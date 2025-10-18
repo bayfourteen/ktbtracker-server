@@ -1,0 +1,11 @@
+PyJWT
+PyMySQL
+PyYAML
+fastapi
+fastapi-utils
+firebase-admin
+pydantic
+pydantic-settings
+sqlmodel
+typing-inspect
+uvicorn

@@ -1,0 +1,7 @@
+# Development-Only Dependencies
+coverage
+flake8
+pytest
+pytest-cov
+pytest-mock
+tox

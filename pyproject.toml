@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools >= 77.0.3", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ktbtracker_server"
+requires-python = ">=3.10"
+readme = "README.md"
+dynamic = ["version", "dependencies"]
+
+[project.scripts]
+ktbtracker-server = "ktbtracker_server.main:main"
+
+[tool.setuptools.dynamic]
+version = {attr = "ktbtracker_server.__version__"}
+dependencies = {file = "requirements.txt"}
+optional-dependencies.dev = {file = "requirements-dev.txt"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+addopts = "--junitxml=./xunit-result-report.xml"
+log_cli = true
+log_cli_level = "DEBUG"
+log_cli_format = "%(asctime)s [%(levelname)8s] %(message)s ($(filename)s:%(lineno)s"
+log_cli_date_format = "%Y-%m-%d %H:%M:%S"
