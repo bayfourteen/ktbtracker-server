@@ -1,4 +1,4 @@
-from typing import Annotated, Sequence
+from typing import Annotated, Sequence, Literal
 
 from fastapi import Depends
 
@@ -14,11 +14,14 @@ class CandidatesService:
     def count_all(self) -> int:
         return self.repository.count_all()
 
-    def find_all(self, offset: int = 0, limit: int = 100) -> Sequence[models.Cycle]:
-        return self.repository.find_all(offset=offset, limit=limit)
+    def count_all_by_cycle_id(self, cycle_id: int) -> int:
+        return self.repository.count_all_by_cycle_id(cycle_id)
 
-    def find_all_by_cycle_id(self, cycle_id: int, offset: int = 0, limit: int = 100) -> Sequence[models.Cycle]:
-        return self.repository.find_all_by_cycle_id(cycle_id, offset=offset, limit=limit)
+    def find_all(self, offset: int = 0, limit: int = 100, sort: Literal['asc', 'desc'] = 'asc') -> Sequence[models.Cycle]:
+        return self.repository.find_all(offset=offset, limit=limit, sort=sort)
+
+    def find_all_by_cycle_id(self, cycle_id: int, offset: int = 0, limit: int = 100, sort: Literal['asc', 'desc'] = 'asc') -> Sequence[models.Cycle]:
+        return self.repository.find_all_by_cycle_id(cycle_id, offset=offset, limit=limit, sort=sort)
 
 
 async def get_candidates_service(repository: Annotated[CandidatesRepository, Depends(get_candidates_repository)]):

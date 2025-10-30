@@ -2,10 +2,9 @@ PyJWT
 PyMySQL
 PyYAML
 fastapi
-fastapi-utils
+fastapi-decorators
 firebase-admin
 pydantic
 pydantic-settings
 sqlmodel
-typing-inspect
 uvicorn

@@ -1,5 +1,5 @@
 import logging
-from typing import Annotated, Sequence
+from typing import Annotated, Sequence, Literal
 
 from fastapi import Depends
 from sqlmodel import Session, func, select
@@ -19,8 +19,11 @@ class CyclesRepository:
     def count_all(self) -> int:
         return self.session.exec(select(func.count()).select_from(entities.Cycle)).first()
 
-    def find_all(self, offset: int = 0, limit: int = 100) -> Sequence[models.Cycle]:
-        cycles = self.session.exec(select(entities.Cycle).offset(offset).limit(limit)).all()
+    def find_all(self, offset: int = 0, limit: int = 100, sort: Literal['asc', 'desc'] = 'desc') -> Sequence[models.Cycle]:
+        cycles = self.session.exec(select(entities.Cycle)
+                                   .offset(offset).limit(limit)
+                                   .order_by(entities.Cycle.id if sort == 'asc' else entities.Cycle.id.desc())
+                                   ).all()
         return [models.Cycle.model_validate(e) for e in cycles]
 
     def find_by_id(self, id: int) -> models.Cycle:

@@ -1,5 +1,5 @@
 import logging
-from typing import Annotated, Sequence
+from typing import Annotated, Sequence, Literal
 
 from fastapi import Depends
 
@@ -17,8 +17,8 @@ class CyclesService:
     def count_all(self) -> int:
         return self.repository.count_all()
 
-    def find_all(self, offset: int = 0, limit: int = 100) -> Sequence[models.Cycle]:
-        return self.repository.find_all(offset, limit)
+    def find_all(self, offset: int = 0, limit: int = 100, sort: Literal['asc', 'desc'] = 'desc') -> Sequence[models.Cycle]:
+        return self.repository.find_all(offset=offset, limit=limit, sort=sort)
 
     def find_by_id(self, id: int) -> models.Cycle:
         return self.repository.find_by_id(id)
