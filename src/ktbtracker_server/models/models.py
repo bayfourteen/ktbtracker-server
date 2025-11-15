@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime, date, timedelta, timezone
 from enum import Enum
-from typing import ClassVar, Any
+from typing import ClassVar, Any, Sequence
 
 from pydantic import BaseModel, ConfigDict, computed_field
 from pydantic.alias_generators import to_camel
@@ -212,41 +212,6 @@ class Requirements(ConfiguredBaseModel):
     sit_ups: int = 0
     sparring: float = 0.0
 
-    class_requirements: ClassVar[list[str]] = [
-        "class_dream_team",
-        "class_hyper_pro",
-        "class_master_q",
-        "class_pmaa",
-        "class_saturday",
-        "class_sparring",
-        "class_weekday"
-    ]
-
-    other_requirements: ClassVar[list[str]] = [
-        "journals",
-        "leadership",
-        "leadership2",
-        "meditation",
-        "mentee",
-        "mentor",
-        "raok",
-    ]
-
-    physical_requirements: ClassVar[list[str]] = [
-        "burpees",
-        "jumps",
-        "kicks",
-        "miles",
-        "planks",
-        "poomsae",
-        "pull_ups",
-        "push_ups",
-        "rolls_falls",
-        "self_defense",
-        "sit_ups",
-        "sparring"
-    ]
-
 
 class CycleWeek(BaseModel):
     days: list[date]
@@ -272,10 +237,12 @@ class Cycle(Requirements, Metadata, ConfiguredBaseModel):
     cycle_post_end: date | None = None
     cycle_week_start: int = 6
 
+    @computed_field
     @property
     def cycle_days(self) -> int:
         return (self.cycle_end - self.cycle_start).days + 1
 
+    @computed_field
     @property
     def cycle_weeks(self) -> int:
         return int(self.cycle_days / 7)
@@ -335,11 +302,7 @@ class JournalPost(Metadata, ConfiguredBaseModel):
     content: str
 
 
-class Statistics(ConfiguredBaseModel):
-    candidate_id: int
-    start_date: date
-    end_date: date
-    overall: float = 0.0
+class TrackingFields(ConfiguredBaseModel):
     burpees: float = 0.0
     class_dream_team: float = 0.0
     class_hyper_pro: float = 0.0
@@ -367,34 +330,22 @@ class Statistics(ConfiguredBaseModel):
     sit_ups: float = 0.0
     sparring: float = 0.0
 
-    def calculate_overall(self, cycle: Cycle) -> float:
-        # Calculate the multiplication factor between 0.0 and 1.0 based on the date range of the statistics
-        factor = min(max((((self.end_date - self.start_date).days + 1) / cycle.cycle_days), 0.0), 1.0)
-        self.overall = (self.calculate_class_overall(cycle, factor) +
-                        self.calculate_other_overall(cycle, factor) +
-                        self.calculate_physical_overall(cycle, factor))
-        return self.overall
 
-    def calculate_class_overall(self, cycle: Cycle, factor: float = 1.0) -> float:
-        class_totals = sum([self.calculate_percentage(e, cycle, factor) for e in Requirements.class_requirements])
-        class_counts = sum([1.0 if getattr(cycle, e, 0) > 0 else 0.0 for e in Requirements.class_requirements])
+class TrackingTotals(ConfiguredBaseModel):
+    candidate_id: int
+    start_date: date
+    end_date: date
+    totals: TrackingFields = TrackingFields()
 
-        return class_totals / class_counts if class_counts > 0 else 0.0
 
-    def calculate_other_overall(self, cycle: Cycle, factor: float = 1.0) -> float:
-        other_totals = sum([self.calculate_percentage(e, cycle, factor) for e in Requirements.other_requirements])
-        other_counts = sum([1.0 if getattr(cycle, e, 0) > 0 else 0.0 for e in Requirements.other_requirements])
+class Statistics(ConfiguredBaseModel):
+    candidate_id: int
+    start_date: date
+    end_date: date
+    overall: float = 0.0
+    totals: TrackingFields = TrackingFields()
+    statistics: TrackingFields = TrackingFields()
 
-        return other_totals / other_counts if other_counts > 0 else 0.0
 
-    def calculate_physical_overall(self, cycle: Cycle, factor: float = 1.0) -> float:
-
-        physical_totals = sum([self.calculate_percentage(e, cycle, factor) for e in Requirements.physical_requirements])
-        physical_counts = sum([1.0 if getattr(cycle, e, 0) > 0 else 0.0 for e in Requirements.physical_requirements])
-
-        return physical_totals / physical_counts if physical_counts > 0 else 0.0
-
-    def calculate_percentage(self, attribute: str, cycle: Cycle, factor: float = 1.0) -> float:
-        if getattr(cycle, attribute, 0) == 0 or factor == 0.0:
-            return 0.0
-        return getattr(self, attribute) / (getattr(cycle, attribute) * factor)
+class FullStatistics(Statistics, ConfiguredBaseModel):
+    weeks: list[Statistics] = list()

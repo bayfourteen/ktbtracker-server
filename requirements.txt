@@ -1,3 +1,4 @@
+sqlalchemy
 PyJWT
 PyMySQL
 PyYAML

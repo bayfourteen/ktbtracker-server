@@ -2,8 +2,11 @@ from datetime import datetime, date, timezone
 from typing import Optional, Annotated
 
 import sqlalchemy as sa
+from pydantic import computed_field
 from sqlmodel import SQLModel, Field, Index, Relationship
 from sqlmodel import Column, TEXT
+
+from ktbtracker_server.config.requirements import RequirementsConfig
 
 
 class SiteGroup(SQLModel, table=True):
@@ -79,6 +82,16 @@ class Cycle(Requirements, Metadata, SQLModel, table=True):
 
     candidates: list["Candidate"] = Relationship(back_populates="cycle")
 
+    @computed_field
+    @property
+    def cycle_days(self) -> int:
+        return (self.cycle_end - self.cycle_start).days + 1
+
+    @computed_field
+    @property
+    def cycle_weeks(self) -> int:
+        return int(self.cycle_days / 7)
+
 
 class Candidate(Metadata, SQLModel, table=True):
     __tablename__ = 'candidates'
@@ -133,3 +146,63 @@ class JournalPost(Metadata, SQLModel, table=True):
     alias: str
     published: bool = Field(default=False)
     content: str = Field(sa_column=Column(TEXT, nullable=True))
+
+
+class TrackingFields(SQLModel):
+    burpees: float = 0.0
+    class_dream_team: float = 0.0
+    class_hyper_pro: float = 0.0
+    class_master_q: float = 0.0
+    class_pmaa: float = 0.0
+    class_saturday: float = 0.0
+    class_sparring: float = 0.0
+    class_weekday: float = 0.0
+    journals: float = 0.0
+    jumps: float = 0.0
+    kicks: float = 0.0
+    leadership: float = 0.0
+    leadership2: float = 0.0
+    meditation: float = 0.0
+    mentee: float = 0.0
+    mentor: float = 0.0
+    miles: float = 0.0
+    planks: float = 0.0
+    poomsae: float = 0.0
+    pull_ups: float = 0.0
+    push_ups: float = 0.0
+    raok: float = 0.0
+    rolls_falls: float = 0.0
+    self_defense: float = 0.0
+    sit_ups: float = 0.0
+    sparring: float = 0.0
+
+
+class Statistics(SQLModel):
+    candidate_id: int
+    start_date: date
+    end_date: date
+    overall: float = 0.0
+    totals: TrackingFields = TrackingFields()
+    statistics: TrackingFields = TrackingFields()
+
+    def calculate(self, cycle: Cycle) -> None:
+        # Calculate the multiplication factor between 0.0 and 1.0 based on the date range of the statistics
+        factor = min(max((((self.end_date - self.start_date).days + 1) / cycle.cycle_days), 0.0), 1.0)
+        attrs = RequirementsConfig.CLASS + RequirementsConfig.OTHER + RequirementsConfig.PHYSICAL
+        attrs = [attr for attr in attrs if getattr(cycle, attr, 0) > 0]
+
+        for attr in attrs:
+            if factor > 0.0:
+                setattr(self.statistics, attr, getattr(self.totals, attr, 0) / (getattr(cycle, attr) * factor))
+            else:
+                setattr(self.statistics, attr, 0)
+
+        self.overall = sum([getattr(self.statistics, attr, 0) for attr in attrs]) / len(attrs) if len(attrs) > 0 else 0.0
+
+
+class FullStatistics(SQLModel):
+    candidate_id: int
+    start_date: date
+    end_date: date
+    overall: float = 0.0
+    weeks: list[Statistics] = list()
