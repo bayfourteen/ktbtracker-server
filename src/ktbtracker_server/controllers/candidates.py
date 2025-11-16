@@ -51,7 +51,6 @@ async def get_full_statistics(
         candidate_id: Annotated[int, Path(
             gt=0,
             description="Candidate ID which uniquely identifies a user as a candidate for a testing cycle.")],
-        candidates_service: CandidatesService = Depends(get_candidates_service),
         # -- Dependencies --
         tracking_service: TrackingService = Depends(get_tracking_service)
 ) -> models.FullStatistics:
@@ -65,10 +64,10 @@ async def create_candidate(
             description="Candidate ID which uniquely identifies a user as a candidate for a testing cycle.")],
         start_date: Annotated[date | None, Query(
             alias="startDate",
-            description="The starting date to gather statistics for the candidate.")],
+            description="The starting date to gather statistics for the candidate.")] = date.today(),
         end_date: Annotated[date | None, Query(
             alias="endDate",
-            description="The ending date to gather statistics for the candidate.")],
+            description="The ending date to gather statistics for the candidate.")] = date.today(),
         # -- Dependencies --
         tracking_service: TrackingService = Depends(get_tracking_service)
 ) -> models.Statistics:
