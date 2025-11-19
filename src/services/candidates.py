@@ -2,8 +2,8 @@ from typing import Annotated, Sequence, Literal
 
 from fastapi import Depends
 
-from ktbtracker_server.models import models
-from ktbtracker_server.repositories.candidates import CandidatesRepository, get_candidates_repository
+from models import models
+from repositories.candidates import CandidatesRepository, get_candidates_repository
 
 
 class CandidatesService:

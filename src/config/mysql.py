@@ -1,11 +1,10 @@
 import logging
-from contextlib import contextmanager
-from typing import Annotated, Generator, AsyncGenerator, Any
+from typing import Annotated, AsyncGenerator, Any
 
 from fastapi import Depends
 from sqlmodel import Session, create_engine
 
-from ktbtracker_server.config.settings import Settings, get_settings
+from config.settings import Settings, get_settings
 
 logger = logging.getLogger(__name__)
 

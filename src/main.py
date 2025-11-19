@@ -1,15 +1,14 @@
-import json
 import logging
 import os
-from pathlib import Path
 
 import firebase_admin
 import uvicorn
 from fastapi import FastAPI
+from starlette.staticfiles import StaticFiles
 
-from ktbtracker_server.config.settings import LOGGING_CONFIG
-from ktbtracker_server.controllers.candidates import router as candidates_router
-from ktbtracker_server.controllers.cycles import router as cycles_router
+from api.v1.candidates import router as candidates_router
+from api.v1.cycles import router as cycles_router
+from webui.views import router as webui_router
 
 
 #logging.basicConfig(format="[%(asctime)s] [%(levelname)-8s] %(name)s: %(message)s",level=logging.INFO)
@@ -26,6 +25,9 @@ def create_app():
     firebase_admin.initialize_app(cert_creds)
     logger.info("Google Firebase Administration SDK successfully initialized for project"
                 f" '{firebase_admin.get_app().project_id}'.")
+
+    app.mount("/static", StaticFiles(directory="static"), name="static")
+    app.include_router(webui_router)
 
     app.include_router(cycles_router, prefix="/ktbtracker/v1")
     app.include_router(candidates_router, prefix="/ktbtracker/v1")

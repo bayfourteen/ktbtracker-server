@@ -4,10 +4,9 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query, HTTPException, Path
 
-from ktbtracker_server.models import models
-from ktbtracker_server.models import response
-from ktbtracker_server.services.candidates import CandidatesService, get_candidates_service
-from ktbtracker_server.services.cycles import CyclesService, get_cycles_service
+from models import models, response
+from services.candidates import CandidatesService, get_candidates_service
+from services.cycles import CyclesService, get_cycles_service
 
 logger = logging.getLogger(__name__)
 

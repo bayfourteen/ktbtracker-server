@@ -1,4 +1,4 @@
-sqlalchemy
+Jinja2
 PyJWT
 PyMySQL
 PyYAML
@@ -7,5 +7,6 @@ fastapi-decorators
 firebase-admin
 pydantic
 pydantic-settings
+sqlalchemy
 sqlmodel
 uvicorn

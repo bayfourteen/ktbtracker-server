@@ -4,9 +4,8 @@ from typing import Sequence, Annotated
 from fastapi import Depends
 from sqlmodel import DOUBLE, Session, func, select
 
-from ktbtracker_server.config.mysql import get_session
-from ktbtracker_server.entities import entities
-from ktbtracker_server.models import models
+from config.mysql import get_session
+from entities import entities
 
 
 class TrackingRepository:

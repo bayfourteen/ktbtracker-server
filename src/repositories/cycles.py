@@ -4,9 +4,8 @@ from typing import Annotated, Sequence, Literal
 from fastapi import Depends
 from sqlmodel import Session, func, select
 
-from ktbtracker_server.config.mysql import get_session
-from ktbtracker_server.entities import entities
-
+from config.mysql import get_session
+from entities import entities
 
 logger = logging.getLogger(__name__)
 

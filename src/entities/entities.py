@@ -6,7 +6,7 @@ from pydantic import computed_field
 from sqlmodel import SQLModel, Field, Index, Relationship
 from sqlmodel import Column, TEXT
 
-from ktbtracker_server.config.requirements import RequirementsConfig
+from config.requirements import RequirementsConfig
 
 
 class SiteGroup(SQLModel, table=True):

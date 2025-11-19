@@ -3,8 +3,8 @@ from typing import Annotated, Sequence, Literal
 
 from fastapi import Depends
 
-from ktbtracker_server.models import models
-from ktbtracker_server.repositories.cycles import CyclesRepository, get_cycles_repository
+from models import models
+from repositories.cycles import CyclesRepository, get_cycles_repository
 
 
 logger = logging.getLogger(__name__)

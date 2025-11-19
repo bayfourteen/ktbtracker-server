@@ -3,8 +3,9 @@ from typing import Annotated
 
 from fastapi import Depends
 
-from ktbtracker_server.models import models
-from ktbtracker_server.repositories.tracking import TrackingRepository, get_tracking_repository
+from models import models
+
+from repositories.tracking import TrackingRepository, get_tracking_repository
 
 
 class TrackingService:
