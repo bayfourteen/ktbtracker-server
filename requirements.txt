@@ -1,4 +1,4 @@
-Jinja2
+sqlalchemy
 PyJWT
 PyMySQL
 PyYAML

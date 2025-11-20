@@ -26,7 +26,7 @@ def create_app():
     logger.info("Google Firebase Administration SDK successfully initialized for project"
                 f" '{firebase_admin.get_app().project_id}'.")
 
-    app.mount("/static", StaticFiles(directory="static"), name="static")
+    app.mount("/static", StaticFiles(directory="src/static"), name="static")
     app.include_router(webui_router)
 
     app.include_router(cycles_router, prefix="/ktbtracker/v1")
