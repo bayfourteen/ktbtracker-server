@@ -3,16 +3,31 @@ import os
 
 import firebase_admin
 import uvicorn
-from fastapi import FastAPI
-from starlette.staticfiles import StaticFiles
+from babel.dates import format_date
+from fastapi import FastAPI, Request
+from fastapi.staticfiles import StaticFiles
+from fastapi_babel import _, Babel, BabelConfigs, BabelMiddleware
+from fastapi.templating import Jinja2Templates
 
 from api.v1.candidates import router as candidates_router
 from api.v1.cycles import router as cycles_router
+from config.jinja2 import get_templates
 from webui.views import router as webui_router
 
 
 #logging.basicConfig(format="[%(asctime)s] [%(levelname)-8s] %(name)s: %(message)s",level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+
+configs = BabelConfigs(
+    ROOT_DIR=__file__,
+    BABEL_DEFAULT_LOCALE="en",
+    BABEL_TRANSLATION_DIRECTORY="lang",
+)
+
+
+def locale_selector(request: Request) -> str:
+    return request.cookies.get("locale") or "en" # Fallback to "en" if no cookie is set
 
 
 def create_app():
@@ -26,7 +41,18 @@ def create_app():
     logger.info("Google Firebase Administration SDK successfully initialized for project"
                 f" '{firebase_admin.get_app().project_id}'.")
 
-    app.mount("/static", StaticFiles(directory="src/static"), name="static")
+    #
+    # Load any middleware
+    #
+    app.add_middleware(
+        BabelMiddleware,
+        babel_configs=configs,
+        jinja2_templates=get_templates(),
+        locale_selector=locale_selector,
+    )
+
+
+    app.mount("/static", StaticFiles(directory="static"), name="static")
     app.include_router(webui_router)
 
     app.include_router(cycles_router, prefix="/ktbtracker/v1")

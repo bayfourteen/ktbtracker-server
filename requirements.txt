@@ -1,4 +1,5 @@
-sqlalchemy
+fastapi-babel
+Jinja2
 PyJWT
 PyMySQL
 PyYAML
