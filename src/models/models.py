@@ -338,6 +338,11 @@ class TrackingTotals(ConfiguredBaseModel):
     totals: TrackingFields = TrackingFields()
 
 
+class TrackingData(TrackingFields, ConfiguredBaseModel):
+    candidate_id: int
+    tracking_date: date
+
+
 class Statistics(ConfiguredBaseModel):
     candidate_id: int
     start_date: date
@@ -348,4 +353,4 @@ class Statistics(ConfiguredBaseModel):
 
 
 class FullStatistics(Statistics, ConfiguredBaseModel):
-    weeks: list[Statistics] = list()
+    weeks: list[Statistics] = []

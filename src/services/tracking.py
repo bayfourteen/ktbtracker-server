@@ -1,5 +1,5 @@
 from datetime import date, timedelta
-from typing import Annotated
+from typing import Annotated, Sequence
 
 from fastapi import Depends
 
@@ -55,6 +55,16 @@ class TrackingService:
             end_date: date,
     ) -> models.Statistics:
         return models.Statistics.model_validate(self.repository.calculate_statistics(candidate_id, start_date, end_date))
+
+    def find_all_by_candidate_id_and_date_range(
+            self,
+            candidate_id: int,
+            start_date: date,
+            end_date: date,
+    ) -> Sequence[models.Tracking]:
+        return [
+                models.Tracking.model_validate(e) for e in self.repository.find_all_by_candidate_id_and_date_range(candidate_id, start_date, end_date)
+            ]
 
 
 async def get_tracking_service(repository: Annotated[TrackingRepository, Depends(get_tracking_repository)]):

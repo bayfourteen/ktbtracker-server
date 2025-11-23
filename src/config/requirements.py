@@ -1,39 +1,41 @@
 from typing import ClassVar
 
+def N_(message: str) -> str: return message
+
 
 class RequirementsConfig:
 
     CLASS: ClassVar[list[str]] = [
-        "class_dream_team",
-        "class_hyper_pro",
-        "class_master_q",
-        "class_pmaa",
-        "class_saturday",
-        "class_sparring",
-        "class_weekday"
+        N_("class_dream_team"),
+        N_("class_hyper_pro"),
+        N_("class_master_q"),
+        N_("class_pmaa"),
+        N_("class_saturday"),
+        N_("class_sparring"),
+        N_("class_weekday"),
     ]
 
     OTHER: ClassVar[list[str]] = [
-        "journals",
-        "leadership",
-        "leadership2",
-        "meditation",
-        "mentee",
-        "mentor",
-        "raok",
+        N_("journals"),
+        N_("leadership"),
+        N_("leadership2"),
+        N_("meditation"),
+        N_("mentee"),
+        N_("mentor"),
+        N_("raok"),
     ]
 
     PHYSICAL: ClassVar[list[str]] = [
-        "burpees",
-        "jumps",
-        "kicks",
-        "miles",
-        "planks",
-        "poomsae",
-        "pull_ups",
-        "push_ups",
-        "rolls_falls",
-        "self_defense",
-        "sit_ups",
-        "sparring"
+        N_("burpees"),
+        N_("jumps"),
+        N_("kicks"),
+        N_("miles"),
+        N_("planks"),
+        N_("poomsae"),
+        N_("pull_ups"),
+        N_("push_ups"),
+        N_("rolls_falls"),
+        N_("self_defense"),
+        N_("sit_ups"),
+        N_("sparring"),
     ]

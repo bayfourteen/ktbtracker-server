@@ -3,6 +3,7 @@ import logging
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query, Path, HTTPException
+from fastapi_babel import _
 
 from entities import entities
 from models import models, response

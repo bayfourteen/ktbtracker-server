@@ -2,7 +2,7 @@
 
 {% block content %}
       <div class="my-3 p-3 bg-body rounded shadow-sm">
-        <h6 class="border-bottom pb-2 mb-0">Suggestions</h6>
+        <h6 class="border-bottom pb-2 mb-0">{{ _('Cycles') }}</h6>
   {% for cycle in cycles %}
         <div class="d-flex text-body-secondary pt-3">
           <svg
@@ -21,14 +21,14 @@
           <div class="pb-3 mb-0 small lh-sm border-bottom w-100">
             <div class="d-flex justify-content-between">
               <strong class="text-gray-dark">{{ cycle.title }}</strong>
-              <a href="#">Follow</a>
+              <a href="#">{{ _('Candidates') }}</a>
             </div>
             <span class="d-block">{{ cycle.cycle_start | format_date(format='long') }} - {{ cycle.cycle_end | format_date(format='long') }}</span>
           </div>
         </div>
   {% endfor %}
         <small class="d-block text-end mt-3">
-          <a href="#">All suggestions</a>
+          <a href="#">{{ _('All suggestions') }}</a>
         </small>
       </div>
 {% endblock %}

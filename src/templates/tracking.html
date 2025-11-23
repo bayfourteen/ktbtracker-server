@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="my-3 p-3 bg-body rounded shadow-sm">
+        <table class="table">
+            <thead>
+            <tr>
+                <tD></tD>
+                {% for tracking in tracking_data %}
+                    <td>
+                        <div class="media align-items-center justify-content-between">
+                            <div class="text-center">
+                                <strong class="text-center">{{ _('DAY') }} {{ cycle_days[loop.index0] }}</strong>
+                            </div>
+                            <span class="d-block text-center"><small>{{ tracking.tracking_date | format_date(format='short') }}</small></span>
+                        </div>
+                    </td>
+                {% endfor %}
+            </tr>
+            </thead>
+            <tbody>
+            {%  for name in tracking_names %}
+                <tr>
+                    <td>{{ _(name) }}</td>
+                {% for tracking in tracking_data %}
+                    <td class="text-end"><span>{{ tracking.model_dump()[name] }}</span></td>
+                {%  endfor  %}
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

@@ -15,7 +15,8 @@ from config.jinja2 import get_templates
 from webui.views import router as webui_router
 
 
-#logging.basicConfig(format="[%(asctime)s] [%(levelname)-8s] %(name)s: %(message)s",level=logging.INFO)
+logging.basicConfig(format="[%(asctime)s] [%(levelname)-8s] %(name)s: %(message)s",level=logging.INFO)
+
 logger = logging.getLogger(__name__)
 
 
