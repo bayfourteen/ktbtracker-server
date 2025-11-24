@@ -20,7 +20,7 @@ class TranslationWrapper:
 
     def init_translation(self):
         lang = "en"  # Default language
-        locales_dir = Path(__file__).parent.parent / "locale"
+        locales_dir = Path(__file__).parent.parent / "locales"
         self.translations = gettext.translation(
             "messages",
             localedir=locales_dir,
@@ -55,7 +55,7 @@ class I18nMiddleware(BaseHTTPMiddleware):
 async def set_locale(request: Request, lang: str = "en"):
     translation_wrapper = TranslationWrapper()
 
-    locales_dir = Path(__file__).parent.parent / "locale"
+    locales_dir = Path(__file__).parent.parent / "locales"
     print(f"Setting language to: {lang}")
     translation_wrapper.translations = gettext.translation(
         "messages", localedir=locales_dir, languages=[lang], fallback=True

@@ -32,8 +32,8 @@ async def index(
     return templates.TemplateResponse("index.html", {"request": request, "cycles": cycles})
 
 
-@router.get("/tracking", response_class=HTMLResponse)
-async def about(
+@router.get("/tracking", response_class=HTMLResponse, response_model=None)
+async def tracking(
         request: Request,
         candidate_id: Annotated[int | None, Query(gt=0, alias="canid")] = 627,
         week: Annotated[int | None, Query(alias="week")] = 0,
@@ -49,15 +49,18 @@ async def about(
             tracking_week = cycle.cycle_week(week or 0)
             logger.info(f"**** Tracking week: {tracking_week}")
             tracking_data = tracking_service.find_all_by_candidate_id_and_date_range(candidate_id, tracking_week.start, tracking_week.end)
-            tracking_stats = tracking_service.calculate_statistics(candidate_id, tracking_week.start, tracking_week.end)
+            tracking_stats = tracking_service.calculate_full_statistics(candidate_id)
             tracking_names = RequirementsConfig.PHYSICAL + RequirementsConfig.CLASS + RequirementsConfig.OTHER
             tracking_day = cycle.cycle_day(tracking_week.start)
             cycle_days = list(range(tracking_day, tracking_day + 7))
             logger.info("**** Tracking data: %d %s", len(tracking_data), tracking_data)
-            return templates.TemplateResponse("tracking.html", {
+            return templates.TemplateResponse("tracking/index.html", {
                 "request": request,
-                "tracking_data": tracking_data,
-                "tracking_stats": tracking_stats,
+                "candidate": candidate,
+                "cycle": cycle.model_dump(),
+                "tracking_data": [e.model_dump() for e in tracking_data],
+                "totals": tracking_stats.model_dump()["totals"],
+                "statistics": tracking_stats.model_dump()["statistics"],
                 "TRACKING_NAMES": TRACKING_NAMES,
                 "tracking_names": tracking_names,
                 "tracking_week": tracking_week

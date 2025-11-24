@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="my-3 p-3 bg-body rounded shadow-sm">
+    <table class="table">
+        <thead>
+        <tr>
+            <tD></tD>
+            {% for tracking in tracking_data %}
+            <td>
+                <div class="media align-items-center justify-content-between">
+                    <div class="text-center">
+                        <strong class="text-center">{{ _('DAY %(day)d') | format(day=tracking_week.days[loop.index0])
+                            }}</strong>
+                    </div>
+                    <span class="d-block text-center"><small>{{ tracking.tracking_date | format_date(format='short') }}</small></span>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                            data-bs-target="#{{ 'tracking-' ~ tracking.tracking_date }}">
+                        Edit
+                    </button>
+                    <div class="modal fade" id="{{ 'tracking-' ~ tracking.tracking_date }}" data-bs-backdrop="static"
+                         data-bs-keyboard="false"
+                         tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    {% with tracking=tracking %}
+                                        {% include 'tracking/edit.html' %}
+                                    {% endwith %}
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close
+                                    </button>
+                                    <button type="button" class="btn btn-primary">Understood</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </td>
+            {% endfor %}
+        </tr>
+        </thead>
+        <tbody>
+        {% for name, title in TRACKING_NAMES.items() %}
+        {% if cycle[name] > 0 %}
+        <tr>
+            <td>{{ title }}</td>
+            {% for tracking in tracking_data %}
+            <td class="text-end">{{ tracking[name] | format_number }}</td>
+            {% endfor %}
+            <td class="text-end">
+                <div>
+                    <div>
+                        <span>{{ totals[name] | format_number }}</span>
+                    </div>
+                    <span class="d-block"><small>{{ cycle[name] | format_number }}</small></span>
+                </div>
+            </td>
+            <td>
+                <svg class="ProgressCircle" viewBox="0 0 32 32" style="height: 50px; width: 50px;">
+                    <circle class="ProgressCircle" r="16" cx="16" cy="16"
+                            style="{{ 'stroke-dasharray: ' ~ statistics[name] | percent ~ ' 100; stroke: ' ~ statistics[name] | pct_color ~ ';' }}">
+                    </circle>
+                </svg>
+            </td>
+        </tr>
+        {% endif %}
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

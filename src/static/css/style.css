@@ -1,0 +1,22 @@
+@keyframes spin {
+    to { transform: rotate(.5turn); }
+}
+
+@keyframes bg {
+    50% { background: #655; }
+}
+
+
+svg.ProgressCircle {
+    width: 100px; height: 100px;
+    transform: rotate(-90deg);
+    background: #aaa;
+    border-radius: 50%;
+}
+
+circle.ProgressCircle {
+    fill: #aaa;
+    stroke: #aaa;
+    stroke-width: 32;
+    animation: fillup 5s linear ease-in-out;
+}
