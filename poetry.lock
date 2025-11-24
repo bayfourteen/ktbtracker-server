@@ -583,23 +583,6 @@ standard = ["email-validator (>=2.0.0)", "fastapi-cli[standard] (>=0.0.8)", "htt
 standard-no-fastapi-cloud-cli = ["email-validator (>=2.0.0)", "fastapi-cli[standard-no-fastapi-cloud-cli] (>=0.0.8)", "httpx (>=0.23.0,<1.0.0)", "jinja2 (>=3.1.5)", "python-multipart (>=0.0.18)", "uvicorn[standard] (>=0.12.0)"]
 
 [[package]]
-name = "fastapi-babel"
-version = "1.0.0"
-description = "FastAPI-babel is an extenstion for I18n and I10n support in FastAPI, based on babel and pytz."
-optional = false
-python-versions = ">=3.7"
-groups = ["main"]
-files = [
-    {file = "fastapi_babel-1.0.0-py3-none-any.whl", hash = "sha256:9be639b098dd07dfe5b811df318abdd7e282622ac20304d909151f46b09a087d"},
-    {file = "fastapi_babel-1.0.0.tar.gz", hash = "sha256:a70005e132b6cfc611a5a02601c63bcd26a1b1cb689d7295be4587c9d35402f3"},
-]
-
-[package.dependencies]
-babel = "*"
-fastapi = "*"
-uvicorn = "*"
-
-[[package]]
 name = "fastapi-decorators"
 version = "1.0.19"
 description = "Create decorators for your endpoints using FastAPI dependencies."
@@ -1178,6 +1161,18 @@ groups = ["dev"]
 files = [
     {file = "iniconfig-2.3.0-py3-none-any.whl", hash = "sha256:f631c04d2c48c52b84d0d0549c99ff3859c98df65b3101406327ecc7d53fbf12"},
     {file = "iniconfig-2.3.0.tar.gz", hash = "sha256:c76315c77db068650d49c5b56314774a7804df16fee4402c1f19d6d15d8c4730"},
+]
+
+[[package]]
+name = "itsdangerous"
+version = "2.2.0"
+description = "Safely pass data to untrusted environments and back."
+optional = false
+python-versions = ">=3.8"
+groups = ["main"]
+files = [
+    {file = "itsdangerous-2.2.0-py3-none-any.whl", hash = "sha256:c6242fc49e35958c8b15141343aa660db5fc54d4f13a1db01a3f5891b98700ef"},
+    {file = "itsdangerous-2.2.0.tar.gz", hash = "sha256:e0050c0b7da1eea53ffaf149c0cfbb5c6e2e2b69c4bef22c81fa6eb73e5f6173"},
 ]
 
 [[package]]
@@ -2259,4 +2254,4 @@ test = ["covdefaults (>=2.3)", "coverage (>=7.2.7)", "coverage-enable-subprocess
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.12"
-content-hash = "cec42e89c094fb87704d132cdc6d26a8a7be058e3cca31e0bff763cfd6244fa7"
+content-hash = "116064c1e947458677e3bfbd917ea2b68857033e5147ce060fd754240ee80976"

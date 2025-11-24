@@ -3,14 +3,15 @@ import os
 
 import firebase_admin
 import uvicorn
-from babel.dates import format_date
+
+
 from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
-from fastapi_babel import _, Babel, BabelConfigs, BabelMiddleware
-from fastapi.templating import Jinja2Templates
+from starlette.middleware.sessions import SessionMiddleware
 
 from api.v1.candidates import router as candidates_router
 from api.v1.cycles import router as cycles_router
+from config.i18n import I18nMiddleware
 from config.jinja2 import get_templates
 from webui.views import router as webui_router
 
@@ -18,13 +19,6 @@ from webui.views import router as webui_router
 logging.basicConfig(format="[%(asctime)s] [%(levelname)-8s] %(name)s: %(message)s",level=logging.INFO)
 
 logger = logging.getLogger(__name__)
-
-
-configs = BabelConfigs(
-    ROOT_DIR=__file__,
-    BABEL_DEFAULT_LOCALE="en",
-    BABEL_TRANSLATION_DIRECTORY="lang",
-)
 
 
 def locale_selector(request: Request) -> str:
@@ -45,15 +39,18 @@ def create_app():
     #
     # Load any middleware
     #
-    app.add_middleware(
-        BabelMiddleware,
-        babel_configs=configs,
-        jinja2_templates=get_templates(),
-        locale_selector=locale_selector,
-    )
-
+    #app.add_middleware(
+    #    BabelMiddleware,
+    #    babel_configs=configs,
+    #    jinja2_templates=get_templates(),
+    #    locale_selector=locale_selector,
+    #)
+    app.add_middleware(I18nMiddleware, templates=get_templates())
+    app.add_middleware(SessionMiddleware, secret_key="SuperSecretKey")
 
     app.mount("/static", StaticFiles(directory="static"), name="static")
+    #templates.env.install_gettext_translations(Translations.load("locale", ["en"]))
+
     app.include_router(webui_router)
 
     app.include_router(cycles_router, prefix="/ktbtracker/v1")

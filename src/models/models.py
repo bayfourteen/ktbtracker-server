@@ -214,17 +214,23 @@ class Requirements(ConfiguredBaseModel):
 
 
 class CycleWeek(BaseModel):
-    days: list[date]
+    week: int
+    start: date
 
     @computed_field
     @property
-    def start(self) -> date | None:
-        return self.days[0] or None
+    def days(self) -> list[int]:
+        return list(range((self.week * 7), ((self.week * 7) + 7)))
+
+    @computed_field
+    @property
+    def dates(self) -> list[date]:
+        return [self.start + timedelta(days=n) for n in range(0, 7)]
 
     @computed_field
     @property
     def end(self) -> date | None:
-        return self.days[-1] or None
+        return self.start + timedelta(days=6)
 
 
 class Cycle(Requirements, Metadata, ConfiguredBaseModel):
@@ -247,13 +253,11 @@ class Cycle(Requirements, Metadata, ConfiguredBaseModel):
     def cycle_weeks(self) -> int:
         return int(self.cycle_days / 7)
 
-    def cycle_day(self, date: date = date.today()) -> int:
-        return (date - self.cycle_start).days + 1
+    def cycle_day(self, cycle_date: date = date.today()) -> int:
+        return (cycle_date - self.cycle_start).days + 1
 
     def cycle_week(self, week: int = 0) -> CycleWeek:
-        start_date = self.cycle_start + timedelta(days=week * 7)
-
-        return CycleWeek(days=[start_date + timedelta(days=n) for n in range(0, 7)])
+        return CycleWeek(week=week, start=self.cycle_start + timedelta(days=week * 7))
 
 
 class Candidate(Metadata, ConfiguredBaseModel):

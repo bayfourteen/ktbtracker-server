@@ -62,9 +62,14 @@ class TrackingService:
             start_date: date,
             end_date: date,
     ) -> Sequence[models.Tracking]:
-        return [
-                models.Tracking.model_validate(e) for e in self.repository.find_all_by_candidate_id_and_date_range(candidate_id, start_date, end_date)
-            ]
+        results = self.repository.find_all_by_candidate_id_and_date_range(candidate_id, start_date, end_date)
+        tracking_data = []
+        for tracking_date in [start_date + timedelta(days=n) for n in range(0, (end_date - start_date).days)]:
+            if tracking := next(filter(lambda d: d.tracking_date == tracking_date, results), None):
+                tracking_data.append(models.Tracking.model_validate(tracking))
+            else:
+                tracking_data.append(models.Tracking(candidate_id=candidate_id, tracking_date=tracking_date))
+        return tracking_data
 
 
 async def get_tracking_service(repository: Annotated[TrackingRepository, Depends(get_tracking_repository)]):

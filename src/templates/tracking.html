@@ -10,7 +10,7 @@
                     <td>
                         <div class="media align-items-center justify-content-between">
                             <div class="text-center">
-                                <strong class="text-center">{{ _('DAY') }} {{ cycle_days[loop.index0] }}</strong>
+                                <strong class="text-center">{{ _('DAY %(day)d') | format(day=tracking_week.days[loop.index0]) }}</strong>
                             </div>
                             <span class="d-block text-center"><small>{{ tracking.tracking_date | format_date(format='short') }}</small></span>
                         </div>
@@ -19,12 +19,18 @@
             </tr>
             </thead>
             <tbody>
-            {%  for name in tracking_names %}
+            {%  for name, title in TRACKING_NAMES.items() %}
                 <tr>
-                    <td>{{ _(name) }}</td>
+                    <td>{{ title }}</td>
                 {% for tracking in tracking_data %}
                     <td class="text-end"><span>{{ tracking.model_dump()[name] }}</span></td>
                 {%  endfor  %}
+                    <td class="text-end">{{ tracking_stats.model_dump()['totals'][name] }}</td>
+                    <td>
+                        <svg class="ProgressCircle" viewBox="0 0 32 32" style="height: 50px; width: 50px;">
+                            <circle class="ProgressCircle" r="16" cx="16" cy="16" style="stroke-dasharray: {{ tracking_stats.model_dump()['statistics'][name] | normalize }} 100; stroke: #fff;"></circle>
+                        </svg>
+                    </td>
                 </tr>
             {% endfor %}
             </tbody>
