@@ -1,12 +1,18 @@
+import logging
 import math
 import sys
+from datetime import date
+from decimal import Decimal
 from pathlib import Path
 
 from babel.dates import format_date
 from babel.numbers import format_number, format_decimal
 from fastapi.templating import Jinja2Templates
+from sqlmodel import case
 
 from config.i18n import _
+
+logger = logging.getLogger(__name__)
 
 BASE_DIR = Path(__file__).parent.parent
 
@@ -33,6 +39,20 @@ def percent(value: int | float) -> float:
     return normalize(value) * 100
 
 
+def factional(value: int | float) -> bool:
+    logger.info(f"factional({value}) type={type(value)}")
+    return type(value) == float
+
+
+def available(value: date, field: str) -> bool:
+    logger.info(f"available({value}, {field}) type={type(value)}, weekday={value.weekday()}")
+    if value.weekday() < 6:
+        if value.weekday() < 5:
+            return field.startswith("class_") and field != "class_saturday"
+        return field == "class_saturday"
+    return False
+
+
 def get_templates():
     templates = Jinja2Templates(directory=str(Path(BASE_DIR, 'templates')))
     templates.env.globals.update(_=_)
@@ -46,5 +66,7 @@ def get_templates():
     templates.env.filters["normalize"] = lambda v: normalize(v)
     templates.env.filters["pct_color"] = lambda v: pct_color(v)
     templates.env.filters["percent"] = lambda v: percent(v)
+    templates.env.tests["available"] = lambda v, f: available(v, f)
+    templates.env.tests["fractional"] = lambda v: factional(v)
 
     return templates

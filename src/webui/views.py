@@ -47,10 +47,8 @@ async def tracking(
     if candidate := candidates_service.find_by_id(candidate_id):
         if cycle := cycles_service.find_by_id(candidate.cycle_id):
             tracking_week = cycle.cycle_week(week or 0)
-            logger.info(f"**** Tracking week: {tracking_week}")
             tracking_data = tracking_service.find_all_by_candidate_id_and_date_range(candidate_id, tracking_week.start, tracking_week.end)
             tracking_stats = tracking_service.calculate_full_statistics(candidate_id)
-            tracking_names = RequirementsConfig.PHYSICAL + RequirementsConfig.CLASS + RequirementsConfig.OTHER
             tracking_day = cycle.cycle_day(tracking_week.start)
             cycle_days = list(range(tracking_day, tracking_day + 7))
             logger.info("**** Tracking data: %d %s", len(tracking_data), tracking_data)
@@ -62,7 +60,6 @@ async def tracking(
                 "totals": tracking_stats.model_dump()["totals"],
                 "statistics": tracking_stats.model_dump()["statistics"],
                 "TRACKING_NAMES": TRACKING_NAMES,
-                "tracking_names": tracking_names,
                 "tracking_week": tracking_week
             })
     return HTMLResponse()
