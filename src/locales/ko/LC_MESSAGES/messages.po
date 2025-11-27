@@ -1,0 +1,141 @@
+# Korean translations for PROJECT.
+# Copyright (C) 2025 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2025-11-24 19:49-0500\n"
+"PO-Revision-Date: 2025-11-24 19:49-0500\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ko\n"
+"Language-Team: ko <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: src/config/requirements.py:9
+msgid "class_dream_team"
+msgstr ""
+
+#: src/config/requirements.py:10
+msgid "class_hyper_pro"
+msgstr ""
+
+#: src/config/requirements.py:11
+msgid "class_master_q"
+msgstr ""
+
+#: src/config/requirements.py:12
+msgid "class_pmaa"
+msgstr ""
+
+#: src/config/requirements.py:13
+msgid "class_saturday"
+msgstr ""
+
+#: src/config/requirements.py:14
+msgid "class_sparring"
+msgstr ""
+
+#: src/config/requirements.py:15
+msgid "class_weekday"
+msgstr ""
+
+#: src/config/requirements.py:19
+msgid "journals"
+msgstr ""
+
+#: src/config/requirements.py:20
+msgid "leadership"
+msgstr ""
+
+#: src/config/requirements.py:21
+msgid "leadership2"
+msgstr ""
+
+#: src/config/requirements.py:22
+msgid "meditation"
+msgstr ""
+
+#: src/config/requirements.py:23
+msgid "mentee"
+msgstr ""
+
+#: src/config/requirements.py:24
+msgid "mentor"
+msgstr ""
+
+#: src/config/requirements.py:25
+msgid "raok"
+msgstr ""
+
+#: src/config/requirements.py:29
+msgid "burpees"
+msgstr ""
+
+#: src/config/requirements.py:30
+msgid "jumps"
+msgstr ""
+
+#: src/config/requirements.py:31
+msgid "kicks"
+msgstr ""
+
+#: src/config/requirements.py:32
+msgid "miles"
+msgstr ""
+
+#: src/config/requirements.py:33
+msgid "planks"
+msgstr ""
+
+#: src/config/requirements.py:34
+msgid "poomsae"
+msgstr ""
+
+#: src/config/requirements.py:35
+msgid "pull_ups"
+msgstr ""
+
+#: src/config/requirements.py:36
+msgid "push_ups"
+msgstr ""
+
+#: src/config/requirements.py:37
+msgid "rolls_falls"
+msgstr ""
+
+#: src/config/requirements.py:38
+msgid "self_defense"
+msgstr ""
+
+#: src/config/requirements.py:39
+msgid "sit_ups"
+msgstr ""
+
+#: src/config/requirements.py:40
+msgid "sparring"
+msgstr ""
+
+#: src/templates/index.html:5
+msgid "Cycles"
+msgstr ""
+
+#: src/templates/index.html:24
+msgid "Candidates"
+msgstr ""
+
+#: src/templates/index.html:31
+msgid "All suggestions"
+msgstr ""
+
+#: src/templates/tracking/index.html:13
+#, python-format
+msgid "DAY %(day)d"
+msgstr ""
+
