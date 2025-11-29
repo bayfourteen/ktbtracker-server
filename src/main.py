@@ -1,4 +1,5 @@
 import logging
+import logging.config
 import os
 
 import firebase_admin
@@ -13,10 +14,11 @@ from api.v1.candidates import router as candidates_router
 from api.v1.cycles import router as cycles_router
 from config.i18n import I18nMiddleware
 from config.jinja2 import get_templates
+from config.observability import RequestLoggerMiddleware, LOGGING_CONFIG
 from webui.views import router as webui_router
 
 
-logging.basicConfig(format="[%(asctime)s] [%(levelname)-8s] %(name)s: %(message)s",level=logging.INFO)
+logging.config.dictConfig(LOGGING_CONFIG)
 
 logger = logging.getLogger(__name__)
 
@@ -45,6 +47,7 @@ def create_app():
     #    jinja2_templates=get_templates(),
     #    locale_selector=locale_selector,
     #)
+    app.add_middleware(RequestLoggerMiddleware, logger=logger)
     app.add_middleware(I18nMiddleware, templates=get_templates())
     app.add_middleware(SessionMiddleware, secret_key="SuperSecretKey")
 
