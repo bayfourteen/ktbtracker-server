@@ -7,14 +7,14 @@
             <tr>
                 <tD></tD>
                 {% for tracking in tracking_data %}
-                    <td>
+                    <td class="{{ 'bg-body-tertiary' if tracking.tracking_date == today else '' }} ">
                         <div class="media align-items-center justify-content-between">
                             <div class="text-center">
                                 <strong class="text-center">{{ _('DAY %(day)d') | format(day=tracking_week.days[loop.index0]) }}</strong>
                             </div>
-                            <span class="d-block text-center"><small
+                            <span class="d-block text-center"><small class="fw-{{ 'bold' if tracking.tracking_date == today else 'normal' }}"
                                     style="font-variant: all-small-caps;">{{ tracking.tracking_date | format_date(format='EEEE') }}</small></span>
-                            <span class="d-block text-center"><small>{{ tracking.tracking_date | format_date(format='short') }}</small></span>
+                            <span class="d-block text-center"><small class="fw-{{ 'bold' if tracking.tracking_date == today else 'normal' }}">{{ tracking.tracking_date | format_date(format='short') }}</small></span>
                             <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                                     data-bs-target="#{{ 'tracking-' ~ tracking.tracking_date }}">
                                 <i class="bi bi-pencil-square"></i>
@@ -41,12 +41,11 @@
                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                                                 Close
                                             </button>
-                                            <button type="button" class="btn btn-primary">Understood</button>
+                                            <button type="submit" class="btn btn-primary" form="tracking-form">Understood</button>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-
                         </div>
                     </td>
                 {% endfor %}
@@ -59,12 +58,12 @@
                         <td>{{ title }}</td>
                         {% for tracking in tracking_data %}
                             {% if name.startswith('class_') %}
-                                <td class="text-end" data-bs-toggle="modal"
+                                <td class="fw-{{ 'bold bg-body-tertiary' if tracking.tracking_date == today else 'normal' }} text-end" data-bs-toggle="modal"
                                     data-bs-target="#{{ 'tracking-' ~ tracking.tracking_date }}"><i
                                         class="{{ '' if tracking['tracking_date'] is not available(name) else 'bi bi-' ~ ['x-lg', 'check-lg'][tracking[name]] }}"></i>
                                 </td>
                             {% else %}
-                                <td class="text-end" data-bs-toggle="modal"
+                                <td class="fw-{{ 'bold bg-body-tertiary' if tracking.tracking_date == today else 'normal' }} text-end" data-bs-toggle="modal"
                                     data-bs-target="#{{ 'tracking-' ~ tracking.tracking_date }}">{{ tracking[name] | format_number }}</td>
                             {% endif %}
                         {% endfor %}

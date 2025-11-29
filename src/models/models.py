@@ -259,6 +259,9 @@ class Cycle(Requirements, Metadata, ConfiguredBaseModel):
     def cycle_week(self, week: int = 0) -> CycleWeek:
         return CycleWeek(week=week, start=self.cycle_start + timedelta(days=week * 7))
 
+    def cycle_week_of(self, cycle_date: date = date.today()) -> CycleWeek:
+        return self.cycle_week((cycle_date - self.cycle_start).days // 7)
+
 
 class Candidate(Metadata, ConfiguredBaseModel):
     id: int
