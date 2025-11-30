@@ -8,9 +8,12 @@ from pathlib import Path
 from babel.dates import format_date
 from babel.numbers import format_number, format_decimal
 from fastapi.templating import Jinja2Templates
+from fastapi_csrf_jinja.jinja_processor import csrf_token_processor
+from pydantic.alias_generators import to_camel
 from sqlmodel import case
 
 from config.i18n import _
+from config.observability import debug
 
 logger = logging.getLogger(__name__)
 
@@ -53,8 +56,9 @@ def available(value: date, field: str) -> bool:
     return False
 
 
+@debug
 def get_templates():
-    templates = Jinja2Templates(directory=str(Path(BASE_DIR, 'templates')))
+    templates = Jinja2Templates(directory=str(Path(BASE_DIR, 'templates')), context_processors=[csrf_token_processor()])
     templates.env.globals.update(_=_)
     #templates.env.add_extension("jinja2.ext.i18n")
     #templates.env.add_extension("jinja2.ext.with_")
@@ -66,6 +70,7 @@ def get_templates():
     templates.env.filters["normalize"] = lambda v: normalize(v)
     templates.env.filters["pct_color"] = lambda v: pct_color(v)
     templates.env.filters["percent"] = lambda v: percent(v)
+    templates.env.filters["to_camel"] = lambda v: to_camel(v)
     templates.env.tests["available"] = lambda v, f: available(v, f)
     templates.env.tests["fractional"] = lambda v: factional(v)
 

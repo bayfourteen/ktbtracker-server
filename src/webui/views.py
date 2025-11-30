@@ -6,11 +6,14 @@ from babel.dates import format_date
 from fastapi import APIRouter, Request, Depends, Query, Form, Path
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
+from starlette import status
+from starlette.responses import RedirectResponse
 
 from config.i18n import _
 from config.jinja2 import get_templates
+from config.observability import debug
 from config.requirements import RequirementsConfig
-from models.models import Tracking
+from models.models import Tracking, TrackingForm
 from services.candidates import CandidatesService, get_candidates_service
 from services.cycles import CyclesService, get_cycles_service
 from services.tracking import TrackingService, get_tracking_service
@@ -35,11 +38,12 @@ async def index(
 
 
 @router.get("/tracking", response_class=HTMLResponse, response_model=None)
+@debug
 async def get_tracking(
         request: Request,
         candidate_id: Annotated[int | None, Query(gt=0, alias="canid")] = 627,
-        tracking_date: Annotated[date | None, Query(alias="trackingDate")] = date.today(),
-        week: Annotated[int | None, Query(alias="week")] = 0,
+        tracking_date: Annotated[date | None, Query(alias="trackingDate")] = None,
+        week: Annotated[int | None, Query(alias="week")] = None,
         # -- Dependencies --
         templates: Jinja2Templates = Depends(get_templates),
         candidates_service: CandidatesService = Depends(get_candidates_service),
@@ -54,6 +58,7 @@ async def get_tracking(
             tracking_stats = tracking_service.calculate_full_statistics(candidate_id)
             tracking_day = cycle.cycle_day(tracking_week.start)
             context = {
+                "tracking_date": format_date(tracking_date, format="Y-M-d"),
                 "request": request,
                 "candidate": candidate,
                 "cycle": cycle.model_dump(),
@@ -72,8 +77,11 @@ async def get_tracking(
 
 
 @router.post("/tracking", response_class=HTMLResponse, response_model=None)
+@debug
 async def create_tracking(
-        form: Annotated[Tracking, Form] = Form({}),
+        tracking_date: Annotated[date, Form(alias="trackingDate")],
+        candidate_id: Annotated[int, Form(alias="candidateId")],
+        miles: Annotated[int, Form(alias="miles")],
         # -- Dependencies --
         templates: Jinja2Templates = Depends(get_templates),
         candidates_service: CandidatesService = Depends(get_candidates_service),
@@ -84,13 +92,16 @@ async def create_tracking(
 
 
 @router.post("/tracking/{tracking_date}", response_class=HTMLResponse, response_model=None)
+@debug
 async def update_tracking(
         tracking_date: Annotated[date, Path()],
-        form: Annotated[Tracking, Form()],
+        form: Annotated[TrackingForm, Form()],
         # -- Dependencies --
+        request: Request,
         templates: Jinja2Templates = Depends(get_templates),
         candidates_service: CandidatesService = Depends(get_candidates_service),
         cycles_service: CyclesService = Depends(get_cycles_service),
         tracking_service: TrackingService = Depends(get_tracking_service),
 ):
     logger.info(f"**** {tracking_date=} {form=}")
+    return RedirectResponse(request.url_for('get_tracking'), status_code=status.HTTP_303_SEE_OTHER)

@@ -12,9 +12,9 @@ logger = logging.getLogger(__name__)
 def create_database(self) -> None:
     pass
 
-async def get_session(settings: Annotated[Settings, Depends(get_settings)]) -> AsyncGenerator[Session, Any]:
+async def get_session(settings: Annotated[Settings, Depends(get_settings)], echo: bool = False) -> AsyncGenerator[Session, Any]:
     logger.info(f"Creating session for {settings.database_url}...")
-    engine = create_engine(str(settings.database_url), echo=True)
+    engine = create_engine(str(settings.database_url), echo=echo)
 
     with Session(engine, autocommit=False, autoflush=settings.auto_flush) as _session:
         try:

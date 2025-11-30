@@ -1,23 +1,25 @@
-import logging
+import logging.config
 import logging.config
 import os
+import secrets
 
 import firebase_admin
 import uvicorn
-
-
 from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
+from fastapi_csrf_jinja.middleware import FastAPICSRFJinjaMiddleware
+from fastapi_csrf_jinja.jinja_processor import csrf_token_processor
 from starlette.middleware.sessions import SessionMiddleware
 
 from api.v1.candidates import router as candidates_router
 from api.v1.cycles import router as cycles_router
 from config.i18n import I18nMiddleware
 from config.jinja2 import get_templates
-from config.observability import RequestLoggerMiddleware, LOGGING_CONFIG
+from config.observability import RequestLoggerMiddleware, CustomLogger
+from config.settings import LOGGING_CONFIG
 from webui.views import router as webui_router
 
-
+logging.setLoggerClass(CustomLogger)
 logging.config.dictConfig(LOGGING_CONFIG)
 
 logger = logging.getLogger(__name__)
@@ -47,9 +49,12 @@ def create_app():
     #    jinja2_templates=get_templates(),
     #    locale_selector=locale_selector,
     #)
-    app.add_middleware(RequestLoggerMiddleware, logger=logger)
-    app.add_middleware(I18nMiddleware, templates=get_templates())
-    app.add_middleware(SessionMiddleware, secret_key="SuperSecretKey")
+
+    # app.add_middleware(FastAPICSRFJinjaMiddleware, secret=secrets.token_urlsafe(32))
+
+    # app.add_middleware(RequestLoggerMiddleware, logger=logger)
+    # app.add_middleware(I18nMiddleware, templates=get_templates())
+    app.add_middleware(SessionMiddleware, secret_key=secrets.token_urlsafe(32))
 
     app.mount("/static", StaticFiles(directory="static"), name="static")
     #templates.env.install_gettext_translations(Translations.load("locale", ["en"]))

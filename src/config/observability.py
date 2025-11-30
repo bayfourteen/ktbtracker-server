@@ -1,11 +1,11 @@
 import functools
+import inspect
 import json
 import logging
 import time
 from logging import Logger
 from typing import Any, Callable
 
-from django.db.models.expressions import result
 from fastapi import FastAPI, Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.types import Message
@@ -37,14 +37,21 @@ LOGGING_CONFIG = {
     }}
 
 
+class CustomLogger(Logger):
+    def findCaller(self, stack_info = False, stacklevel = 1):
+        return super().findCaller(stack_info, stacklevel + 1)
+
+
 def debug(func: Callable) -> Callable:
     @functools.wraps(func)
-    def wrapper(*args: Any, **kwargs: Any) -> Any:
+    async def wrapper(*args: Any, **kwargs: Any) -> Any:
         logging.getLogger("uvicorn").setLevel(logging.ERROR)
         logging.info(f"ENTRY: {func.__name__}({args}, {kwargs})")
-        result = func(*args, **kwargs)
+        result = await func(*args, **kwargs) if inspect.iscoroutinefunction(func) else func(*args, **kwargs)
         logging.info(f"EXIT:  {func.__name__} -> ({result})")
-    return result
+        return result
+    return wrapper
+
 
 class AsyncIteratorWrapper:
     """The following is a utility class that transforms a

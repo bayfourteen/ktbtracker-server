@@ -309,6 +309,11 @@ class JournalPost(Metadata, ConfiguredBaseModel):
     content: str
 
 
+class TrackingForm(Requirements, ConfiguredBaseModel):
+    tracking_date: date
+    candidate_id: int
+
+
 class TrackingFields(ConfiguredBaseModel):
     burpees: float = 0.0
     class_dream_team: float = 0.0

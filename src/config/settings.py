@@ -36,27 +36,27 @@ LOGGING_CONFIG = {
     },
     'loggers': {
         '': {
-            'handlers': ['default'],
+            'handlers': ['default', 'file_handler'],
             'level': 'INFO',
             'propagate': True,
         },
         'uvicorn': {
-            'handlers': ['default', 'file_handler'],
+            'handlers': ['file_handler'],
             'level': 'TRACE',
             'propagate': False
         },
         'uvicorn.access': {
-            'handlers': ['stream_handler', 'file_handler'],
+            'handlers': ['file_handler'],
             'level': 'TRACE',
             'propagate': False
         },
         'uvicorn.error': {
-            'handlers': ['stream_handler', 'file_handler'],
+            'handlers': ['file_handler'],
             'level': 'TRACE',
             'propagate': False
         },
         'uvicorn.asgi': {
-            'handlers': ['stream_handler', 'file_handler'],
+            'handlers': ['file_handler'],
             'level': 'TRACE',
             'propagate': False
         },

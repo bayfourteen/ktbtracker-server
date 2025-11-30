@@ -583,6 +583,23 @@ standard = ["email-validator (>=2.0.0)", "fastapi-cli[standard] (>=0.0.8)", "htt
 standard-no-fastapi-cloud-cli = ["email-validator (>=2.0.0)", "fastapi-cli[standard-no-fastapi-cloud-cli] (>=0.0.8)", "httpx (>=0.23.0,<1.0.0)", "jinja2 (>=3.1.5)", "python-multipart (>=0.0.18)", "uvicorn[standard] (>=0.12.0)"]
 
 [[package]]
+name = "fastapi-csrf-jinja"
+version = "0.1.3"
+description = "CSRF middleware for FastAPI applications with Jinja template integration."
+optional = false
+python-versions = ">=3.8"
+groups = ["main"]
+files = [
+    {file = "fastapi_csrf_jinja-0.1.3-py3-none-any.whl", hash = "sha256:4bde9ad70d7a6051201fa7663e761dbf730d6e2a8025f381c44c0c6b3385a69d"},
+    {file = "fastapi_csrf_jinja-0.1.3.tar.gz", hash = "sha256:ac7d5931439d0b65f0a0f1df449547a4247996707ff21d04ed27b7ab623774de"},
+]
+
+[package.dependencies]
+itsdangerous = ">=2.0.1,<3.0.0"
+starlette = ">=0.14.2"
+typing-extensions = ">=4.8.0"
+
+[[package]]
 name = "fastapi-decorators"
 version = "1.0.19"
 description = "Create decorators for your endpoints using FastAPI dependencies."
@@ -2281,4 +2298,4 @@ test = ["covdefaults (>=2.3)", "coverage (>=7.2.7)", "coverage-enable-subprocess
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.12"
-content-hash = "fcfbb7ca4d1f4a5cbc88df2fb7c6121836a18d60795d6e6b46ed52997fcda078"
+content-hash = "6c84485d6f9a78384a7a8528a60136bac6c1df3c6a3bc6cf8b41a52fe0ed7428"

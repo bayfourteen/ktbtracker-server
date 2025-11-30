@@ -1,22 +1,25 @@
-<form id="tracking-form" class="form-floating" action="{{ url_for('update_tracking', tracking_date=tracking['tracking_date']) }}" method="POST">
+<form id="{{ 'tracking-' ~ tracking['tracking_date'] | format_date(format='Y-M-d') ~ '-form' }}" class="form-floating" action="{{ url_for('update_tracking', tracking_date=tracking['tracking_date']) }}" method="POST">
+
+    <input type="hidden" name="trackingDate" value="{{ tracking['tracking_date'] }}"/>
+    <input type="hidden" name="candidateId" value="{{ tracking['candidate_id'] }}"/>
     {% for name, title in TRACKING_NAMES.items() %}
         {% if cycle[name] > 0 %}
             {% if name.startswith('class_') %}
                 <div class="form-floating mb-3">
                     <div class="form-check form-check-reverse form-switch">
-                        <input class="form-check-input" type="checkbox" role="switch"
-                               id="{{ 'input-' ~ name }}" {{ ' checked' if tracking[name] != 0 else '' }} {{ '' if tracking['tracking_date'] is available(name) else ' disabled'  }}>
-                        <label class="form-check-label"
-                               for="{{ 'input-' ~ name }}">{{ title }}</label>
+                        <input class="form-check-input" type="checkbox" role="switch" name="{{ name | to_camel }}" id="{{ 'input-' ~ name | to_camel }}"
+                               {{ ' checked' if tracking[name] != 0 else '' }} {{ '' if tracking['tracking_date'] is available(name) else ' disabled'  }}
+                               value="1">
+                        <label class="form-check-label" for="{{ 'input-' ~ name | to_camel }}">{{ title }}</label>
                     </div>
                 </div>
             {% else %}
                 <div class="form-floating mb-3">
-                    <input type="number" class="form-control" id="{{ 'input-' ~ name }}"
+                    <input type="number" class="form-control" name="{{ name | to_camel }}" id="{{ 'input-' ~ name | to_camel }}"
                            min="0" {{ '' if tracking[name] is fractional else ' step=' ~ "1" }}
                            inputmode="numeric" pattern="^\d*$"
-                           value={{ tracking[name] }}>
-                    <label for="{{ 'input-' ~ name }}">{{ title }}</label>
+                           value="{{ tracking[name] }}">
+                    <label for="{{ 'input-' ~ name | to_camel }}">{{ title }}</label>
                 </div>
             {% endif %}
         {% endif %}
