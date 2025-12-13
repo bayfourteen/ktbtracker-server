@@ -4,7 +4,7 @@
     <div class="d-flex align-items-center justify-content-center p-3 my-3 rounded shadow-sm">
         <div class="">
             <div class="text-center">
-                <h1 class="d-block h3 mb-0" style="font-variant: small-caps;">{{ cycle.title }} &mdash; {{ _('Week %(week)s') | format(week=tracking_week.week) }}</h1>
+                <h1 class="d-block h3 mb-0" style="font-variant: small-caps;">{{ cycle.title }} &mdash; {{ _('Week %(week)s') | format(week=tracking_week.week | cycle_week) }}</h1>
             </div>
             <div class="d-flex align-items-center justify-content-between mx-3">
                 <small style="font-variant: all-small-caps;">{{ _('%(weeks)d Weeks') | format(weeks=cycle.cycle_weeks) }}</small> &nbsp; | &nbsp;
@@ -18,17 +18,17 @@
         <table class="table table-hover">
             <thead>
             <tr>
-                <tD>
+                <td>
                     <a class="btn btn-primary" role="button" href="{{ url_for('get_tracking').include_query_params(week=tracking_week.week - 1) }}">
-                        <i class="bi bi-calendar-minus"></i>
-                        {{ tracking_week.week - 1 }}
+                        <i class="bi bi-calendar-range"></i>
+                        {{ (tracking_week.week - 1) | cycle_week }}
                     </a>
-                </tD>
+                </td>
                 {% for tracking in tracking_data %}
-                    <td class="{{ 'bg-body-tertiary' if tracking.tracking_date == today else '' }} ">
+                    <td class="{{ 'table-info' if tracking.tracking_date == today else loop.cycle('bg-body-tertiary', '') }}">
                         <div class="media align-items-center justify-content-between">
                             <div class="text-center">
-                                <strong class="text-center">{{ _('DAY %(day)d') | format(day=tracking_week.days[loop.index0]) }}</strong>
+                                <strong class="text-center">{{ _('DAY %(day)d') | format(day=tracking_week.days[loop.index0] | cycle_day) }}</strong>
                             </div>
                             <span class="d-block text-center"><small
                                     class="fw-{{ 'bold' if tracking.tracking_date == today else 'normal' }}"
@@ -74,8 +74,8 @@
                 <td></td>
                 <td>
                     <a class="btn btn-primary" role="button" href="{{ url_for('get_tracking').include_query_params(week=tracking_week.week + 1) }}">
-                        <i class="bi bi-calendar-plus"></i>
-                        {{ tracking_week.week + 1 }}
+                        <i class="bi bi-calendar-range"></i>
+                        {{ (tracking_week.week + 1) | cycle_week }}
                     </a>
                 </td>
             </tr>
@@ -87,13 +87,13 @@
                         <td>{{ title }}</td>
                         {% for tracking in tracking_data %}
                             {% if name.startswith('class_') %}
-                                <td class="fw-{{ 'bold bg-body-tertiary' if tracking.tracking_date == today else 'normal' }} text-end"
+                                <td class="fw-{{ 'bold table-info' if tracking.tracking_date == today else loop.cycle('normal bg-body-tertiary', 'normal') }} text-end"
                                     data-bs-toggle="modal"
                                     data-bs-target="#{{ 'tracking-' ~ tracking.tracking_date | format_date(format='Y-M-d') ~ '-modal' }}"><i
                                         class="{{ '' if tracking['tracking_date'] is not available(name) else 'bi bi-' ~ ['x-lg', 'check-lg'][tracking[name]] }}"></i>
                                 </td>
                             {% else %}
-                                <td class="fw-{{ 'bold bg-body-tertiary' if tracking.tracking_date == today else 'normal' }} text-end"
+                                <td class="fw-{{ 'bold table-info' if tracking.tracking_date == today else loop.cycle('normal bg-body-tertiary', 'normal') }} text-end"
                                     data-bs-toggle="modal"
                                     data-bs-target="#{{ 'tracking-' ~ tracking.tracking_date | format_date(format='Y-M-d') ~ '-modal' }}">{{ tracking[name] | format_number }}</td>
                             {% endif %}

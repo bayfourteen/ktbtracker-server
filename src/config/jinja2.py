@@ -71,6 +71,8 @@ def get_templates():
     templates.env.filters["pct_color"] = lambda v: pct_color(v)
     templates.env.filters["percent"] = lambda v: percent(v)
     templates.env.filters["to_camel"] = lambda v: to_camel(v)
+    templates.env.filters["cycle_day"] = lambda v: v if v < 0 else v + 1
+    templates.env.filters["cycle_week"] = lambda v: v if v < 0 else v + 1
     templates.env.tests["available"] = lambda v, f: available(v, f)
     templates.env.tests["fractional"] = lambda v: factional(v)
 
