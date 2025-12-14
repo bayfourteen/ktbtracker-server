@@ -9,6 +9,7 @@ from fastapi.templating import Jinja2Templates
 from starlette import status
 from starlette.responses import RedirectResponse
 
+from config.firebase import get_current_user
 from config.i18n import _
 from config.jinja2 import get_templates
 from config.observability import debug
@@ -45,6 +46,7 @@ async def get_tracking(
         tracking_date: Annotated[date | None, Query(alias="trackingDate")] = None,
         week: Annotated[int | None, Query(alias="week")] = None,
         # -- Dependencies --
+        # user: str = Depends(get_current_user),
         templates: Jinja2Templates = Depends(get_templates),
         candidates_service: CandidatesService = Depends(get_candidates_service),
         cycles_service: CyclesService = Depends(get_cycles_service),

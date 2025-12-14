@@ -46,7 +46,8 @@ def debug(func: Callable) -> Callable:
     @functools.wraps(func)
     async def wrapper(*args: Any, **kwargs: Any) -> Any:
         logging.getLogger("uvicorn").setLevel(logging.ERROR)
-        logging.info(f"ENTRY: {func.__name__}({args}, {kwargs})")
+        all_args = ", ".join(args) + ", " if args else "" + ", ".join([f"{k}={v}" for k, v in kwargs.items()])
+        logging.info(f"ENTRY: {func.__name__}({all_args})")
         result = await func(*args, **kwargs) if inspect.iscoroutinefunction(func) else func(*args, **kwargs)
         logging.info(f"EXIT:  {func.__name__} -> ({result})")
         return result
