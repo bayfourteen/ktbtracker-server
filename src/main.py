@@ -11,13 +11,14 @@ from fastapi_csrf_jinja.middleware import FastAPICSRFJinjaMiddleware
 from fastapi_csrf_jinja.jinja_processor import csrf_token_processor
 from starlette.middleware.sessions import SessionMiddleware
 
-from api.v1.candidates import router as candidates_router
-from api.v1.cycles import router as cycles_router
+from api.v1.candidates import router as api_candidates_router
+from api.v1.cycles import router as api_cycles_router
 from config.i18n import I18nMiddleware
 from config.jinja2 import get_templates
 from config.observability import RequestLoggerMiddleware, CustomLogger
 from config.settings import LOGGING_CONFIG
 from webui.views import router as webui_router
+from webui.admin.views import router as webui_admin_router
 
 logging.setLoggerClass(CustomLogger)
 logging.config.dictConfig(LOGGING_CONFIG)
@@ -60,9 +61,10 @@ def create_app():
     #templates.env.install_gettext_translations(Translations.load("locale", ["en"]))
 
     app.include_router(webui_router)
+    app.include_router(webui_admin_router, prefix="/admin")
 
-    app.include_router(cycles_router, prefix="/ktbtracker/v1")
-    app.include_router(candidates_router, prefix="/ktbtracker/v1")
+    app.include_router(api_cycles_router, prefix="/ktbtracker/v1")
+    app.include_router(api_candidates_router, prefix="/ktbtracker/v1")
 
     return app
 

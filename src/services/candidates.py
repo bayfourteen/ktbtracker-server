@@ -1,7 +1,10 @@
 from typing import Annotated, Sequence, Literal
 
-from fastapi import Depends
+from fastapi import Depends, Request
+from firebase_admin import auth
 
+from config.firebase import FIREBASE_COOKIE, FIREBASE_CHECK_REVOKED
+from config.observability import debug
 from models import models
 from repositories.candidates import CandidatesRepository, get_candidates_repository
 
@@ -35,6 +38,16 @@ class CandidatesService:
     ) -> Sequence[models.Candidate]:
         return [models.Candidate.model_validate(e)
                 for e in self.repository.find_all_by_cycle_id(cycle_id, offset=offset, limit=limit, sort=sort)]
+
+    def find_all_by_user_id(
+            self,
+            user_id: int,
+            offset: int = 0,
+            limit: int = 100,
+            sort: Literal['asc', 'desc'] = 'desc'
+    ) -> Sequence[models.Candidate]:
+        return [models.Candidate.model_validate(e)
+                for e in self.repository.find_all_by_user_id(user_id, offset=offset, limit=limit, sort=sort)]
 
     def find_by_id(self, id: int) -> models.Candidate | None:
         if candidate := self.repository.find_by_id(id):

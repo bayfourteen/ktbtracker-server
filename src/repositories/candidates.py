@@ -50,6 +50,19 @@ class CandidatesRepository:
                                  .order_by(entities.Candidate.id if sort == 'asc' else entities.Candidate.id.desc())
                                  ).all()
 
+    def find_all_by_user_id(
+            self,
+            user_id: int,
+            offset: int = 0,
+            limit: int = 100,
+            sort: Literal['asc', 'desc'] = 'desc'
+    ) -> Sequence[entities.Candidate]:
+        return self.session.exec(select(entities.Candidate)
+                                 .offset(offset).limit(limit)
+                                 .where(entities.Candidate.user_id == user_id)
+                                 .order_by(entities.Candidate.id if sort == 'asc' else entities.Candidate.id.desc())
+                                 ).all()
+
     def find_by_id(
             self,
             id: int

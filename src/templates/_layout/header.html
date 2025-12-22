@@ -1,0 +1,79 @@
+{%  set nav_disabled = ' disabled' if request.url.path.startswith('/log') else '' %}
+{%  set aria_disabled = ' aria-disabled="true"' if request.path.startswith('/log') else '' %}
+<nav class="navbar navbar-expand-lg sticky-top bg-dark border-bottom border-body" data-bs-theme="dark">
+    <div class="container-fluid">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-toggler"
+                aria-controls="navbar-toggler" aria-expanded="false" aria-label="{{ _('Toggle navigation') }}">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbar-toggler">
+            <a class="navbar-brand" href="/">
+                <img src="/static/images/ktb-logo-dark.png" alt="" width="auto" height="50"
+                     class="d-inline-block align-text-middle">
+                {{ _('Black Belt Cycle') }}
+            </a>
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link{{ nav_disabled }}{{ ' active' if request.url.path == '/' else '' }}" aria-current="page"
+                       href="/">{{ _('Home') }}</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link{{ nav_disabled }}{{ ' active' if request.url.path.startswith('/tracking') else '' }}"{{ aria_disabled }}
+                       href="/tracking">{{ _('Tracking') }}</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link{{ nav_disabled }}{{ ' active' if request.url.path.startswith('/admin') else '' }} d-none d-lg-block"{{ aria_disabled }}
+                       href="/admin">
+                        {{ _('Admin') }}
+                    </a>
+                    <a class="nav-link dropdown-toggle{{ nav_disabled }}{{ ' active' if request.url.path.startswith('/admin') else '' }} d-block d-lg-none"{{ aria_disabled }}
+                       href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        {{ _('Admin') }}
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item{{ nav_disabled }}{{ ' active' if request.url.path in ['/admin', '/admin/'] else '' }}"{{ aria_disabled }}
+                               href="/admin">{{ _('Dashboard') }}</a></li>
+                        <li><a class="dropdown-item{{ nav_disabled }}{{ ' active' if request.url.path.startswith('/admin') else '' }}"{{ aria_disabled }}
+                               href="/admin/cycles">{{ _('Cycles') }}</a></li>
+                        <li><a class="dropdown-item{{ nav_disabled }}{{ ' active' if request.url.path.startswith('/admin') else '' }}"{{ aria_disabled }}
+                               href="/admin/candidates">{{ _('Candidates') }}</a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><a class="dropdown-item" href="#">Something else here</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <a class="" href="/log{{ 'in' if not is_authenticated else 'out' }}?next_url={{ request.url.path | escape }}">
+                <button class="btn btn-outline-{{ 'success' if not is_authenticated else 'danger' }}{{ ' d-none' if request.url.path.startswith('/log') else '' }}" type="submit">
+                    {{ _('Login') if not is_authenticated else _('Logout') }}
+                </button>
+            </a>
+        </div>
+
+    </div>
+</nav>
+
+<nav class="navbar navbar-expand-lg sticky-top bg-dark border-bottom border-body d-none{{ ' d-lg-block' if request.url.path.startswith('/admin') else '' }}"
+     data-bs-theme="dark">
+    <div class="container-fluid">
+        <div class="container-fluid">
+            <span class="navbar-brand mb-0 h1">{{ _('Administration') }}</span>
+        </div>
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+                <a class="nav-link{{ ' active' if request.url.path in ['/admin', '/admin/'] else '' }}"
+                   aria-current="page"
+                   href="/admin">{{ _('Dashboard') }}</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link{{ ' active' if request.url.path.startswith('/admin/cycles') else '' }}"
+                   href="/admin/cycles">{{ _('Cycles') }}</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link{{ ' active' if request.url.path.startswith('/admin/candidates') else '' }}"
+                   href="/admin/candidates">{{ _('Candidates') }}</a>
+            </li>
+        </ul>
+    </div>
+</nav>
