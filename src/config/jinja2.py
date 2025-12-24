@@ -1,22 +1,18 @@
 import logging
-import math
-import sys
 from datetime import date
-from decimal import Decimal
 from pathlib import Path
 
 from babel.dates import format_date
-from babel.numbers import format_number, format_decimal
+from babel.numbers import format_decimal
 from fastapi import Request
 from fastapi.templating import Jinja2Templates
 from fastapi_csrf_jinja.jinja_processor import csrf_token_processor
 from firebase_admin import auth
 from pydantic.alias_generators import to_camel
-from sqlmodel import case
 
-from config.firebase import FIREBASE_COOKIE
-from config.i18n import _
-from config.observability import debug
+from src.config import firebase
+from src.config.i18n import _
+from src.config.observability import debug
 
 logger = logging.getLogger(__name__)
 
@@ -64,7 +60,7 @@ def get_templates(request: Request) -> Jinja2Templates:
 
     templates = Jinja2Templates(directory=str(Path(BASE_DIR, 'templates')), context_processors=[csrf_token_processor()])
     templates.env.globals.update(_=_)
-    if session_cookie := request.cookies.get(FIREBASE_COOKIE):
+    if session_cookie := request.cookies.get(firebase.COOKIE):
         try:
             decoded_claims = auth.verify_session_cookie(session_cookie, check_revoked=True)
             templates.env.globals.update(is_authenticated=decoded_claims.get("sub") is not None)

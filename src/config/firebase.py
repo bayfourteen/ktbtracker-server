@@ -24,10 +24,10 @@ FIREBASE_CONFIG = {
     "databaseURL": "https://kingtiger.firebaseio.com",
 }
 
-FIREBASE_COOKIE = "SESSION"
-FIREBASE_COOKIE_TTL = timedelta(hours=5)
-FIREBASE_HTTPONLY = True
-FIREBASE_SECURE = False
+COOKIE = "session"
+COOKIE_TTL = timedelta(hours=5)
+HTTPONLY = True
+SECURE = False
 
 
 async def get_current_user(token: HTTPAuthorizationCredentials = Depends(bearer_scheme)):

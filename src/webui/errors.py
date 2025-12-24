@@ -1,5 +1,6 @@
 from http.client import HTTPException
 
+import sqlalchemy
 from fastapi import Depends, FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
@@ -12,45 +13,13 @@ from src.config.observability import debug
 app = FastAPI()
 
 
-@app.exception_handler(Exception)
+@app.exception_handler(sqlalchemy.exc.OperationalError)
 @debug
-async def http_exception_handler(
+async def operational_error_handler(
         request: Request,
-        exc: Exception,
+        exc: sqlalchemy.exc.OperationalError,
         # -- Dependencies --
         templates: Jinja2Templates = Depends(get_templates),
 ) -> HTMLResponse:
-    return templates.TemplateResponse("index.html", {"request": request, "page_background": "bg-danger"})
+    return templates.TemplateResponse("sysdown.html", {"request": request, "error": str(exc), "page_background": "bg-danger"})
 
-
-@app.exception_handler(OperationalError)
-@debug
-async def http_exception_handler(
-        request: Request,
-        exc: OperationalError,
-        # -- Dependencies --
-        templates: Jinja2Templates = Depends(get_templates),
-) -> HTMLResponse:
-    return templates.TemplateResponse("index.html", {"request": request, "page_background": "bg-danger"})
-
-
-@app.exception_handler(SQLAlchemyError)
-@debug
-async def http_exception_handler(
-        request: Request,
-        exc: SQLAlchemyError,
-        # -- Dependencies --
-        templates: Jinja2Templates = Depends(get_templates),
-) -> HTMLResponse:
-    return templates.TemplateResponse("index.html", {"request": request, "page_background": "bg-danger"})
-
-
-@app.exception_handler(ValidationError)
-@debug
-async def http_exception_handler(
-        request: Request,
-        exc: ValidationError,
-        # -- Dependencies --
-        templates: Jinja2Templates = Depends(get_templates),
-) -> HTMLResponse:
-    return templates.TemplateResponse("index.html", {"request": request, "page_background": "bg-danger"})

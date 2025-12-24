@@ -4,21 +4,21 @@ import os
 import secrets
 
 import firebase_admin
+import sqlalchemy
 import uvicorn
 from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
-from fastapi_csrf_jinja.middleware import FastAPICSRFJinjaMiddleware
-from fastapi_csrf_jinja.jinja_processor import csrf_token_processor
 from starlette.middleware.sessions import SessionMiddleware
 
 from api.v1.candidates import router as api_candidates_router
 from api.v1.cycles import router as api_cycles_router
-from config.i18n import I18nMiddleware
-from config.jinja2 import get_templates
-from config.observability import RequestLoggerMiddleware, CustomLogger
+from config.observability import CustomLogger
 from config.settings import LOGGING_CONFIG
-from webui.views import router as webui_router
+from src.webui import errors
 from webui.admin.views import router as webui_admin_router
+from webui.auth.views import router as webui_auth_router
+from webui.tracking.views import router as webui_tracking_router
+from webui.views import router as webui_router
 
 logging.setLoggerClass(CustomLogger)
 logging.config.dictConfig(LOGGING_CONFIG)
@@ -41,6 +41,8 @@ def create_app():
     logger.info("Google Firebase Administration SDK successfully initialized for project"
                 f" '{firebase_admin.get_app().project_id}'.")
 
+    app.add_exception_handler(sqlalchemy.exc.OperationalError, errors.operational_error_handler)
+
     #
     # Load any middleware
     #
@@ -61,6 +63,8 @@ def create_app():
     #templates.env.install_gettext_translations(Translations.load("locale", ["en"]))
 
     app.include_router(webui_router)
+    app.include_router(webui_auth_router)
+    app.include_router(webui_tracking_router)
     app.include_router(webui_admin_router, prefix="/admin")
 
     app.include_router(api_cycles_router, prefix="/ktbtracker/v1")

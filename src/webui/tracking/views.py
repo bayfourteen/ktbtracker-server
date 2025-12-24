@@ -1,19 +1,14 @@
-import base64
-import json
 import logging
+from collections import OrderedDict
 from datetime import date
-from typing import Annotated, OrderedDict, Any
+from typing import Annotated, Any
 
-import sqlalchemy
 from babel.dates import format_date
-from fastapi import APIRouter, Request, Depends, Query, Form, Path, status
+from fastapi import APIRouter, Depends, Form, Path, Query, Request, status
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
-from firebase_admin import auth
 
-from src.config import firebase
 from src.config.firebase import get_current_session
-from src.config.i18n import _
 from src.config.jinja2 import get_templates
 from src.config.observability import debug
 from src.config.requirements import RequirementsConfig
@@ -23,74 +18,11 @@ from src.services.candidates import CandidatesService, get_candidates_service
 from src.services.cycles import CyclesService, get_cycles_service
 from src.services.site_users import SiteUsersService, get_site_users_service
 from src.services.tracking import TrackingService, get_tracking_service
+from src.webui.views import get_session_data
 
 TRACKING_NAMES = OrderedDict({e: _(e) for e in (RequirementsConfig.PHYSICAL + RequirementsConfig.CLASS + RequirementsConfig.OTHER)})
 
-logger = logging.getLogger('uvicorn')
-
 router = APIRouter()
-
-@debug
-async def get_session_data(
-        request: Request,
-        # -- Dependencies --
-        candidates_service: CandidatesService = Depends(get_candidates_service),
-        cycles_service: CyclesService = Depends(get_cycles_service),
-        site_users_service: SiteUsersService = Depends(get_site_users_service),
-) -> SessionData | None:
-    decoded_claims, decoded_query = {}, {}
-    if session_cookie := request.cookies.get(firebase.COOKIE):
-        try:
-            decoded_claims = auth.verify_session_cookie(session_cookie, check_revoked=True)
-
-        except auth.InvalidSessionCookieError:
-            pass
-
-    if query_cookie := request.cookies.get("q"):
-        try:
-            decoded_query = json.loads(base64.b64decode(query_cookie.encode("utf-8")))
-
-        except json.JSONDecodeError:
-            pass
-
-    if decoded_claims and decoded_query.get("candidate_id") is None:
-        try:
-            if current_user := site_users_service.find_by_user_id(decoded_claims.get("user_id")):
-                if candidates := candidates_service.find_all_by_user_id(current_user.id):
-                    decoded_query["candidate_id"] = candidates[0].id
-        except sqlalchemy.exc.OperationalError as e:
-            pass
-
-    if decoded_claims and decoded_query.get("week") is None:
-        try:
-            if decoded_query.get("candidate_id") and (candidate := candidates_service.find_by_id(decoded_query.get("candidate_id"))):
-                cycle = cycles_service.find_by_id(candidate.cycle_id)
-                decoded_query["week"] = cycle.cycle_week_of(decoded_query.get("tracking_date") or date.today()).week
-        except sqlalchemy.exc.OperationalError as e:
-            pass
-
-    return SessionData(**decoded_claims, **decoded_query)
-
-
-
-@router.get("/", response_class=HTMLResponse)
-async def index(
-        request: Request,
-        # -- Dependencies --
-        templates: Jinja2Templates = Depends(get_templates),
-        cycles_service: CyclesService = Depends(get_cycles_service),
-):
-    try:
-        cycles = cycles_service.find_all()
-        return templates.TemplateResponse("index.html", {"request": request, "cycles": cycles})
-
-    except sqlalchemy.exc.OperationalError as e:
-        # Inform users if database is unavailable...
-        if "Connection refused" in str(e):
-            return templates.TemplateResponse("sysdown.html", {"request": request, "error": str(e)})
-
-        return templates.TemplateResponse("error.html", {"request": request, "error": str(e)})
-
 
 
 @router.get("/tracking", response_class=HTMLResponse, response_model=None)
@@ -166,5 +98,5 @@ async def update_tracking(
         cycles_service: CyclesService = Depends(get_cycles_service),
         tracking_service: TrackingService = Depends(get_tracking_service),
 ):
-    logger.info(f"**** {tracking_date=} {form=}")
+    logging.info(f"**** {tracking_date=} {form=}")
     return RedirectResponse(request.url_for('get_tracking'), status_code=status.HTTP_303_SEE_OTHER)

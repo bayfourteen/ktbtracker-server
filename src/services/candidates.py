@@ -3,10 +3,9 @@ from typing import Annotated, Sequence, Literal
 from fastapi import Depends, Request
 from firebase_admin import auth
 
-from config.firebase import FIREBASE_COOKIE, FIREBASE_CHECK_REVOKED
-from config.observability import debug
-from models import models
-from repositories.candidates import CandidatesRepository, get_candidates_repository
+from src.config.observability import debug
+from src.models import models
+from src.repositories.candidates import CandidatesRepository, get_candidates_repository
 
 
 class CandidatesService:
