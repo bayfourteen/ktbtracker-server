@@ -68,6 +68,7 @@ LOGGING_CONFIG = {
 class Settings(BaseSettings):
     database_url: MySQLDsn
     auto_flush: bool = False
+    google_application_credentials: str = None
 
 
 async def get_settings() -> Settings:

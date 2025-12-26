@@ -29,23 +29,23 @@ router = APIRouter()
 async def login(
         request: Request,
         error: Annotated[str | None, Query(...)] = None,
-        return_url: Annotated[str | None, Query(alias="returnUrl")] = None,
+        next_url: Annotated[str | None, Query(...)] = None,
         # -- Dependencies --
         templates: Jinja2Templates = Depends(get_templates),
 ):
     # If the user is currently logged-in, simply redirect to return URL (or "/")
     if session_cookie := request.cookies.get(firebase.COOKIE):
         try:
-            decoded_claims = auth.verify_session_cookie(session_cookie, check_revoked=True)
+            auth.verify_session_cookie(session_cookie, check_revoked=True)
 
-            return RedirectResponse(url=return_url or "/", status_code=status.HTTP_303_SEE_OTHER)
+            return RedirectResponse(url="/" if next_url is None else next_url, status_code=status.HTTP_303_SEE_OTHER)
 
         except auth.InvalidSessionCookieError:
             pass
 
     return templates.TemplateResponse("login/index.html", context={
         "request": request,
-        "next_url": return_url,
+        "next_url": next_url,
         "error": None,
         "page_background": "bg-primary"
     })

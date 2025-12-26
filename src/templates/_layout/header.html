@@ -44,6 +44,7 @@
                     </ul>
                 </li>
             </ul>
+            {% include '_layout/color-modes.html' %}
             <a class="" href="/log{{ 'in' if not is_authenticated else 'out' }}?next_url={{ request.url.path | escape }}">
                 <button class="btn btn-outline-{{ 'success' if not is_authenticated else 'danger' }}{{ ' d-none' if request.url.path.startswith('/log') else '' }}" type="submit">
                     {{ _('Login') if not is_authenticated else _('Logout') }}

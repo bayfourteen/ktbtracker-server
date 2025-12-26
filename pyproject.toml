@@ -34,7 +34,7 @@ dependencies = [
     "requests-toolbelt (==0.10.1)",
 ]
 
-[dependency-groups]
+[project.optional-dependencies]
 dev = [
     "coverage (>=7.12.0,<8.0.0)",
     "flake8 (>=7.3.0,<8.0.0)",
@@ -50,6 +50,7 @@ path = "src/__init__.py"
 [tool.hatch.envs.default]
 # Set skip-install to true to prevent Hatch from installing the project in editable mode.
 skip-install = true
+path = ".hatch/default"
 
 [tool.pytest.ini_options]
 addopts = "--junitxml=./xunit-result-report.xml"

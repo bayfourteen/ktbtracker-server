@@ -10,6 +10,8 @@ from fastapi import APIRouter, Request, Depends, Query, Form, Path, status
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from firebase_admin import auth
+from pymysql import OperationalError
+from sqlalchemy.exc import SQLAlchemyError
 
 from src.config import firebase
 from src.config.firebase import get_current_session
