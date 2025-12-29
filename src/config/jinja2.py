@@ -11,7 +11,7 @@ from firebase_admin import auth
 from pydantic.alias_generators import to_camel
 
 from src.config import firebase
-from src.config.i18n import _
+from src.config.i18n import _, set_locale
 from src.config.observability import debug
 
 logger = logging.getLogger(__name__)
@@ -56,10 +56,11 @@ def available(value: date, field: str) -> bool:
 
 
 @debug
-def get_templates(request: Request) -> Jinja2Templates:
+async def get_templates(request: Request) -> Jinja2Templates:
 
     templates = Jinja2Templates(directory=str(Path(BASE_DIR, 'templates')), context_processors=[csrf_token_processor()])
     templates.env.globals.update(_=_)
+    templates.env.globals.update(lang=await set_locale(request))
     if session_cookie := request.cookies.get(firebase.COOKIE):
         try:
             decoded_claims = auth.verify_session_cookie(session_cookie, check_revoked=True)

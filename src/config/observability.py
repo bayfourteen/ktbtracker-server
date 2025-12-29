@@ -45,11 +45,12 @@ class CustomLogger(Logger):
 def debug(func: Callable) -> Callable:
     @functools.wraps(func)
     async def wrapper(*args: Any, **kwargs: Any) -> Any:
-        logging.getLogger("uvicorn").setLevel(logging.ERROR)
-        all_args = ", ".join([str(e) for e in args]) + ", " if args else "" + ", ".join([f"{str(k)}={str(v)}" for k, v in kwargs.items()])
-        logging.info(f"ENTRY: {func.__name__}({all_args})")
+        debug_logger = logging.getLogger(f"{func.__module__}")
+        # logging.getLogger("uvicorn").setLevel(logging.ERROR)
+        all_args = ", ".join([str(e) for e in args] + [f"{str(k)}={str(v)}" for k, v in kwargs.items()])
+        debug_logger.debug(f"ENTRY {func.__qualname__}({all_args})", stacklevel=2)
         result = await func(*args, **kwargs) if inspect.iscoroutinefunction(func) else func(*args, **kwargs)
-        logging.info(f"EXIT:  {func.__name__} -> ({result})")
+        debug_logger.debug(f"EXIT {func.__qualname__} -> ({result})", stacklevel=2)
         return result
     return wrapper
 

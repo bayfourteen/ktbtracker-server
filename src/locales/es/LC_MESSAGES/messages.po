@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-11-24 19:49-0500\n"
+"POT-Creation-Date: 2025-12-27 11:35-0500\n"
 "PO-Revision-Date: 2025-11-24 19:49-0500\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: es\n"
@@ -122,20 +122,104 @@ msgstr ""
 msgid "sparring"
 msgstr ""
 
+#: src/templates/error.html:5
+msgid "OOPS!"
+msgstr ""
+
+#: src/templates/admin/cycles/index.html:5 src/templates/admin/index.html:5
 #: src/templates/index.html:5
 msgid "Cycles"
 msgstr ""
 
+#: src/templates/admin/cycles/index.html:24 src/templates/admin/index.html:24
 #: src/templates/index.html:24
 msgid "Candidates"
 msgstr ""
 
+#: src/templates/admin/cycles/index.html:31 src/templates/admin/index.html:31
 #: src/templates/index.html:31
 msgid "All suggestions"
 msgstr ""
 
-#: src/templates/tracking/index.html:13
-#, python-format
-msgid "DAY %(day)d"
+#: src/templates/sysdown.html:6
+msgid "System Temporarily Unavailable"
 msgstr ""
+
+#: src/templates/sysdown.html:8
+msgid ""
+"The server is temporarily unable to service your request due to "
+"maintenance downtime or capacity problems."
+msgstr ""
+
+#: src/templates/sysdown.html:9
+msgid "Please try again later."
+msgstr ""
+
+#: src/templates/login/index.html:13
+msgid "King Tiger Tae Kwon Do"
+msgstr ""
+
+#: src/templates/login/index.html:15
+msgid "Black Belt Cycle"
+msgstr ""
+
+#: src/templates/login/index.html:33
+msgid "Log in"
+msgstr ""
+
+#: src/templates/login/index.html:34
+msgid "Don't have an account?"
+msgstr ""
+
+#: src/templates/login/index.html:34
+msgid "Sign up"
+msgstr ""
+
+#: src/templates/login/index.html:45
+msgid "Email"
+msgstr ""
+
+#: src/templates/login/index.html:51 src/templates/login/index.html:52
+msgid "Password"
+msgstr ""
+
+#: src/templates/login/index.html:60
+msgid "Keep me logged in"
+msgstr ""
+
+#: src/templates/login/index.html:66
+msgid "Log in now"
+msgstr ""
+
+#: src/templates/login/index.html:74
+msgid "Forgot password"
+msgstr ""
+
+#: src/templates/login/index.html:80
+msgid "Or continue with"
+msgstr ""
+
+#: src/templates/tracking/index.html:8 src/templates/tracking/index.html:29
+#: src/templates/tracking/index.html:87
+#, python-format
+msgid "Week %(week)s"
+msgstr ""
+
+#: src/templates/tracking/index.html:11
+#, python-format
+msgid "%(weeks)s Weeks"
+msgstr ""
+
+#: src/templates/tracking/index.html:15
+#, python-format
+msgid "%(days)s Days"
+msgstr ""
+
+#: src/templates/tracking/index.html:38
+#, python-format
+msgid "DAY %(day)s"
+msgstr ""
+
+#~ msgid "DAY %(day)d"
+#~ msgstr ""
 

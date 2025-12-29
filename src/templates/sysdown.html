@@ -8,9 +8,9 @@
                 <p class="lead mb-4">{{ _('The server is temporarily unable to service your request due to maintenance downtime or capacity problems.') }}</p>
                 <p class="lead mb-4">{{ _('Please try again later.') }}</p>
                 <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-                    <button type="button" class="btn btn-primary btn-lg px-4 gap-3">
-                        {{ _('Home') }}
-                    </button>
+                    <a role="button" class="btn btn-primary btn-lg px-4 gap-3" href="{{ '/' if is_authenticated else '/login' }}">
+                        {{ _('Home' if is_authenticated else 'Login') }}
+                    </a>
                 </div>
             </div>
         </div>

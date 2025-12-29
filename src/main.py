@@ -1,7 +1,9 @@
+import json
 import logging.config
 import logging.config
 import os
 import secrets
+from pathlib import Path
 
 import firebase_admin
 import sqlalchemy
@@ -12,16 +14,14 @@ from starlette.middleware.sessions import SessionMiddleware
 
 from api.v1.candidates import router as api_candidates_router
 from api.v1.cycles import router as api_cycles_router
-from config.observability import CustomLogger
-from config.settings import LOGGING_CONFIG
+from src.config.i18n import I18nMiddleware
 from src.webui import errors
 from webui.admin.views import router as webui_admin_router
 from webui.auth.views import router as webui_auth_router
 from webui.tracking.views import router as webui_tracking_router
 from webui.views import router as webui_router
 
-logging.setLoggerClass(CustomLogger)
-logging.config.dictConfig(LOGGING_CONFIG)
+logging.config.dictConfig(json.loads(Path(Path(__file__).parent, "logging.json").read_text()))
 
 logger = logging.getLogger(__name__)
 
@@ -56,7 +56,7 @@ def create_app():
     # app.add_middleware(FastAPICSRFJinjaMiddleware, secret=secrets.token_urlsafe(32))
 
     # app.add_middleware(RequestLoggerMiddleware, logger=logger)
-    # app.add_middleware(I18nMiddleware, templates=get_templates())
+    app.add_middleware(I18nMiddleware)
     app.add_middleware(SessionMiddleware, secret_key=secrets.token_urlsafe(32))
 
     app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -77,4 +77,4 @@ app = create_app()
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000, reload=True, log_config="logging.json")
+    uvicorn.run(app, host="0.0.0.0", port=8000, reload=True, log_config=json.loads(Path(Path(__file__).parent, "logging.json").read_text()))

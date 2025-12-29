@@ -1,13 +1,10 @@
 import logging
 from datetime import datetime, UTC
-from types import NoneType
 from typing import Annotated
 from urllib.parse import quote
 
 import pyrebase
-
-import pyrebase
-from fastapi import APIRouter, Depends, FastAPI, Form, HTTPException, Query, Request, status
+from fastapi import APIRouter, Depends, Form, Query, Request, status
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from firebase_admin import auth
@@ -24,8 +21,8 @@ pyrebase_auth = firebase_app.auth()
 router = APIRouter()
 
 
-@router.get("/login", response_class=HTMLResponse)
 @debug
+@router.get("/login", response_class=HTMLResponse)
 async def login(
         request: Request,
         error: Annotated[str | None, Query(...)] = None,

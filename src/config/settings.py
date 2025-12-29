@@ -37,7 +37,7 @@ LOGGING_CONFIG = {
     'loggers': {
         '': {
             'handlers': ['default', 'file_handler'],
-            'level': 'INFO',
+            'level': 'DEBUG',
             'propagate': True,
         },
         'uvicorn': {
@@ -60,7 +60,6 @@ LOGGING_CONFIG = {
             'level': 'TRACE',
             'propagate': False
         },
-
     },
 }
 
@@ -69,6 +68,7 @@ class Settings(BaseSettings):
     database_url: MySQLDsn
     auto_flush: bool = False
     google_application_credentials: str = None
+    supported_locales: list[str] = ["en", "es", "ko"]
 
 
 async def get_settings() -> Settings:
