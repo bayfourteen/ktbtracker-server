@@ -8,6 +8,7 @@ from fastapi import APIRouter, Depends, Form, Path, Query, Request, status
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 
+from config.i18n import _
 from src.config.firebase import get_current_session
 from src.config.jinja2 import get_templates
 from src.config.observability import debug

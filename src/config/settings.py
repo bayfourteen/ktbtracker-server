@@ -1,3 +1,4 @@
+from functools import lru_cache
 from typing import Literal
 
 from pydantic import MySQLDsn
@@ -71,5 +72,6 @@ class Settings(BaseSettings):
     supported_locales: list[str] = ["en", "es", "ko"]
 
 
-async def get_settings() -> Settings:
+@lru_cache
+def get_settings() -> Settings:
     return Settings()

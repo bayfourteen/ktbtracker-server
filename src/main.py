@@ -14,11 +14,13 @@ from starlette.middleware.sessions import SessionMiddleware
 
 from api.v1.candidates import router as api_candidates_router
 from api.v1.cycles import router as api_cycles_router
+from config.settings import get_settings
 from src.config.i18n import I18nMiddleware
 from src.webui import errors
 from webui.admin.views import router as webui_admin_router
 from webui.auth.views import router as webui_auth_router
 from webui.tracking.views import router as webui_tracking_router
+#from webui.base import router as webui_base_router
 from webui.views import router as webui_router
 
 logging.config.dictConfig(json.loads(Path(Path(__file__).parent, "logging.json").read_text()))
@@ -31,6 +33,7 @@ def locale_selector(request: Request) -> str:
 
 
 def create_app():
+    # settings = get_settings()
     app = FastAPI()
 
     #
@@ -62,13 +65,14 @@ def create_app():
     app.mount("/static", StaticFiles(directory="static"), name="static")
     #templates.env.install_gettext_translations(Translations.load("locale", ["en"]))
 
+    # app.include_router(webui_router)
+
     app.include_router(webui_router)
-    app.include_router(webui_auth_router)
-    app.include_router(webui_tracking_router)
-    app.include_router(webui_admin_router, prefix="/admin")
 
     app.include_router(api_cycles_router, prefix="/ktbtracker/v1")
     app.include_router(api_candidates_router, prefix="/ktbtracker/v1")
+
+    logger.info([r.path for r in app.routes])
 
     return app
 

@@ -13,6 +13,8 @@ from firebase_admin import auth
 from pymysql import OperationalError
 from sqlalchemy.exc import SQLAlchemyError
 
+from config.i18n import get_locale
+from services.session import get_session_data
 from src.config import firebase
 from src.config.firebase import get_current_session
 from src.config.i18n import _
@@ -25,54 +27,18 @@ from src.services.candidates import CandidatesService, get_candidates_service
 from src.services.cycles import CyclesService, get_cycles_service
 from src.services.site_users import SiteUsersService, get_site_users_service
 from src.services.tracking import TrackingService, get_tracking_service
+from src.webui.admin.views import router as admin_router
+from src.webui.auth.views import router as auth_router
+from src.webui.tracking.views import router as tracking_router
 
 TRACKING_NAMES = OrderedDict({e: _(e) for e in (RequirementsConfig.PHYSICAL + RequirementsConfig.CLASS + RequirementsConfig.OTHER)})
 
-logger = logging.getLogger('uvicorn')
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
-
-@debug
-async def get_session_data(
-        request: Request,
-        # -- Dependencies --
-        candidates_service: CandidatesService = Depends(get_candidates_service),
-        cycles_service: CyclesService = Depends(get_cycles_service),
-        site_users_service: SiteUsersService = Depends(get_site_users_service),
-) -> SessionData | None:
-    decoded_claims, decoded_query = {}, {}
-    if session_cookie := request.cookies.get(firebase.COOKIE):
-        try:
-            decoded_claims = auth.verify_session_cookie(session_cookie, check_revoked=True)
-
-        except auth.InvalidSessionCookieError:
-            pass
-
-    if query_cookie := request.cookies.get("q"):
-        try:
-            decoded_query = json.loads(base64.b64decode(query_cookie.encode("utf-8")))
-
-        except json.JSONDecodeError:
-            pass
-
-    if decoded_claims and decoded_query.get("candidate_id") is None:
-        try:
-            if current_user := site_users_service.find_by_user_id(decoded_claims.get("user_id")):
-                if candidates := candidates_service.find_all_by_user_id(current_user.id):
-                    decoded_query["candidate_id"] = candidates[0].id
-        except sqlalchemy.exc.OperationalError as e:
-            pass
-
-    if decoded_claims and decoded_query.get("week") is None:
-        try:
-            if decoded_query.get("candidate_id") and (candidate := candidates_service.find_by_id(decoded_query.get("candidate_id"))):
-                cycle = cycles_service.find_by_id(candidate.cycle_id)
-                decoded_query["week"] = cycle.cycle_week_of(decoded_query.get("tracking_date") or date.today()).week
-        except sqlalchemy.exc.OperationalError as e:
-            pass
-
-    return SessionData(**decoded_claims, **decoded_query)
-
+router.include_router(admin_router)
+router.include_router(auth_router)
+router.include_router(tracking_router)
 
 
 @router.get("/", response_class=HTMLResponse)

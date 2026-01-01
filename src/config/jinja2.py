@@ -5,18 +5,23 @@ from pathlib import Path
 from babel.dates import format_date
 from babel.numbers import format_decimal
 from fastapi import Request
+from fastapi.datastructures import URL
 from fastapi.templating import Jinja2Templates
 from fastapi_csrf_jinja.jinja_processor import csrf_token_processor
 from firebase_admin import auth
 from pydantic.alias_generators import to_camel
 
+from config.i18n import get_locale
+from config.settings import get_settings
 from src.config import firebase
 from src.config.i18n import _, set_locale
 from src.config.observability import debug
 
+BASE_DIR = Path(__file__).parent.parent
+
 logger = logging.getLogger(__name__)
 
-BASE_DIR = Path(__file__).parent.parent
+settings = get_settings()
 
 
 def pct_color(value: int | float, alpha: float = 1.0, basis: float = 0) -> str:
@@ -55,11 +60,24 @@ def available(value: date, field: str) -> bool:
     return False
 
 
+def set_request_locale(value: URL, locale: str = 'en_US'):
+    request_locale = value.path.strip("/").split("/")[0]
+    new_locale = locale.replace("-", "_").split("_")[0]
+
+    if request_locale in settings.supported_locales:
+        if request_locale != new_locale:
+            value = value.replace(path=f"/{new_locale}{value.path[1:].split(request_locale)[1]}")
+    else:
+        value = value.replace(path=f"/{new_locale}{value.path}")
+    return value
+
+
 @debug
 async def get_templates(request: Request) -> Jinja2Templates:
-
+    current_locale = await get_locale(request)
     templates = Jinja2Templates(directory=str(Path(BASE_DIR, 'templates')), context_processors=[csrf_token_processor()])
     templates.env.globals.update(_=_)
+    templates.env.globals.update(settings=settings)
     templates.env.globals.update(lang=await set_locale(request))
     if session_cookie := request.cookies.get(firebase.COOKIE):
         try:
@@ -84,5 +102,5 @@ async def get_templates(request: Request) -> Jinja2Templates:
     templates.env.filters["cycle_week"] = lambda v: v if v < 0 else v + 1
     templates.env.tests["available"] = lambda v, f: available(v, f)
     templates.env.tests["fractional"] = lambda v: factional(v)
-
+    templates.env.filters["for_locale"] = lambda v, locale=current_locale: set_request_locale(v, locale=locale)
     return templates
