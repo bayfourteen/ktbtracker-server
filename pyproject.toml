@@ -1,6 +1,6 @@
 [build-system]
-requires = ["uv_build>=0.9.21,<0.10.0"]
-build-backend = "uv_build"
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "ktbtracker-server"
@@ -12,31 +12,12 @@ authors = [
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "jinja2",
-    "pyjwt",
-    "pymysql",
-    "pyyaml",
-    "fastapi",
-    "fastapi-decorators",
-    "firebase-admin",
-    "pydantic",
-    "pydantic-settings",
-    "sqlalchemy",
-    "sqlmodel",
+    "django",
+    "django-environ",
+    "gunicorn",
+    "mysqlclient",
     "uvicorn",
-    "python-ulid",
-    "babel",
-    "itsdangerous",
-    "python-multipart",
-    "python-json-logger",
-    "fastapi-csrf-jinja",
-    "requests-toolbelt",
-    "uv-build",
-    "setuptools>=80.9.0",
-    "requests>=2.32.5",
-    "httpx>=0.28.1",
-    "loguru>=0.7.3",
-    "rich>=14.2.0",
+    "uvicorn-worker"
 ]
 
 [project.optional-dependencies]

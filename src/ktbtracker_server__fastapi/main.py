@@ -59,7 +59,7 @@ def create_app():
     app.add_middleware(I18nMiddleware)
     app.add_middleware(SessionMiddleware, secret_key=secrets.token_urlsafe(32))
 
-    app.mount("/static", StaticFiles(directory="ktbtracker_server/static"), name="static")
+    app.mount("/static", StaticFiles(directory="ktbtracker_server__fastapi/static"), name="static")
     #templates.env.install_gettext_translations(Translations.load("locale", ["en"]))
 
     # app.include_router(webui_router)
@@ -78,4 +78,4 @@ app = create_app()
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000, reload=True, log_config=json.loads(Path("ktbtracker_server/config/logging.json").read_text()))
+    uvicorn.run(app, host="0.0.0.0", port=8000, reload=True, log_config=json.loads(Path("ktbtracker_server__fastapi/config/logging.json").read_text()))

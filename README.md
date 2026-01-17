@@ -14,8 +14,8 @@ do NOT run `pybabel init` since it will overwrite any translations already made.
 To extract messages from source and templates, run the following commands from the project directory:
 ```bash
 source .venv/bin/activate
-pybabel extract -F src/ktbtracker_server/babel.cfg -o src/ktbtracker_server/messages.pot .
-pybabel update -i src/ktbtracker_server/messages.pot -d src/ktbtracker_server/locales -l en
+pybabel extract -F src/ktbtracker_server__fastapi/babel.cfg -o src/ktbtracker_server__fastapi/messages.pot .
+pybabel update -i src/ktbtracker_server__fastapi/messages.pot -d src/ktbtracker_server__fastapi/locales -l en
 ```
 
 Modify the generated `.po` file (`src/locales/en/LC_MESSAGES/messages.po`) with the proper translations. Then compile
@@ -30,8 +30,8 @@ pybabel compile -d src/locales
 To extract messages from source and templates, run the following commands from the project directory:
 ```bash
 source .venv/bin/activate
-pybabel extract -F src/ktbtracker_server/babel.cfg -o src/ktbtracker_server/messages.pot .
-pybabel update -i src/ktbtracker_server/messages.pot -d src/ktbtracker_server/locales -l es
+pybabel extract -F src/ktbtracker_server__fastapi/babel.cfg -o src/ktbtracker_server__fastapi/messages.pot .
+pybabel update -i src/ktbtracker_server__fastapi/messages.pot -d src/ktbtracker_server__fastapi/locales -l es
 ```
 
 Modify the generated `.po` file (`src/locales/es/LC_MESSAGES/messages.po`) with the proper translations. Then compile
@@ -46,13 +46,13 @@ pybabel compile -d src/locales
 To extract messages from source and templates, run the following commands from the project directory:
 ```bash
 source .venv/bin/activate
-pybabel extract -F src/ktbtracker_server/babel.cfg -o src/ktbtracker_server/messages.pot .
-pybabel update -i src/ktbtracker_server/messages.pot -d src/ktbtracker_server/locales -l ko
+pybabel extract -F src/ktbtracker_server__fastapi/babel.cfg -o src/ktbtracker_server__fastapi/messages.pot .
+pybabel update -i src/ktbtracker_server__fastapi/messages.pot -d src/ktbtracker_server__fastapi/locales -l ko
 ```
 
 Modify the generated `.po` file (`src/locales/ko/LC_MESSAGES/messages.po`) with the proper translations. Then compile
 the `.po` file into the required `.mo` file:
 ```bash
 source .venv/bin/activate
-pybabel compile -d src/ktbtracker_server/locales
+pybabel compile -d src/ktbtracker_server__fastapi/locales
 ```
