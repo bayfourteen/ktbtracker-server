@@ -16,7 +16,7 @@ import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-environ.Env.read_env(os.path.join(BASE_DIR.parent, '.env')) # Load the .env file
+environ.Env.read_env(os.path.join(BASE_DIR, '.env')) # Load the .env file
 env = environ.FileAwareEnv()
 
 # Quick-start development settings - unsuitable for production
@@ -40,6 +40,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_bootstrap5',
+    # -- Applications --
+    'core',
+    'tracking'
 ]
 
 MIDDLEWARE = [

@@ -36,10 +36,10 @@ RUN ls /wheels
 RUN pip install --no-cache-dir /wheels/* && rm -rf /wheels
 
 # copy only what you need (thanks to .dockerignore)
-COPY ./src .
+COPY . .
 
 USER appuser
 EXPOSE 8000
 
-#CMD ["python", "src/manage.py", "runserver", "0.0.0.0:8000"]
+#CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
 CMD ["gunicorn", "config.asgi:application", "-k", "uvicorn_worker.UvicornWorker", "--bind", "0.0.0.0:8000"]
