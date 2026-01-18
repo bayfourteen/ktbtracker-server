@@ -59,6 +59,47 @@ def available(value: date, field: str) -> bool:
     return False
 
 
+@register.filter
+def index(value, arg):
+    try:
+        return value[arg]
+    except IndexError:
+        return ''
+
+
+@register.filter
+def add(value, arg):
+    """Adds the argument from the value."""
+    try:
+        return float(value) + float(arg)
+    except (ValueError, TypeError):
+        return ''
+
+
+@register.filter
+def sub(value, arg):
+    """Subtracts the argument from the value."""
+    try:
+        return float(value) - float(arg)
+    except (ValueError, TypeError):
+        return ''
+
+@register.filter
+def mul(value, arg):
+    """Multiplies the value by the argument."""
+    try:
+        return float(value) * float(arg)
+    except (ValueError, TypeError):
+        return ''
+
+@register.filter
+def div(value, arg):
+    """Divides the value by the argument."""
+    try:
+        return float(value) / float(arg)
+    except (ValueError, TypeError):
+        return ''
+
 
 register.filter("cycle_day", lambda v: v if v < 0 else v + 1)
 register.filter("cycle_week", lambda v: v if v < 0 else v + 1)
