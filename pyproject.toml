@@ -16,6 +16,7 @@ dependencies = [
     "django-bootstrap5",
     "django-environ",
     "gunicorn",
+    "legacy-cgi; python_version >= '3.13'",
     "mysqlclient",
     "uvicorn",
     "uvicorn-worker"

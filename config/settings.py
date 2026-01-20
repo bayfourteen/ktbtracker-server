@@ -62,7 +62,9 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            BASE_DIR / 'templates',
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -124,10 +126,45 @@ TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
+USE_L10N = True
+
 USE_TZ = True
+
+USE_THOUSAND_SEPARATOR = True
+
+FORMAT_MODULE_PATH = [
+    "core.formats"
+]
 
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+]
+
+
+# Logging
+# https://docs.djangoproject.com/en/6.0/howto/logging/
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+
+    "handlers": {
+        "file": {
+            "class": "logging.FileHandler",
+            "filename": "general.log",
+        },
+    },
+
+    "loggers": {
+        "": {
+            "level": "DEBUG",
+            "handlers": ["file"],
+        },
+    },
+}

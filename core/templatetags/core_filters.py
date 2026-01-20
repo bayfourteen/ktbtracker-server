@@ -1,7 +1,10 @@
+import logging
 from datetime import date
 
-from django.template import library
+from django.template import library, Context
 from django.template.defaultfilters import stringfilter
+
+logger = logging.getLogger(__name__)
 
 register = library.Library()
 
@@ -23,17 +26,30 @@ def byte_value(value: int | float) -> int | float:
 
 
 @register.filter
-def normalize(value: int | float) -> int | float:
-    return max(min(value, 1.0), 0.0)
+def normalize(value: int | float) -> float:
+    try:
+        return min(max(float(value), 0.0), 1.0)
+    except (ValueError, TypeError):
+        return 0.0
+
+@register.filter
+def pct(value: int | float) -> float:
+    try:
+        return normalize(value) * 100.0
+    except (ValueError, TypeError):
+        return 0.0
 
 
 @register.filter
 def percent(value: int | float) -> float:
-    return normalize(value) * 100
+    try:
+        return float(value) * 100.0
+    except (ValueError, TypeError):
+        return 0.0
 
 
 @register.filter
-def factional(value: int | float) -> bool:
+def fractional(value: int | float) -> bool:
     #logger.info(f"factional({value}) type={type(value)}")
     return type(value) == float
 
@@ -64,6 +80,16 @@ def index(value, arg):
     try:
         return value[arg]
     except IndexError:
+        return ''
+
+@register.filter
+def keyof(value, arg):
+    #logger.info(f"keyof {value=} {arg=}")
+    try:
+        if isinstance(value, dict):
+            return value[arg]
+        return getattr(value, arg)
+    except IndexError | AttributeError | TypeError:
         return ''
 
 
@@ -101,6 +127,31 @@ def div(value, arg):
         return ''
 
 
-register.filter("cycle_day", lambda v: v if v < 0 else v + 1)
-register.filter("cycle_week", lambda v: v if v < 0 else v + 1)
+@register.filter
+def cycle_day(value):
+    try:
+        return int(value) if int(value) < 0 else int(value) + 1
+    except (ValueError, TypeError):
+        return ''
 
+
+@register.filter
+def cycle_week(value):
+    try:
+        return int(value) if int(value) < 0 else int(value) + 1
+    except (ValueError, TypeError):
+        return ''
+
+
+@register.simple_tag(takes_context=True)
+def nav_disabled(context: Context) -> str | None:
+    return " disabled" if context.get("request") and context.get("request").path.startswith("/log") else ""
+
+
+@register.simple_tag(takes_context=True)
+def path_active(context: Context, *args: str | None, emit: str = " active") -> str:
+    if args and len(args) == 1:
+        return emit if context.get("request") and context.get("request").path.startswith(str(args[0])) else ""
+    if args and len(args) > 1:
+        return emit if context.get("request") and context.get("request").path in [str(arg) for arg in args] else ""
+    return ""

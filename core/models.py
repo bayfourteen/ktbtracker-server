@@ -1,10 +1,29 @@
-
+from dataclasses import dataclass
+from datetime import date, timedelta
 from pathlib import Path
 
 from django.db import models
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+
+@dataclass
+class CycleWeek:
+    week: int
+    start: date
+
+    @property
+    def days(self) -> list[int]:
+        return list(range((self.week * 7), ((self.week * 7) + 7)))
+
+    @property
+    def dates(self) -> list[date]:
+        return [self.start + timedelta(days=n) for n in range(0, 7)]
+
+    @property
+    def end(self) -> date | None:
+        return self.start + timedelta(days=6)
 
 
 class Candidates(models.Model):
@@ -81,6 +100,23 @@ class Cycles(models.Model):
     sit_ups = models.IntegerField()
     sparring = models.FloatField()
     title = models.CharField(max_length=255)
+
+    @property
+    def cycle_days(self) -> int:
+        return (self.cycle_end - self.cycle_start).days + 1
+
+    @property
+    def cycle_weeks(self) -> int:
+        return int(self.cycle_days / 7)
+
+    def cycle_day(self, cycle_date: date = date.today()) -> int:
+        return (cycle_date - self.cycle_start).days + 1
+
+    def cycle_week(self, week: int = 0) -> CycleWeek:
+        return CycleWeek(week=week, start=self.cycle_start + timedelta(days=week * 7))
+
+    def cycle_week_of(self, cycle_date: date = date.today()) -> CycleWeek:
+        return self.cycle_week((cycle_date - self.cycle_start).days // 7)
 
     class Meta:
         managed = False

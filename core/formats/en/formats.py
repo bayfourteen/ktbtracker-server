@@ -1,0 +1,3 @@
+
+SHORT_DATE_FORMAT = "m/d/y"
+LONG_DATE_FORMAT = "F d, Y"

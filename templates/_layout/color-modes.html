@@ -32,12 +32,12 @@
         type="button"
         aria-expanded="false"
         data-bs-toggle="dropdown"
-        aria-label="Toggle theme (auto)"
+        aria-label="{{ _('Toggle theme (auto)') }}"
       >
         <svg class="bi my-1 theme-icon-active" aria-hidden="true" height="1rem" width="1rem" fill="currentColor">
           <use href="#circle-half"></use>
         </svg>
-        <span class="visually-hidden" id="bd-theme-text">Toggle theme</span>
+        <span class="visually-hidden" id="bd-theme-text">{{ _('Toggle theme') }}</span>
       </button>
       <ul
         class="dropdown-menu dropdown-menu-end shadow"
@@ -53,7 +53,7 @@
             <svg class="bi me-2 opacity-50" aria-hidden="true" height="1rem" width="1rem" fill="currentColor">
               <use href="#sun-fill"></use>
             </svg>
-            Light
+            {{ _('Light') }}
             <svg class="bi ms-auto d-none" aria-hidden="true">
               <use href="#check2"></use>
             </svg>
@@ -69,7 +69,7 @@
             <svg class="bi me-2 opacity-50" aria-hidden="true" height="1rem" width="1rem" fill="currentColor">
               <use href="#moon-stars-fill"></use>
             </svg>
-            Dark
+            {{ _('Dark') }}
             <svg class="bi ms-auto d-none" aria-hidden="true">
               <use href="#check2"></use>
             </svg>
@@ -85,7 +85,7 @@
             <svg class="bi me-2 opacity-50" aria-hidden="true" height="1rem" width="1rem" fill="currentColor">
               <use href="#circle-half"></use>
             </svg>
-            Auto
+            {{ _('Auto') }}
             <svg class="bi ms-auto d-none" aria-hidden="true">
               <use href="#check2"></use>
             </svg>

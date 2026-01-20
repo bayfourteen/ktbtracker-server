@@ -10,7 +10,7 @@
             <div class="d-flex align-items-center justify-content-between mx-3">
                 <small style="font-variant: all-small-caps;">{{ _('%(weeks)s Weeks') | format(weeks=cycle.cycle_weeks | format_number) }}</small>
                 &nbsp; | &nbsp;
-                <small style="font-variant: all-small-caps;">{{ cycle.cycle_start | format_date(format='long') }}
+                <small style="font-variant: all-small-caps;">{{ cycle.cycle_start|date:'F d\, format_date(format='long') }}
                     &ndash; {{ cycle.cycle_end | format_date(format='long') }}</small> &nbsp; | &nbsp;
                 <small style="font-variant: all-small-caps;">{{ _('%(days)s Days') | format(days=(cycle.cycle_weeks * 7) | format_number) }}</small>
             </div>

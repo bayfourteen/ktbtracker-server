@@ -1,5 +1,5 @@
-{%  set nav_disabled = ' disabled' if request.url.path.startswith('/log') else '' %}
-{%  set aria_disabled = ' aria-disabled="true"' if request.path.startswith('/log') else '' %}
+{% load static %}
+{% load core_filters %}
 <nav class="navbar navbar-expand-lg sticky-top bg-dark border-bottom border-body" data-bs-theme="dark">
     <div class="container-fluid">
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-toggler"
@@ -8,34 +8,34 @@
         </button>
         <div class="collapse navbar-collapse" id="navbar-toggler">
             <a class="navbar-brand" href="/">
-                <img src="/static/images/ktb-logo-dark.png" alt="" width="auto" height="50"
+                <img src="{% static '/images/ktb-logo-dark.png' %}" alt="" width="auto" height="50"
                      class="d-inline-block align-text-middle">
                 {{ _('Black Belt Cycle') }}
             </a>
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link{{ nav_disabled }}{{ ' active' if request.url.path == '/' else '' }}" aria-current="page"
+                    <a class="nav-link{% path_active '/log' emit=' disabled' %}{% path_active '' '/' %}" aria-current="page"
                        href="/">{{ _('Home') }}</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link{{ nav_disabled }}{{ ' active' if request.url.path.startswith('/tracking') else '' }}"{{ aria_disabled }}
+                    <a class="nav-link{% path_active '/log' emit=' disabled' %}{% path_active '/tracking' %}" {% path_active '/log' emit='aria-disabled="true"' %}
                        href="/tracking">{{ _('Tracking') }}</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link{{ nav_disabled }}{{ ' active' if request.url.path.startswith('/admin') else '' }} d-none d-lg-block"{{ aria_disabled }}
+                    <a class="nav-link{% path_active '/log' emit=' disabled' %}{% path_active '/admin' %} d-none d-lg-block" {% path_active '/log' emit='aria-disabled="true"' %}
                        href="/admin">
                         {{ _('Admin') }}
                     </a>
-                    <a class="nav-link dropdown-toggle{{ nav_disabled }}{{ ' active' if request.url.path.startswith('/admin') else '' }} d-block d-lg-none"{{ aria_disabled }}
+                    <a class="nav-link dropdown-toggle{% path_active '/log' emit=' disabled' %}{% if request.url.path|slice:6 == '/admin' %} active{% endif %} d-block d-lg-none" {% path_active '/log' emit='aria-disabled="true"' %}
                        href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         {{ _('Admin') }}
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item{{ nav_disabled }}{{ ' active' if request.url.path in ['/admin', '/admin/'] else '' }}"{{ aria_disabled }}
+                        <li><a class="dropdown-item{% path_active '/log' emit=' disabled' %}{% path_active '/admin' '/admin/' %}" {% path_active '/log' emit='aria-disabled="true"' %}
                                href="/admin">{{ _('Dashboard') }}</a></li>
-                        <li><a class="dropdown-item{{ nav_disabled }}{{ ' active' if request.url.path.startswith('/admin') else '' }}"{{ aria_disabled }}
+                        <li><a class="dropdown-item{% path_active '/log' emit=' disabled' %}{% path_active '/admin' %}" {% path_active '/log' emit='aria-disabled="true"' %}
                                href="/admin/cycles">{{ _('Cycles') }}</a></li>
-                        <li><a class="dropdown-item{{ nav_disabled }}{{ ' active' if request.url.path.startswith('/admin') else '' }}"{{ aria_disabled }}
+                        <li><a class="dropdown-item{% path_active '/log' emit=' disabled' %}{% path_active '/admin' %}" {% path_active '/log' emit='aria-disabled="true"' %}
                                href="/admin/candidates">{{ _('Candidates') }}</a></li>
                         <li>
                             <hr class="dropdown-divider">
@@ -45,9 +45,9 @@
                 </li>
             </ul>
             {% include '_layout/color-modes.html' %}
-            <a class="" href="/log{{ 'in' if not is_authenticated else 'out' }}?next_url={{ request.url.path | escape }}">
-                <button class="btn btn-outline-{{ 'success' if not is_authenticated else 'danger' }}{{ ' d-none' if request.url.path.startswith('/log') else '' }}" type="submit">
-                    {{ _('Login') if not is_authenticated else _('Logout') }}
+            <a class="" href="/log{% if not is_authenticated %}in{% else %}out{% endif %}?next_url={{ request.path|escape }}">
+                <button class="btn btn-outline-{% if not is_authenticated %}success{% else %}danger{% endif %}{% path_active '/log' emit=' d-none' %}" type="submit">
+                    {% if not is_authenticated %}{{ _('Login') }}{% else %}{{ _('Logout') }}{% endif %}
                 </button>
             </a>
         </div>
@@ -55,7 +55,7 @@
     </div>
 </nav>
 
-<nav class="navbar navbar-expand-lg sticky-top bg-dark border-bottom border-body d-none{{ ' d-lg-block' if request.url.path.startswith('/admin') else '' }}"
+<nav class="navbar navbar-expand-lg sticky-top bg-dark border-bottom border-body d-none{% path_active '/admin' emit=' d-lg-block' %}"
      data-bs-theme="dark">
     <div class="container-fluid">
         <div class="container-fluid">
@@ -63,16 +63,16 @@
         </div>
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item">
-                <a class="nav-link{{ ' active' if request.url.path in ['/admin', '/admin/'] else '' }}"
+                <a class="nav-link{% path_active '/admin' '/admin/' %}"
                    aria-current="page"
                    href="/admin">{{ _('Dashboard') }}</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link{{ ' active' if request.url.path.startswith('/admin/cycles') else '' }}"
+                <a class="nav-link{% path_active '/admin/cycles' %}"
                    href="/admin/cycles">{{ _('Cycles') }}</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link{{ ' active' if request.url.path.startswith('/admin/candidates') else '' }}"
+                <a class="nav-link{% path_active '/admin/candidates' %}"
                    href="/admin/candidates">{{ _('Candidates') }}</a>
             </li>
         </ul>
