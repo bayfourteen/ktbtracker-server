@@ -26,7 +26,7 @@
             <tr>
                 <td>
                     <a class="btn btn-primary" role="button"
-                       href="{% url 'tracking:index' %}{% querystring week=tracking_week.week|sub:1 %}"
+                       href="{% url 'tracking:index' %}{% querystring week=tracking_week.week|sub:1|floatformat:0 %}"
                        title="{% blocktrans with week=tracking_week.week|sub:1|cycle_week %}Week {{ week }}{% endblocktrans %}">
                         <i class="bi bi-calendar-range"></i>
                         {{ tracking_week.week|sub:1|cycle_week }}
@@ -86,7 +86,7 @@
                 <td></td>
                 <td>
                     <a class="btn btn-primary" role="button"
-                       href="{% url 'tracking:index' %}{% querystring week=tracking_week.week|add:1 %}"
+                       href="{% url 'tracking:index' %}{% querystring week=tracking_week.week|add:1|floatformat:0 %}"
                        title="{% blocktrans with week=tracking_week.week|add:1|cycle_week %}Week {{ week }}{% endblocktrans %}">
                         <i class="bi bi-calendar-range"></i>
                         {{ tracking_week.week|add:1|cycle_week }}

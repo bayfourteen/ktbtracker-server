@@ -1,11 +1,10 @@
 import logging
 from collections import OrderedDict
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 from operator import itemgetter
 
-from django.core.handlers.wsgi import WSGIRequest
 from django.forms.models import model_to_dict
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpRequest
 from django.shortcuts import render
 from django.template import loader
 from django.utils.translation import gettext_lazy as _
@@ -16,7 +15,8 @@ from tracking.models import TrackingStatistics, TrackingFullStatistics
 
 logger = logging.getLogger(__name__)
 
-TRACKING_NAMES = OrderedDict({e: _(e) for e in (RequirementsConfig.PHYSICAL + RequirementsConfig.CLASS + RequirementsConfig.OTHER)})
+TRACKING_NAMES = OrderedDict(
+    {e: _(e) for e in (RequirementsConfig.PHYSICAL + RequirementsConfig.CLASS + RequirementsConfig.OTHER)})
 
 
 def calculate_tracking_totals(candidate: Candidates, cycle_week: CycleWeek | None = None) -> dict[str, float]:
@@ -37,6 +37,7 @@ def calculate_statistics(candidate: Candidates, cycle_week: CycleWeek | None = N
     tracking_statistics = {}
     tracking_totals = calculate_tracking_totals(candidate, cycle_week)
 
+
 def calculate_full_statistics(candidate: Candidates):
     full_statistics = {}
     full_tracking = Tracking.objects.filter(
@@ -47,14 +48,19 @@ def calculate_full_statistics(candidate: Candidates):
     for name in TRACKING_NAMES.keys():
         full_statistics[name] = [t.get(name, 0) for t in full_tracking]
 
+
 # Create your views here.
-def index(request: WSGIRequest):
+def index(request: HttpRequest):
+    # Process any query parameters...
+    week = request.GET.get("week")
+    tracking_date = request.GET.get("trackingDate")
+    tracking_date = datetime.strptime(tracking_date, "%Y-%m-%d").date() if tracking_date else None
+
     template = loader.get_template("tracking/index.html")
     cycle = Cycles.objects.filter(id=36).first()
     candidate = Candidates.objects.filter(id=691).first()
-    week = None
-    tracking_date = None
-    tracking_week = cycle.cycle_week(week) if week else cycle.cycle_week_of(tracking_date or date.today())
+
+    tracking_week = cycle.cycle_week(int(week)) if week else cycle.cycle_week_of(tracking_date or date.today())
     tracking_day = cycle.cycle_day(tracking_week.start)
     tracking_query = Tracking.objects.filter(
         candidate=candidate,
@@ -83,3 +89,12 @@ def index(request: WSGIRequest):
     }
 
     return HttpResponse(template.render(context, request))
+
+
+def editor(request: HttpRequest):
+    if request.method == "POST":
+        pass
+
+    else:
+        return HttpResponse(status=405)
+
