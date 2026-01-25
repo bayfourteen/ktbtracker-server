@@ -6,5 +6,5 @@ app_name = "tracking"
 
 urlpatterns = [
     path("", views.index, name="index"),
-    path("<tracking_date>/", views.index, name="tracking_editor"),
+    path("<str:tracking_date>/edit/", views.editor, name="editor"),
 ]

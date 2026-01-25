@@ -91,10 +91,16 @@ def index(request: HttpRequest):
     return HttpResponse(template.render(context, request))
 
 
-def editor(request: HttpRequest):
+def editor(request: HttpRequest, tracking_date: str):
+    # Process any query parameters...
+    candidate_id = request.GET.get("canid")
+    tracking_date = datetime.strptime(tracking_date, "%Y-%m-%d").date() if tracking_date else None
+
     if request.method == "POST":
         pass
 
     else:
+        tracking = Tracking.objects.get(tracking_date=tracking_date, candidate_id=candidate_id or 691)
+
         return HttpResponse(status=405)
 
