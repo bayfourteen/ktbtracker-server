@@ -11,6 +11,7 @@ from django.utils.translation import gettext_lazy as _
 
 from config.requirements import RequirementsConfig
 from core.models import Tracking, Cycles, Candidates, CycleWeek
+from tracking.forms import TrackingForm
 from tracking.models import TrackingStatistics, TrackingFullStatistics
 
 logger = logging.getLogger(__name__)
@@ -91,16 +92,32 @@ def index(request: HttpRequest):
     return HttpResponse(template.render(context, request))
 
 
-def editor(request: HttpRequest, tracking_date: str):
-    # Process any query parameters...
-    candidate_id = request.GET.get("canid")
-    tracking_date = datetime.strptime(tracking_date, "%Y-%m-%d").date() if tracking_date else None
+def editor(request: HttpRequest):
+    template = loader.get_template("tracking/editor.html")
+    cycle = Cycles.objects.filter(id=36).first()
+    candidate = Candidates.objects.filter(id=691).first()
 
     if request.method == "POST":
         pass
 
     else:
-        tracking = Tracking.objects.get(tracking_date=tracking_date, candidate_id=candidate_id or 691)
+        # Process any query parameters...
+        candidate_id = request.GET.get("canid")
+        tracking_date = request.GET.get("trackingDate")
+        tracking_date = datetime.strptime(tracking_date, "%Y-%m-%d").date() if tracking_date else None
 
-        return HttpResponse(status=405)
+        try:
+            tracking = Tracking.objects.get(tracking_date=tracking_date, candidate=candidate)
+        except Tracking.DoesNotExist:
+            tracking = Tracking(candidate=candidate, tracking_date=tracking_date)
 
+        form = TrackingForm(instance=tracking)
+
+        context = {
+            "TRACKING_NAMES": TRACKING_NAMES,
+            "cycle": cycle,
+            "candidate": candidate,
+            "form": form
+        }
+        logger.info(f"TrackinForm.fields={form.fields}")
+        return HttpResponse(template.render(context, request))

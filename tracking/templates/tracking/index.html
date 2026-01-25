@@ -59,12 +59,21 @@
                         </small>
                     </span>
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                            data-bs-target="#tracking-editor-modal"
-                            hx-get="{% url 'tracking:editor' tracking_date=tracking.tracking_date %}"
-                            hx-target="#tracking-editor-modal-body"
+                            data-bs-target="#tracking-{{ tracking.tracking_date|date:'Y-m-d' }}-editor-modal"
+                            hx-get="{% url 'tracking:editor' %}{% querystring trackingDate=tracking.tracking_date|date:'Y-m-d' %}"
+                            hx-target="#tracking-{{ tracking.tracking_date|date:'Y-m-d' }}-editor"
                             hx-swap="innerHTML">
                         <i class="bi bi-pencil-square"></i>
                     </button>
+                    <div class="modal fade"
+                         id="tracking-{{ tracking.tracking_date|date:'Y-m-d' }}-editor-modal"
+                         data-bs-backdrop="static"
+                         data-bs-keyboard="false"
+                         tabindex="-1" aria-labelledby="tracking-{{ tracking.tracking_date|date:'Y-m-d' }}-editor-label" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" id="tracking-{{ tracking.tracking_date|date:'Y-m-d' }}-editor">
+                            {% with tracking=tracking %}{% include 'tracking/editor.html' %}{% endwith %}
+                        </div>
+                    </div>
                 </div>
             </td>
             {% endfor %}
@@ -103,43 +112,14 @@
             <td class="fw-{% if tracking.tracking_date == today %}bold table-info{% else %}{{ bg_color }}{% endif %} text-end"
                 data-bs-toggle="modal"
                 data-bs-target="#tracking-editor-modal"
-                hx-get="{% url 'tracking:editor' tracking_date=tracking.tracking_date|date:'Y-m-d' %}"
-                hx-target="#tracking-{{ tracking.tracking_date|date:'Y-m-d' }}-editor-body"
+                hx-get="{% url 'tracking:editor' %}{% querystring trackingDate=tracking.tracking_date|date:'Y-m-d' %}"
+                hx-target="#tracking-{{ tracking.tracking_date|date:'Y-m-d' }}-editor"
                 hx-swap="innerHTML">
             {% if name|slice:':6' == 'class_' %}
                 <i class="{% if tracking|keyof:'tracking_date'|available:name %}bi bi-{% if tracking|keyof:name > 0 %}check-lg{% else %}x-lg{% endif %}{% endif %}"></i>
             {% else %}
                 {{ tracking|keyof:name|default:0 }}
             {% endif %}
-                <div class="modal fade"
-                     id="tracking-{{ tracking.tracking_date|date:'Y-m-d' }}-editor"
-                     data-bs-backdrop="static"
-                     data-bs-keyboard="false"
-                     tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h1 class="modal-title fs-5"
-                                    id="staticBackdropLabel">{{ tracking.tracking_date|date }}</h1>
-                                <span><small>{{ tracking.tracking_date|date }}</small></span>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body" id="tracking-{{ tracking.tracking_date|date:'Y-m-d' }}-editor-body">
-                                {% with tracking=tracking %}{% include 'tracking/editor.html' %}{% endwith %}
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                    Close
-                                </button>
-                                <button type="submit" class="btn btn-primary"
-                                        form="tracking-{{ tracking.tracking_date }}-form">
-                                    Understood
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </td>
             {% endfor %}
             {% resetcycle %}

@@ -1,8 +1,11 @@
 import logging
 from datetime import date
 
+from django import forms
 from django.template import library, Context
 from django.template.defaultfilters import stringfilter
+
+from tracking.forms import TrackingForm
 
 logger = logging.getLogger(__name__)
 
@@ -84,13 +87,18 @@ def index(value, arg):
 
 @register.filter
 def keyof(value, arg):
-    #logger.info(f"keyof {value=} {arg=}")
-    try:
-        if isinstance(value, dict):
-            return value[arg]
-        return getattr(value, arg)
-    except IndexError | AttributeError | TypeError:
-        return ''
+    if isinstance(value, TrackingForm):
+        logger.info(f"keyof {value=} {arg=}")
+    if value:
+        try:
+            if isinstance(value, dict):
+                return value[arg]
+            if isinstance(value, object):
+                return getattr(value, arg)
+            return ''
+        except IndexError | AttributeError | TypeError:
+            return ''
+    return ''
 
 
 @register.filter

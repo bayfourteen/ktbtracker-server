@@ -1,32 +1,25 @@
+{% load crispy_forms_tags %}
 {% load core_filters %}
-<form id="tracking-editor-form" class="form-floating"
-      action="{% url 'tracking:editor' tracking_date=tracking.tracking_date %}"
-      method="POST">
-    {% csrf_token %}
-    <input type="hidden" name="trackingDate" value="{{ tracking.tracking_date|date:'Y-m-d' }}"/>
-    <input type="hidden" name="candidateId" value="{{ candidate.id }}"/>
-    {% for name, title in TRACKING_NAMES.items %}
-        {% if cycle|keyof:name > 0 %}
-            {% if name|slice:6  == 'class_' %}
-                <div class="form-floating mb-3">
-                    <div class="form-check form-check-reverse form-switch">
-                        <input class="form-check-input" type="checkbox" role="switch" name="{{ name }}" id="input-{{ name }}"
-                               {% if tracking|keyof:name != 0 %} checked{% endif %}
-                               {% if not tracking|keyof:'tracking_date'|available:name %} disabled {% endif %}
-                               value="1">
-                        <label class="form-check-label" for="input-{{ name }}">{{ title }}</label>
-                    </div>
-                </div>
-            {% else %}
-                <div class="form-floating mb-3">
-                    <input type="number" class="form-control" name="{{ name }}" id="input-{{ name }}"
-                           min="0"
-                           {% if not tracking|keyof:name|fractional %} step="1"{% endif %}
-                           inputmode="numeric" pattern="^\d*$"
-                           value="{{ tracking|keyof:name }}">
-                    <label for="input-{{ name }}">{{ title }}</label>
-                </div>
-            {% endif %}
-        {% endif %}
-    {% endfor %}
+{% load i18n %}
+{% if form %}
+<form id="tracking-editor-form" class="form-floating modal-content"
+      hx-post="{{ request.path }}" hx-headers='{"X-CSRFToken":"{{ csrf_token }}"}'>
+    <div class="modal-header">
+        <h1 class="modal-title fs-5"
+            id="tracking-{{ form.fields.tracking_date|date:'Y-m-d' }}-editor-label">
+            {{ form.tracking_date|date }}
+        </h1>
+        <span><small>{{ form.tracking_date|date }}</small></span>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                aria-label="Close">
+        </button>
+    </div>
+    <div class="modal-body" id="tracking-{{ form.fields.tracking_date|date:'Y-m-d' }}-editor-body">
+        {% csrf_token %}
+        {% crispy form %}
+    </div>
+    <div class="modal-footer">
+
+    </div>
 </form>
+{% endif %}
