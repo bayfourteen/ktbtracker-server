@@ -111,7 +111,7 @@ def editor(request: HttpRequest):
         except Tracking.DoesNotExist:
             tracking = Tracking(candidate=candidate, tracking_date=tracking_date)
 
-        form = TrackingForm(instance=tracking)
+        form = TrackingForm(instance=tracking, cycle=cycle)
 
         context = {
             "TRACKING_NAMES": TRACKING_NAMES,
