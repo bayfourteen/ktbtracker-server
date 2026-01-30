@@ -26,40 +26,35 @@ class CycleWeek:
         return self.start + timedelta(days=6)
 
 
-class Candidates(models.Model):
-    audit = models.TextField()  # This field type is a guess.
-    belt_rank = models.IntegerField()
-    cycle_cont = models.IntegerField()
-    essays = models.IntegerField()
-    exam_written = models.FloatField()
-    hidden = models.TextField()  # This field type is a guess.
-    letters = models.IntegerField()
-    created = models.DateTimeField(blank=True, null=True)
-    created_by = models.CharField(max_length=255, blank=True, null=True)
-    modified = models.DateTimeField(blank=True, null=True)
-    modified_by = models.CharField(max_length=255, blank=True, null=True)
-    exam_burpees = models.IntegerField()
-    exam_planks = models.IntegerField()
-    exam_pull_ups = models.IntegerField()
-    exam_push_ups = models.IntegerField()
-    exam_run = models.FloatField()
-    exam_sit_ups = models.IntegerField()
-    pre_exam_burpees = models.IntegerField()
-    pre_exam_planks = models.IntegerField()
-    pre_exam_pull_ups = models.IntegerField()
-    pre_exam_push_ups = models.IntegerField()
-    pre_exam_run = models.FloatField()
-    pre_exam_sit_ups = models.IntegerField()
-    poom = models.TextField()  # This field type is a guess.
-    pre_exam_written = models.FloatField()
-    status = models.IntegerField()
-    cycle = models.ForeignKey('Cycles', models.DO_NOTHING)
-    user = models.ForeignKey('Users', models.DO_NOTHING)
+class Users(models.Model):
+    display_name = models.CharField(max_length=255, blank=True, null=True)
+    email = models.CharField(max_length=255)
+    email_verified = models.TextField()  # This field type is a guess.
+    photo_url = models.CharField(max_length=255, blank=True, null=True)
+    user_id = models.CharField(unique=True, max_length=255)
 
     class Meta:
         managed = False
-        db_table = 'candidates'
-        unique_together = (('user', 'cycle'),)
+        db_table = 'users'
+
+
+class Usergroups(models.Model):
+    description = models.CharField(max_length=255, blank=True, null=True)
+    name = models.CharField(unique=True, max_length=255)
+
+    class Meta:
+        managed = False
+        db_table = 'usergroups'
+
+
+class UserUsergroups(models.Model):
+    pk = models.CompositePrimaryKey('usergroup_id', 'user_id')
+    usergroup = models.ForeignKey(Usergroups, models.DO_NOTHING)
+    user = models.ForeignKey(Users, models.DO_NOTHING)
+
+    class Meta:
+        managed = False
+        db_table = 'user_usergroups'
 
 
 class Cycles(models.Model):
@@ -101,6 +96,10 @@ class Cycles(models.Model):
     sparring = models.FloatField()
     title = models.CharField(max_length=255)
 
+    class Meta:
+        managed = False
+        db_table = 'cycles'
+
     @property
     def cycle_days(self) -> int:
         return (self.cycle_end - self.cycle_start).days + 1
@@ -118,28 +117,44 @@ class Cycles(models.Model):
     def cycle_week_of(self, cycle_date: date = date.today()) -> CycleWeek:
         return self.cycle_week((cycle_date - self.cycle_start).days // 7)
 
-    class Meta:
-        managed = False
-        db_table = 'cycles'
 
-
-class JournalPosts(models.Model):
-    alias = models.CharField(max_length=255)
-    content = models.TextField(blank=True, null=True)
+class Candidates(models.Model):
+    audit = models.TextField()  # This field type is a guess.
+    belt_rank = models.IntegerField()
+    cycle_cont = models.IntegerField()
+    essays = models.IntegerField()
+    exam_written = models.FloatField()
+    hidden = models.TextField()  # This field type is a guess.
+    letters = models.IntegerField()
     created = models.DateTimeField(blank=True, null=True)
     created_by = models.CharField(max_length=255, blank=True, null=True)
     modified = models.DateTimeField(blank=True, null=True)
     modified_by = models.CharField(max_length=255, blank=True, null=True)
-    published = models.TextField()  # This field type is a guess.
-    title = models.CharField(max_length=255)
+    exam_burpees = models.IntegerField()
+    exam_planks = models.IntegerField()
+    exam_pull_ups = models.IntegerField()
+    exam_push_ups = models.IntegerField()
+    exam_run = models.FloatField()
+    exam_sit_ups = models.IntegerField()
+    pre_exam_burpees = models.IntegerField()
+    pre_exam_planks = models.IntegerField()
+    pre_exam_pull_ups = models.IntegerField()
+    pre_exam_push_ups = models.IntegerField()
+    pre_exam_run = models.FloatField()
+    pre_exam_sit_ups = models.IntegerField()
+    poom = models.TextField()  # This field type is a guess.
+    pre_exam_written = models.FloatField()
+    status = models.IntegerField()
+    cycle = models.ForeignKey(Cycles, models.DO_NOTHING)
+    user = models.ForeignKey('AuthUser', models.DO_NOTHING)
 
     class Meta:
         managed = False
-        db_table = 'journal_posts'
+        db_table = 'candidates'
+        unique_together = (('user', 'cycle'),)
 
 
 class Tracking(models.Model):
-    pk = models.CompositePrimaryKey('candidate_id', 'tracking_date')
     tracking_date = models.DateField()
     burpees = models.IntegerField()
     class_dream_team = models.IntegerField()
@@ -176,34 +191,19 @@ class Tracking(models.Model):
     class Meta:
         managed = False
         db_table = 'tracking'
+        unique_together = (('candidate', 'tracking_date'),)
 
 
-class UserUsergroups(models.Model):
-    pk = models.CompositePrimaryKey('usergroup_id', 'user_id')
-    usergroup = models.ForeignKey('Usergroups', models.DO_NOTHING)
-    user = models.ForeignKey('Users', models.DO_NOTHING)
-
-    class Meta:
-        managed = False
-        db_table = 'user_usergroups'
-
-
-class Usergroups(models.Model):
-    description = models.CharField(max_length=255, blank=True, null=True)
-    name = models.CharField(unique=True, max_length=255)
+class JournalPosts(models.Model):
+    alias = models.CharField(max_length=255)
+    content = models.TextField(blank=True, null=True)
+    created = models.DateTimeField(blank=True, null=True)
+    created_by = models.CharField(max_length=255, blank=True, null=True)
+    modified = models.DateTimeField(blank=True, null=True)
+    modified_by = models.CharField(max_length=255, blank=True, null=True)
+    published = models.TextField()  # This field type is a guess.
+    title = models.CharField(max_length=255)
 
     class Meta:
         managed = False
-        db_table = 'usergroups'
-
-
-class Users(models.Model):
-    display_name = models.CharField(max_length=255, blank=True, null=True)
-    email = models.CharField(max_length=255)
-    email_verified = models.TextField()  # This field type is a guess.
-    photo_url = models.CharField(max_length=255, blank=True, null=True)
-    user_id = models.CharField(unique=True, max_length=255)
-
-    class Meta:
-        managed = False
-        db_table = 'users'
+        db_table = 'journal_posts'

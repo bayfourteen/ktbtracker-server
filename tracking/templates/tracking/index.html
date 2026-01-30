@@ -40,7 +40,12 @@
             </td>
             {% for tracking in tracking_data %}
             {% cycle 'bg-body-tertiary' '' as bg_color silent %}
-            <td class="{% if tracking.tracking_date == today %}table-info{% else %}{{ bg_color }}{% endif %}">
+            <td class="{% if tracking.tracking_date == today %}table-info{% else %}{{ bg_color }}{% endif %}"
+                data-bs-toggle="modal"
+                data-bs-target="#tracking-editor-modal"
+                hx-get="{% url 'tracking:editor' %}{% querystring trackingDate=tracking.tracking_date|date:'Y-m-d' %}"
+                hx-target="#tracking-editor"
+                hx-swap="innerHTML">
                 <div class="media align-items-center justify-content-between">
                     <div class="text-center">
                         <strong class="text-center">
@@ -58,22 +63,6 @@
                             {{ tracking.tracking_date|date:'SHORT_DATE_FORMAT' }}
                         </small>
                     </span>
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                            data-bs-target="#tracking-{{ tracking.tracking_date|date:'Y-m-d' }}-editor-modal"
-                            hx-get="{% url 'tracking:editor' %}{% querystring trackingDate=tracking.tracking_date|date:'Y-m-d' %}"
-                            hx-target="#tracking-{{ tracking.tracking_date|date:'Y-m-d' }}-editor"
-                            hx-swap="innerHTML">
-                        <i class="bi bi-pencil-square"></i>
-                    </button>
-                    <div class="modal fade"
-                         id="tracking-{{ tracking.tracking_date|date:'Y-m-d' }}-editor-modal"
-                         data-bs-backdrop="static"
-                         data-bs-keyboard="false"
-                         tabindex="-1" aria-labelledby="tracking-{{ tracking.tracking_date|date:'Y-m-d' }}-editor-label" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" id="tracking-{{ tracking.tracking_date|date:'Y-m-d' }}-editor">
-                            {% with tracking=tracking %}{% include 'tracking/editor.html' %}{% endwith %}
-                        </div>
-                    </div>
                 </div>
             </td>
             {% endfor %}
@@ -113,7 +102,7 @@
                 data-bs-toggle="modal"
                 data-bs-target="#tracking-editor-modal"
                 hx-get="{% url 'tracking:editor' %}{% querystring trackingDate=tracking.tracking_date|date:'Y-m-d' %}"
-                hx-target="#tracking-{{ tracking.tracking_date|date:'Y-m-d' }}-editor"
+                hx-target="#tracking-editor"
                 hx-swap="innerHTML">
             {% if name|slice:':6' == 'class_' %}
                 <i class="{% if tracking|keyof:'tracking_date'|available:name %}bi bi-{% if tracking|keyof:name > 0 %}check-lg{% else %}x-lg{% endif %}{% endif %}"></i>
@@ -139,7 +128,7 @@
                         {% endblocktrans %}
                     </title>
                     <circle class="ProgressCircle" r="16" cx="16" cy="16"
-                            style="stroke-dasharray: {{ cycle_statistics.statistics|keyof:name|pct|floatformat:0 }} 100; stroke: {{ cycle_statistics.statistics|keyof:name|pct_color }};">
+                            style="stroke-dasharray:{{ cycle_statistics.statistics|keyof:name|pct|floatformat:0 }} 100; stroke:{{ cycle_statistics.statistics|keyof:name|pct_color }};">
                     </circle>
                 </svg>
             </td>
@@ -148,5 +137,32 @@
         {% endfor %}
         </tbody>
     </table>
+    <div class="modal fade"
+         id="tracking-editor-modal"
+         data-bs-backdrop="static"
+         data-bs-keyboard="false"
+         tabindex="-1" aria-labelledby="tracking-editor-label" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" id="tracking-editor">
+            {% include 'tracking/editor.html' %}
+        </div>
+    </div>
 </div>
+<script>
+  function closeModal(event) {
+    // Check if the request was successful (e.g., HTTP status 2xx)
+    if (event.detail.xhr.status >= 200 && event.detail.xhr.status < 300) {
+      // Get the modal element
+      var myModalEl = document.getElementById('tracking-editor-modal');
+      // Get the Bootstrap modal instance
+      var modal = bootstrap.Modal.getInstance(myModalEl);
+      // Hide the modal
+      modal.hide();
+
+      // Optional: Clear modal content after it's hidden to prevent stale data
+      myModalEl.addEventListener('hidden.bs.modal', function (e) {
+        document.getElementById('tracking-editor').innerHTML = '';
+      }, {once: true}); // Use {once: true} to ensure the event listener runs only once
+    }
+  }
+</script>
 {% endblock %}

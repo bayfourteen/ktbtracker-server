@@ -2,12 +2,14 @@ import logging
 from collections import OrderedDict
 from datetime import date, timedelta, datetime
 from operator import itemgetter
+from typing import Any
 
 from django.forms.models import model_to_dict
 from django.http import HttpResponse, HttpRequest
 from django.shortcuts import render
 from django.template import loader
 from django.utils.translation import gettext_lazy as _
+from django.views.generic import FormView
 
 from config.requirements import RequirementsConfig
 from core.models import Tracking, Cycles, Candidates, CycleWeek
@@ -119,5 +121,38 @@ def editor(request: HttpRequest):
             "candidate": candidate,
             "form": form
         }
-        logger.info(f"TrackinForm.fields={form.fields}")
+        logger.info(f"TrackingForm.fields={form.fields}")
         return HttpResponse(template.render(context, request))
+
+
+class TrackingFormView(FormView):
+    template_name = "tracking/editor.html"
+    form_class = TrackingForm
+
+    def get_initial(self):
+        candidate = Candidates.objects.filter(id=691).first()
+
+        # Process any query parameters...
+        tracking_date = datetime.strptime(self.request.GET.get("trackingDate"), "%Y-%m-%d").date() if self.request.GET.get("trackingDate") else date.today()
+
+        try:
+            tracking = Tracking.objects.get(tracking_date=tracking_date, candidate=candidate)
+        except Tracking.DoesNotExist:
+            tracking = Tracking(candidate=candidate, tracking_date=tracking_date)
+
+        return model_to_dict(tracking)
+
+    def get_form_kwargs(self):
+        # Process any query parameters...
+
+        candidate = Candidates.objects.filter(id=691).first()
+
+        # Add additional keywords to initialize the ModelForm
+        kwargs = super(TrackingFormView, self).get_form_kwargs()
+        kwargs.update(cycle=candidate.cycle)
+
+        return kwargs
+
+    def form_valid(self, form: TrackingForm):
+        logger.info(f"TrackingForm.form_valid({form.fields})")
+        return super().form_valid(form)
