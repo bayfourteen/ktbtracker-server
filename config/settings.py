@@ -99,6 +99,7 @@ DATABASES = {
 #
 
 AUTHENTICATION_BACKENDS = [
+    'core.auth.joomla.JoomlaAuthBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
 
@@ -164,6 +165,10 @@ STATICFILES_DIRS = [
 ]
 
 
+LOGIN_REDIRECT_URL = '/' # Redirect to home page after login
+LOGIN_URL = '/login'
+
+
 # Logging
 # https://docs.djangoproject.com/en/6.0/howto/logging/
 
@@ -171,18 +176,84 @@ LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
 
+    "formatters": {
+        "simple": {
+            "format": "[%(asctime)s] [%(levelname)-8s] [%(name)s] %(message)s",
+        },
+        "verbose": {
+            "format": "[%(asctime)s] [%(levelname)-8s] [%(name)s] %(message)s (%(filename)s:%(lineno)s)",
+        },
+        "call_trace": {
+            "format": "[%(asctime)s] [%(levelname)-8s] %(message)s (%(pathname)s:%(lineno)s)",
+        }
+    },
+
     "handlers": {
+        "console": {
+            "level": "DEBUG",
+            "formatter": "simple",
+            "class": "logging.StreamHandler",
+        },
         "file": {
+            "level": "DEBUG",
+            "formatter": "verbose",
+            "class": "logging.FileHandler",
+            "filename": "general.log",
+        },
+        "call_trace": {
+            "level": "DEBUG",
+            "formatter": "call_trace",
             "class": "logging.FileHandler",
             "filename": "general.log",
         },
     },
 
+    "root": {
+        "level": "INFO",
+        "handlers": ["console", "file"],
+    },
+
     "loggers": {
-        "": {
+        "core": {
             "level": "DEBUG",
+            "formatter": "verbose",
+            "handlers": ["console", "file"],
+        },
+        "tracking": {
+            "level": "DEBUG",
+            "formatter": "verbose",
+            "handlers": ["console", "file"],
+        },
+        "call_trace": {
+            "level": "DEBUG",
+            "formatter": "call_trace",
             "handlers": ["file"],
         },
+        "django": {
+            "level": "ERROR",
+            "formatter": "verbose",
+            "handlers": ["file"],
+        },
+        "django.db": {
+            "level": "DEBUG",
+            "formatter": "verbose",
+            "handlers": ["file"],
+        },
+        "django.auth": {
+            "level": "DEBUG",
+            "formatter": "verbose",
+            "handlers": ["file"],
+        },
+        "django.request": {
+            "level": "DEBUG",
+            "formatter": "verbose",
+            "handlers": ["file"],
+        },
+        "django.server": {
+            "level": "INFO",
+            "formatter": "verbose",
+            "handlers": ["file"],
+        }
     },
 }
 

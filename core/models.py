@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from datetime import date, timedelta
 from pathlib import Path
 
+from django.contrib.auth.models import User
 from django.db import models
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -146,7 +147,7 @@ class Candidates(models.Model):
     pre_exam_written = models.FloatField()
     status = models.IntegerField()
     cycle = models.ForeignKey(Cycles, models.DO_NOTHING)
-    user = models.ForeignKey('AuthUser', models.DO_NOTHING)
+    user = models.ForeignKey(User, models.DO_NOTHING)
 
     class Meta:
         managed = False

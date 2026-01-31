@@ -13,7 +13,7 @@
     <link href="{% static '/css/style.css' %}" rel="stylesheet">
 </head>
 <body class="{% if page_background %}{{ page_background }}{% else %}bg-body-tertiary{% endif %}">
-{% include '_layout/header.html' %}
+{% include 'header.html' %}
 <main class="container">
     {% block content %}{% endblock content %}
 </main>

@@ -1,4 +1,5 @@
 {% load static %}
+{% load i18n %}
 {% load core_filters %}
 <nav class="navbar navbar-expand-lg sticky-top bg-dark border-bottom border-body" data-bs-theme="dark">
     <div class="container-fluid">
@@ -7,7 +8,7 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbar-toggler">
-            <a class="navbar-brand" href="/">
+            <a class="navbar-brand" href="/static">
                 <img src="{% static '/images/ktb-logo-dark.png' %}" alt="" width="auto" height="50"
                      class="d-inline-block align-text-middle">
                 {{ _('Black Belt Cycle') }}
@@ -15,7 +16,7 @@
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
                     <a class="nav-link{% path_active '/log' emit=' disabled' %}{% path_active '' '/' %}" aria-current="page"
-                       href="/">{{ _('Home') }}</a>
+                       href="/static">{{ _('Home') }}</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link{% path_active '/log' emit=' disabled' %}{% path_active '/tracking' %}" {% path_active '/log' emit='aria-disabled="true"' %}
@@ -44,7 +45,7 @@
                     </ul>
                 </li>
             </ul>
-            {% include '_layout/color-modes.html' %}
+            {% include 'color-modes.html' %}
             <a class="" href="/log{% if not is_authenticated %}in{% else %}out{% endif %}?next_url={{ request.path|escape }}">
                 <button class="btn btn-outline-{% if not is_authenticated %}success{% else %}danger{% endif %}{% path_active '/log' emit=' d-none' %}" type="submit">
                     {% if not is_authenticated %}{{ _('Login') }}{% else %}{{ _('Logout') }}{% endif %}

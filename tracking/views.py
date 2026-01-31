@@ -4,6 +4,7 @@ from datetime import date, timedelta, datetime
 from operator import itemgetter
 from typing import Any
 
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.forms.models import model_to_dict
 from django.http import HttpResponse, HttpRequest
 from django.shortcuts import render
@@ -12,6 +13,7 @@ from django.utils.translation import gettext_lazy as _
 from django.views.generic import FormView
 
 from config.requirements import RequirementsConfig
+from core import debug
 from core.models import Tracking, Cycles, Candidates, CycleWeek
 from tracking.forms import TrackingForm
 from tracking.models import TrackingStatistics, TrackingFullStatistics
@@ -125,10 +127,11 @@ def editor(request: HttpRequest):
         return HttpResponse(template.render(context, request))
 
 
-class TrackingFormView(FormView):
+class TrackingFormView(LoginRequiredMixin, FormView):
     template_name = "tracking/editor.html"
     form_class = TrackingForm
 
+    @debug
     def get_initial(self):
         candidate = Candidates.objects.filter(id=691).first()
 
