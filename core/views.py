@@ -2,14 +2,14 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.views import LoginView
 from django.shortcuts import render
 
-from core.forms import AccountsLoginForm
+from core.forms import CoreAuthenticationForm
 
 
 # Create your views here.
 
 class AccountsLoginView(LoginView):
     template_name = "accounts/login.html"
-    form_class = AccountsLoginForm
+    form_class = CoreAuthenticationForm
 
     def get_context_data(self, **kwargs):
 

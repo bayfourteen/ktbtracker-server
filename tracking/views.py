@@ -58,13 +58,18 @@ def calculate_full_statistics(candidate: Candidates):
 def index(request: HttpRequest):
     # Process any query parameters...
     week = request.GET.get("week")
+    canid = request.GET.get("canid")
     tracking_date = request.GET.get("trackingDate")
     tracking_date = datetime.strptime(tracking_date, "%Y-%m-%d").date() if tracking_date else None
 
     template = loader.get_template("tracking/index.html")
     cycle = Cycles.objects.filter(id=36).first()
-    candidate = Candidates.objects.filter(id=691).first()
 
+    if canid:
+        candidate = Candidates.objects.filter(id=int(canid)).first()
+    else:
+        candidate = Candidates.objects.filter(user__id=request.user.id).order_by("-id").first()
+    logger.info(f"{canid=} {request.user=} {candidate=}")
     tracking_week = cycle.cycle_week(int(week)) if week else cycle.cycle_week_of(tracking_date or date.today())
     tracking_day = cycle.cycle_day(tracking_week.start)
     tracking_query = Tracking.objects.filter(
@@ -79,6 +84,7 @@ def index(request: HttpRequest):
             tracking_data.append(tracking_query.get(tracking_date=tracking_date))
         else:
             tracking_data.append(Tracking(candidate=candidate, tracking_date=tracking_date))
+
 
     context = {
         "TRACKING_NAMES": TRACKING_NAMES,
@@ -131,28 +137,41 @@ class TrackingFormView(LoginRequiredMixin, FormView):
     template_name = "tracking/editor.html"
     form_class = TrackingForm
 
+    @property
+    def _candidate(self) -> Candidates:
+        # Determine the most recent candidate (or candidate chosen by a staff member)...
+        if self.request.user.is_staff and self.request.GET.get("canid") and self.request.GET.get("canid").isdigit():
+            return Candidates.objects.get(id=int(self.request.GET.get("canid")))
+        else:
+            return Candidates.objects.filter(user__id=self.request.user.id).order_by("-id").first()
+
+    @property
+    def _cycle(self) -> Cycles:
+        # Determine the most recent cycle (or cycle chosen by a staff member)...
+        if self.request.user.is_staff and self.request.GET.get("cycle") and self.request.GET.get("cycle").isdigit():
+            return Cycles.objects.get(id=int(self.request.GET.get("cycle")))
+        else:
+            return Cycles.objects.all().order_by("-id").first()
+
+    @property
+    def _tracking_date(self) -> date:
+        if self.request.GET.get("trackingDate"):
+            return datetime.strptime(self.request.GET.get("trackingDate"), "%Y-%m-%d").date()
+        return date.today()
+
     @debug
     def get_initial(self):
-        candidate = Candidates.objects.filter(id=691).first()
-
-        # Process any query parameters...
-        tracking_date = datetime.strptime(self.request.GET.get("trackingDate"), "%Y-%m-%d").date() if self.request.GET.get("trackingDate") else date.today()
-
         try:
-            tracking = Tracking.objects.get(tracking_date=tracking_date, candidate=candidate)
+            tracking = Tracking.objects.get( candidate=self._candidate, tracking_date=self._tracking_date)
         except Tracking.DoesNotExist:
-            tracking = Tracking(candidate=candidate, tracking_date=tracking_date)
+            tracking = Tracking(candidate=self._candidate, tracking_date=self._tracking_date)
 
         return model_to_dict(tracking)
 
     def get_form_kwargs(self):
-        # Process any query parameters...
-
-        candidate = Candidates.objects.filter(id=691).first()
-
         # Add additional keywords to initialize the ModelForm
         kwargs = super(TrackingFormView, self).get_form_kwargs()
-        kwargs.update(cycle=candidate.cycle)
+        kwargs.update(cycle=self._cycle)
 
         return kwargs
 

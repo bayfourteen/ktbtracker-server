@@ -49,7 +49,7 @@
                                     </div>
                                     {% endif %}
                                 </div>
-                                <form action="/login" method="post" class="form-floating">
+                                <form action="{{ request.path }}" method="post" class="form-floating">
                                     <input type="hidden" name="next_url" value="{{ next_url }}">
                                     {% csrf_token %}
                                     {% crispy form %}

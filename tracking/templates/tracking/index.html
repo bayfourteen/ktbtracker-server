@@ -22,7 +22,11 @@
             </small>
         </div>
         <div class="d-flex align-items-center justify-content-center mx-3">
-            <strong style="font-variant: all-small-caps;">{{ candidate.user.display_name }}</strong>
+            <strong style="font-variant: all-small-caps;">{{ candidate.user.first_name }} {{ candidate.user.last_name }}</strong>
+            {% if user.is_staff or user.is_superuser %}
+            &nbsp;
+            <i class="bi bi-circle text-success"></i>
+            {% endif %}
         </div>
     </div>
 </div>

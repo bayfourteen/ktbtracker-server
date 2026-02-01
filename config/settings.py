@@ -165,8 +165,10 @@ STATICFILES_DIRS = [
 ]
 
 
-LOGIN_REDIRECT_URL = '/' # Redirect to home page after login
+LOGIN_REDIRECT_URL = '/tracking' # Redirect to home page after login
 LOGIN_URL = '/login'
+LOGOUT_REDIRECT_URL = '/login'
+LOGOUT_URL = '/logout'
 
 
 # Logging
@@ -235,7 +237,7 @@ LOGGING = {
             "handlers": ["file"],
         },
         "django.db": {
-            "level": "DEBUG",
+            "level": "ERROR",
             "formatter": "verbose",
             "handlers": ["file"],
         },

@@ -46,11 +46,16 @@
                 </li>
             </ul>
             {% include 'color-modes.html' %}
-            <a class="" href="/log{% if not is_authenticated %}in{% else %}out{% endif %}?next_url={{ request.path|escape }}">
-                <button class="btn btn-outline-{% if not is_authenticated %}success{% else %}danger{% endif %}{% path_active '/log' emit=' d-none' %}" type="submit">
-                    {% if not is_authenticated %}{{ _('Login') }}{% else %}{{ _('Logout') }}{% endif %}
-                </button>
+            {% if user.is_authenticated %}
+            <form action="{% url 'core:accounts-logout'%}" method="POST">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-outline-danger{% path_active '/log' emit=' d-none' %}">{{ _('Logout') }}</button>
+            </form>
+            {% else %}
+            <a href="{% url 'core:accounts-login' %}">
+                <button type="submit" class="btn btn-outline-success{% path_active '/log' emit=' d-none' %}">{{ _('Login') }} </button>
             </a>
+            {% endif %}
         </div>
 
     </div>
