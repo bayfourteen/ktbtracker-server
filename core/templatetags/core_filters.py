@@ -1,10 +1,11 @@
 import logging
 from datetime import date
+from typing import Any
 
-from django import forms
 from django.template import library, Context
 from django.template.defaultfilters import stringfilter
 
+from core.models import Tracking
 from tracking.forms import TrackingForm
 
 logger = logging.getLogger(__name__)
@@ -53,12 +54,11 @@ def percent(value: int | float) -> float:
 
 @register.filter
 def fractional(value: int | float) -> bool:
-    #logger.info(f"factional({value}) type={type(value)}")
     return type(value) == float
 
 
 @register.filter
-def format_number(value: int | float) -> int | float:
+def format_number(value: int | float) -> str:
     return str(value)
 
 
@@ -70,7 +70,6 @@ def tag_format_string(value: str, *args, **kwargs) -> str:
 
 @register.filter
 def available(value: date, field: str) -> bool:
-    #logger.info(f"available({value}, {field}) type={type(value)}, weekday={value.weekday()}")
     if value.weekday() < 6:
         if value.weekday() < 5:
             return field.startswith("class_") and field != "class_saturday"
@@ -163,3 +162,15 @@ def path_active(context: Context, *args: str | None, emit: str = " active") -> s
     if args and len(args) > 1:
         return emit if context.get("request") and context.get("request").path in [str(arg) for arg in args] else ""
     return ""
+
+
+@register.simple_tag(takes_context=True)
+def tracking_for_date(context: Context, *args: Any | None) -> Tracking:
+    object_list = context.get("object_list") or Tracking.objects.none()
+    candidate = context.get("candidate")
+    tracking_date = args[0] if args and isinstance(args[0], date) else date.today()
+
+    if object_list.filter(tracking_date=tracking_date).exists():
+        return object_list.get(tracking_date=tracking_date)
+
+    return Tracking(candidate=candidate, tracking_date=tracking_date)

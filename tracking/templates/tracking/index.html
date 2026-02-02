@@ -2,7 +2,7 @@
 {% load core_filters %}
 {% load i18n %}
 {% block content %}
-<div class="d-flex align-items-center justify-content-center p-3 my-3 rounded shadow-sm">
+<div class="d-flex align-items-center justify-content-center p-3 my-3 rounded shadow-sm bg-body">
     <div class="">
         <div class="text-center">
             <h1 class="d-block h3 mb-0" style="font-variant: small-caps;">{{ cycle.title|upper }}
@@ -25,7 +25,21 @@
             <strong style="font-variant: all-small-caps;">{{ candidate.user.first_name }} {{ candidate.user.last_name }}</strong>
             {% if user.is_staff or user.is_superuser %}
             &nbsp;
-            <i class="bi bi-circle text-success"></i>
+            <div class="dropdown">
+                <button class="btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-people-fill"></i>
+                </button>
+                <ul class="dropdown-menu" style="max-height:80rem;overflow-y:auto;">
+                    <li><a class="dropdown-item" href="{% querystring canid='' %}">-{{ _('Current User') }}-</a></li>
+                    {% for cycle_candidate in cycle_candidates %}
+                    <li>
+                        <a class="dropdown-item" href="{% querystring canid=cycle_candidate.id %}">
+                            {{ cycle_candidate.user.last_name }}, {{ cycle_candidate.user.first_name }}
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
             {% endif %}
         </div>
     </div>
@@ -35,15 +49,17 @@
         <thead>
         <tr>
             <td>
-                <a class="btn btn-primary" role="button"
+                <a class="btn" role="button"
                    href="{% url 'tracking:index' %}{% querystring week=tracking_week.week|sub:1|floatformat:0 %}"
                    title="{% blocktrans with week=tracking_week.week|sub:1|cycle_week %}Week {{ week }}{% endblocktrans %}">
-                    <i class="bi bi-calendar-range"></i>
                     {{ tracking_week.week|sub:1|cycle_week }}
+                    <i class="bi bi-box-arrow-in-left"></i>
+                    <i class="bi bi-calendar-range"></i>
                 </a>
             </td>
-            {% for tracking in tracking_data %}
-            {% cycle 'bg-body-tertiary' '' as bg_color silent %}
+            {% for tracking_date in tracking_week.dates %}
+            {% cycle 'normal bg-body-tertiary' 'normal' as bg_color silent %}
+            {% tracking_for_date tracking_date as tracking %}
             <td class="{% if tracking.tracking_date == today %}table-info{% else %}{{ bg_color }}{% endif %}"
                 data-bs-toggle="modal"
                 data-bs-target="#tracking-editor-modal"
@@ -73,10 +89,11 @@
             {% resetcycle %}
             <td></td>
             <td>
-                <a class="btn btn-primary" role="button"
+                <a class="btn" role="button"
                    href="{% url 'tracking:index' %}{% querystring week=tracking_week.week|add:1|floatformat:0 %}"
                    title="{% blocktrans with week=tracking_week.week|add:1|cycle_week %}Week {{ week }}{% endblocktrans %}">
                     <i class="bi bi-calendar-range"></i>
+                    <i class="bi bi-box-arrow-in-right"></i>
                     {{ tracking_week.week|add:1|cycle_week }}
                 </a>
             </td>
@@ -88,28 +105,29 @@
         <tr>
             <td>
                 {{ title }}
-                <div class="progress" role="progressbar" aria-valuenow="{{ statistics|keyof:name|pct|floatformat:0 }}"
+                <div class="progress" role="progressbar" aria-valuenow="{{ tracking_stats|keyof:name|pct|floatformat:0 }}"
                      aria-valuemin="0" aria-valuemax="100" style="height: 4px">
                     <div class="progress-bar"
-                         style="width:{{ statistics|keyof:name|pct|floatformat:0 }}%; background-color:{{ statistics|keyof:name|pct_color }};">
+                         style="width:{{ tracking_stats|keyof:name|pct|floatformat:0 }}%; background-color:{{ tracking_stats|keyof:name|pct_color }};">
                     </div>
                 </div>
                 <sup class="font-variant: all-small-caps; text-muted">
-                    {% blocktrans with progress=statistics|keyof:name|percent|floatformat:2 actual=totals|keyof:name|floatformat:-2 goal=cycle|keyof:name|div:cycle.cycle_weeks|floatformat:-2 %}
+                    {% blocktrans with progress=tracking_stats|keyof:name|percent|floatformat:2 actual=tracking_totals|keyof:name|floatformat:-2 goal=cycle|keyof:name|div:cycle.cycle_weeks|floatformat:-2 %}
                         Week {{ progress }}% ({{ actual }} / {{ goal }})
                     {% endblocktrans %}
                 </sup>
             </td>
-            {% for tracking in tracking_data %}
+            {% for tracking_date in tracking_week.dates %}
             {% cycle 'normal bg-body-tertiary' 'normal' as bg_color silent %}
-            <td class="fw-{% if tracking.tracking_date == today %}bold table-info{% else %}{{ bg_color }}{% endif %} text-end"
+            {% tracking_for_date tracking_date as tracking %}
+            <td class="fw-{% if tracking_date == today %}bold table-info{% else %}{{ bg_color }}{% endif %} text-end"
                 data-bs-toggle="modal"
                 data-bs-target="#tracking-editor-modal"
-                hx-get="{% url 'tracking:editor' %}{% querystring trackingDate=tracking.tracking_date|date:'Y-m-d' %}"
+                hx-get="{% url 'tracking:editor' %}{% querystring trackingDate=tracking_date|date:'Y-m-d' %}"
                 hx-target="#tracking-editor"
                 hx-swap="innerHTML">
             {% if name|slice:':6' == 'class_' %}
-                <i class="{% if tracking|keyof:'tracking_date'|available:name %}bi bi-{% if tracking|keyof:name > 0 %}check-lg{% else %}x-lg{% endif %}{% endif %}"></i>
+                <i class="{% if tracking.tracking_date|available:name %}bi bi-{% if tracking|keyof:name > 0 %}check-lg{% else %}x-lg{% endif %}{% endif %}"></i>
             {% else %}
                 {{ tracking|keyof:name|default:0 }}
             {% endif %}
@@ -119,7 +137,7 @@
             <td class="text-end">
                 <div>
                     <div>
-                        <span>{{ cycle_statistics.totals|keyof:name }}</span>
+                        <span>{{ cycle_totals|keyof:name }}</span>
                     </div>
                     <span class="d-block"><small>{{ cycle|keyof:name }}</small></span>
                 </div>
@@ -127,12 +145,12 @@
             <td>
                 <svg class="ProgressCircle" viewBox="0 0 32 32" style="height: 50px; width: 50px;">
                     <title>
-                        {% blocktrans with progress=cycle_statistics.statistics|keyof:name|percent|floatformat:2 %}
+                        {% blocktrans with progress=cycle_stats|keyof:name|percent|floatformat:2 %}
                             Overall {{ progress }}%
                         {% endblocktrans %}
                     </title>
                     <circle class="ProgressCircle" r="16" cx="16" cy="16"
-                            style="stroke-dasharray:{{ cycle_statistics.statistics|keyof:name|pct|floatformat:0 }} 100; stroke:{{ cycle_statistics.statistics|keyof:name|pct_color }};">
+                            style="stroke-dasharray:{{ cycle_stats|keyof:name|pct|floatformat:0 }} 100; stroke:{{ cycle_stats|keyof:name|pct_color }};">
                     </circle>
                 </svg>
             </td>

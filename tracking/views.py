@@ -5,12 +5,14 @@ from operator import itemgetter
 from typing import Any
 
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import QuerySet
 from django.forms.models import model_to_dict
 from django.http import HttpResponse, HttpRequest
 from django.shortcuts import render
 from django.template import loader
 from django.utils.translation import gettext_lazy as _
-from django.views.generic import FormView
+from django.views import View
+from django.views.generic import FormView, ListView
 
 from config.requirements import RequirementsConfig
 from core import debug
@@ -54,89 +56,7 @@ def calculate_full_statistics(candidate: Candidates):
         full_statistics[name] = [t.get(name, 0) for t in full_tracking]
 
 
-# Create your views here.
-def index(request: HttpRequest):
-    # Process any query parameters...
-    week = request.GET.get("week")
-    canid = request.GET.get("canid")
-    tracking_date = request.GET.get("trackingDate")
-    tracking_date = datetime.strptime(tracking_date, "%Y-%m-%d").date() if tracking_date else None
-
-    template = loader.get_template("tracking/index.html")
-    cycle = Cycles.objects.filter(id=36).first()
-
-    if canid:
-        candidate = Candidates.objects.filter(id=int(canid)).first()
-    else:
-        candidate = Candidates.objects.filter(user__id=request.user.id).order_by("-id").first()
-    logger.info(f"{canid=} {request.user=} {candidate=}")
-    tracking_week = cycle.cycle_week(int(week)) if week else cycle.cycle_week_of(tracking_date or date.today())
-    tracking_day = cycle.cycle_day(tracking_week.start)
-    tracking_query = Tracking.objects.filter(
-        candidate=candidate,
-        tracking_date__gte=tracking_week.start,
-        tracking_date__lt=tracking_week.end + timedelta(days=1)
-    )
-    tracking_statistics = TrackingFullStatistics(candidate)
-    tracking_data = []
-    for tracking_date in [tracking_week.start + timedelta(days=n) for n in range(0, len(tracking_week.days))]:
-        if tracking_query.filter(tracking_date=tracking_date).exists():
-            tracking_data.append(tracking_query.get(tracking_date=tracking_date))
-        else:
-            tracking_data.append(Tracking(candidate=candidate, tracking_date=tracking_date))
-
-
-    context = {
-        "TRACKING_NAMES": TRACKING_NAMES,
-        "cycle": cycle,
-        "candidate": candidate,
-        "tracking_date": (tracking_date or date.today()).isoformat(),
-        "tracking_week": tracking_week,
-        "tracking_data": [model_to_dict(e) for e in tracking_data],
-        "statistics": tracking_statistics.weeks[tracking_week.week].statistics,
-        "totals": tracking_statistics.weeks[tracking_week.week].totals,
-        "cycle_statistics": tracking_statistics.cycle,
-        "today": date.today(),
-    }
-
-    return HttpResponse(template.render(context, request))
-
-
-def editor(request: HttpRequest):
-    template = loader.get_template("tracking/editor.html")
-    cycle = Cycles.objects.filter(id=36).first()
-    candidate = Candidates.objects.filter(id=691).first()
-
-    if request.method == "POST":
-        pass
-
-    else:
-        # Process any query parameters...
-        candidate_id = request.GET.get("canid")
-        tracking_date = request.GET.get("trackingDate")
-        tracking_date = datetime.strptime(tracking_date, "%Y-%m-%d").date() if tracking_date else None
-
-        try:
-            tracking = Tracking.objects.get(tracking_date=tracking_date, candidate=candidate)
-        except Tracking.DoesNotExist:
-            tracking = Tracking(candidate=candidate, tracking_date=tracking_date)
-
-        form = TrackingForm(instance=tracking, cycle=cycle)
-
-        context = {
-            "TRACKING_NAMES": TRACKING_NAMES,
-            "cycle": cycle,
-            "candidate": candidate,
-            "form": form
-        }
-        logger.info(f"TrackingForm.fields={form.fields}")
-        return HttpResponse(template.render(context, request))
-
-
-class TrackingFormView(LoginRequiredMixin, FormView):
-    template_name = "tracking/editor.html"
-    form_class = TrackingForm
-
+class TrackingBaseView(View):
     @property
     def _candidate(self) -> Candidates:
         # Determine the most recent candidate (or candidate chosen by a staff member)...
@@ -158,6 +78,52 @@ class TrackingFormView(LoginRequiredMixin, FormView):
         if self.request.GET.get("trackingDate"):
             return datetime.strptime(self.request.GET.get("trackingDate"), "%Y-%m-%d").date()
         return date.today()
+
+    @property
+    def _week(self) -> int | None:
+        if self.request.GET.get("week") and self.request.GET.get("week").isdigit():
+            return int(self.request.GET.get("week"))
+        return None
+
+
+class TrackingListView(LoginRequiredMixin, TrackingBaseView, ListView):
+    template_name = "tracking/index.html"
+    model = Tracking
+
+    def get_queryset(self) -> QuerySet:
+        tracking_week = self._cycle.cycle_week(self._week) if self._week else self._cycle.cycle_week_of(self._tracking_date)
+
+        return Tracking.objects.filter(
+            candidate=self._candidate,
+            tracking_date__gte=tracking_week.start,
+            tracking_date__lt=tracking_week.end + timedelta(days=1)
+        )
+
+    def get_context_data(self, *, object_list = ..., **kwargs):
+        tracking_week = self._cycle.cycle_week(self._week) if self._week else self._cycle.cycle_week_of(self._tracking_date)
+        tracking_statistics = TrackingFullStatistics(self._candidate)
+        cycle_candidates = Candidates.objects.filter(cycle=self._cycle).order_by("user__last_name", "user__first_name").all()
+
+        context = super().get_context_data(**kwargs)
+        context.update(
+            TRACKING_NAMES=TRACKING_NAMES,
+            cycle = self._cycle,
+            candidate = self._candidate,
+            tracking_week=tracking_week,
+            tracking_stats=tracking_statistics.weeks[tracking_week.week].statistics,
+            tracking_totals=tracking_statistics.weeks[tracking_week.week].totals,
+            cycle_stats=tracking_statistics.cycle.statistics,
+            cycle_totals=tracking_statistics.cycle.totals,
+            cycle_candidates=cycle_candidates,
+            today=date.today(),
+        )
+
+        return context
+
+
+class TrackingFormView(LoginRequiredMixin, TrackingBaseView, FormView):
+    template_name = "tracking/editor.html"
+    form_class = TrackingForm
 
     @debug
     def get_initial(self):
