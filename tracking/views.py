@@ -3,6 +3,7 @@ from collections import OrderedDict
 from datetime import date, timedelta, datetime
 from operator import itemgetter
 from typing import Any
+from zoneinfo import ZoneInfo
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import QuerySet
@@ -76,8 +77,12 @@ class TrackingBaseView(View):
     @property
     def _tracking_date(self) -> date:
         if self.request.GET.get("trackingDate"):
-            return datetime.strptime(self.request.GET.get("trackingDate"), "%Y-%m-%d").date()
-        return date.today()
+            try:
+                return datetime.fromisoformat(self.request.GET.get("trackingDate")).date()
+            except ValueError:
+                return datetime.now(ZoneInfo("America/New_York")).date()
+            # return datetime.strptime(self.request.GET.get("trackingDate"), "%Y-%m-%d").date()
+        return datetime.now(ZoneInfo("America/New_York")).date()
 
     @property
     def _week(self) -> int | None:
@@ -95,8 +100,9 @@ class TrackingListView(LoginRequiredMixin, TrackingBaseView, ListView):
 
         return Tracking.objects.filter(
             candidate=self._candidate,
-            tracking_date__gte=tracking_week.start,
-            tracking_date__lt=tracking_week.end + timedelta(days=1)
+            tracking_date__range=(tracking_week.start, tracking_week.end),
+            #tracking_date__gte=tracking_week.start,
+            #tracking_date__lt=tracking_week.end + timedelta(days=1)
         )
 
     def get_context_data(self, *, object_list = ..., **kwargs):
@@ -115,7 +121,7 @@ class TrackingListView(LoginRequiredMixin, TrackingBaseView, ListView):
             cycle_stats=tracking_statistics.cycle.statistics,
             cycle_totals=tracking_statistics.cycle.totals,
             cycle_candidates=cycle_candidates,
-            today=date.today(),
+            today=datetime.now(ZoneInfo("America/New_York")).date(),
         )
 
         return context
