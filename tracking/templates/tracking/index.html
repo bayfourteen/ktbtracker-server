@@ -136,7 +136,7 @@
                         </div>
                         <small class="m-0 text-muted" style="font-variant: all-small-caps;">
                             {% blocktrans with progress=tracking_stats|keyof:name|percent|floatformat:2 actual=tracking_totals|keyof:name|floatformat:-2 goal=cycle|keyof:name|div:cycle.cycle_weeks|floatformat:-2 %}
-                                Week {{ progress }}% ({{ actual }} / {{ goal }})
+                                Weekly {{ progress }}% ({{ actual }} / {{ goal }})
                             {% endblocktrans %}
                         </small>
                     </div>

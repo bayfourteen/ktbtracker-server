@@ -134,11 +134,23 @@ class TrackingFormView(LoginRequiredMixin, TrackingBaseView, FormView):
     @debug
     def get_initial(self):
         try:
-            tracking = Tracking.objects.get( candidate=self._candidate, tracking_date=self._tracking_date)
+            tracking = Tracking.objects.get(candidate=self._candidate, tracking_date=self._tracking_date)
         except Tracking.DoesNotExist:
             tracking = Tracking(candidate=self._candidate, tracking_date=self._tracking_date)
 
         return model_to_dict(tracking)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context.update(
+            cycle = self._cycle,
+            candidate=self._candidate,
+            cycle_day=self._cycle.cycle_day(self._tracking_date),
+            tracking_date=self._tracking_date
+        )
+
+        return context
 
     def get_form_kwargs(self):
         # Add additional keywords to initialize the ModelForm

@@ -22,11 +22,14 @@ logger = logging.getLogger(__name__)
 
 
 class TrackingForm(forms.ModelForm):
+    tracking_date = forms.DateField(widget=forms.DateInput(attrs={"class": "datepicker"}))
 
     def __init__(self, *args, **kwargs):
         self.cycle = kwargs.pop("cycle", Cycles())
         super(TrackingForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
+
+        self.fields["tracking_date"] = forms.DateField(widget=forms.DateInput(attrs={"class": "datepicker"}))
 
         for name in [name for name in RequirementsConfig.PHYSICAL + RequirementsConfig.OTHER if getattr(self.cycle, name, 0) > 0]:
             logger.debug(f"Adding {name} {type(self.fields[name])} {isinstance(self.fields[name], fields.FloatField)}")
@@ -45,6 +48,7 @@ class TrackingForm(forms.ModelForm):
                         attrs=dict(**self.fields[name].widget.attrs, pattern=r"^\d+$")),
                     min_value=0,
                     step_size=1,
+                    initial=getattr(self.cycle, name, 0),
                     required=False
                 )
 
