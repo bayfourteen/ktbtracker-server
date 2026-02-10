@@ -10,7 +10,7 @@ from django.forms import fields
 from django.utils.translation import gettext_lazy as _
 
 from config.requirements import RequirementsConfig
-from core.models import Tracking, Cycles
+from core.models import Tracking, Cycle
 
 TRACKING_NAMES = OrderedDict(
     {e: _(e) for e in (RequirementsConfig.PHYSICAL + RequirementsConfig.CLASS + RequirementsConfig.OTHER)})
@@ -25,7 +25,7 @@ class TrackingForm(forms.ModelForm):
     tracking_date = forms.DateField(widget=forms.DateInput(attrs={"class": "datepicker"}))
 
     def __init__(self, *args, **kwargs):
-        self.cycle = kwargs.pop("cycle", Cycles())
+        self.cycle = kwargs.pop("cycle", Cycle())
         super(TrackingForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
 

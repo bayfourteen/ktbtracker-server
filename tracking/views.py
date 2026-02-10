@@ -17,7 +17,7 @@ from django.views.generic import FormView, ListView
 
 from config.requirements import RequirementsConfig
 from core import debug
-from core.models import Tracking, Cycles, Candidates, CycleWeek
+from core.models import Tracking, Cycle, Candidate, CycleWeek
 from tracking.forms import TrackingForm
 from tracking.models import TrackingStatistics, TrackingFullStatistics
 
@@ -27,7 +27,7 @@ TRACKING_NAMES = OrderedDict(
     {e: _(e) for e in (RequirementsConfig.PHYSICAL + RequirementsConfig.CLASS + RequirementsConfig.OTHER)})
 
 
-def calculate_tracking_totals(candidate: Candidates, cycle_week: CycleWeek | None = None) -> dict[str, float]:
+def calculate_tracking_totals(candidate: Candidate, cycle_week: CycleWeek | None = None) -> dict[str, float]:
     tracking_totals = {}
     candidate_tracking = Tracking.objects.filter(
         candidate=candidate,
@@ -41,12 +41,12 @@ def calculate_tracking_totals(candidate: Candidates, cycle_week: CycleWeek | Non
     return tracking_totals
 
 
-def calculate_statistics(candidate: Candidates, cycle_week: CycleWeek | None = None):
+def calculate_statistics(candidate: Candidate, cycle_week: CycleWeek | None = None):
     tracking_statistics = {}
     tracking_totals = calculate_tracking_totals(candidate, cycle_week)
 
 
-def calculate_full_statistics(candidate: Candidates):
+def calculate_full_statistics(candidate: Candidate):
     full_statistics = {}
     full_tracking = Tracking.objects.filter(
         candidate=candidate,
@@ -59,20 +59,20 @@ def calculate_full_statistics(candidate: Candidates):
 
 class TrackingBaseView(View):
     @property
-    def _candidate(self) -> Candidates:
+    def _candidate(self) -> Candidate:
         # Determine the most recent candidate (or candidate chosen by a staff member)...
         if self.request.user.is_staff and self.request.GET.get("canid") and self.request.GET.get("canid").isdigit():
-            return Candidates.objects.get(id=int(self.request.GET.get("canid")))
+            return Candidate.objects.get(id=int(self.request.GET.get("canid")))
         else:
-            return Candidates.objects.filter(user__id=self.request.user.id).order_by("-id").first()
+            return Candidate.objects.filter(user__id=self.request.user.id).order_by("-id").first()
 
     @property
-    def _cycle(self) -> Cycles:
+    def _cycle(self) -> Cycle:
         # Determine the most recent cycle (or cycle chosen by a staff member)...
         if self.request.user.is_staff and self.request.GET.get("cycle") and self.request.GET.get("cycle").isdigit():
-            return Cycles.objects.get(id=int(self.request.GET.get("cycle")))
+            return Cycle.objects.get(id=int(self.request.GET.get("cycle")))
         else:
-            return Cycles.objects.all().order_by("-id").first()
+            return Cycle.objects.all().order_by("-id").first()
 
     @property
     def _tracking_date(self) -> date:
@@ -108,7 +108,7 @@ class TrackingListView(LoginRequiredMixin, TrackingBaseView, ListView):
     def get_context_data(self, *, object_list = ..., **kwargs):
         tracking_week = self._cycle.cycle_week(self._week) if self._week else self._cycle.cycle_week_of(self._tracking_date)
         tracking_statistics = TrackingFullStatistics(self._candidate)
-        cycle_candidates = Candidates.objects.filter(cycle=self._cycle).order_by("user__last_name", "user__first_name").all()
+        cycle_candidates = Candidate.objects.filter(cycle=self._cycle).order_by("user__last_name", "user__first_name").all()
 
         context = super().get_context_data(**kwargs)
         context.update(

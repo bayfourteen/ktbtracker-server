@@ -6,7 +6,7 @@ from datetime import timedelta
 from django.utils.translation import gettext_lazy as _
 
 from config.requirements import RequirementsConfig
-from core.models import CycleWeek, Candidates, Tracking
+from core.models import CycleWeek, Candidate, Tracking
 
 TRACKING_NAMES = OrderedDict({e: _(e) for e in (RequirementsConfig.PHYSICAL + RequirementsConfig.CLASS + RequirementsConfig.OTHER)})
 
@@ -44,7 +44,7 @@ class TrackingFields:
 
 @dataclass
 class TrackingStatistics:
-    candidate: Candidates
+    candidate: Candidate
     cycle_week: CycleWeek | None = None
     overall: float = 0.0
     totals: TrackingFields = dataclasses.field(default_factory=TrackingFields)
@@ -78,7 +78,7 @@ class TrackingStatistics:
 
 @dataclass
 class TrackingFullStatistics:
-    candidate: Candidates
+    candidate: Candidate
     overall: float = 0.0
     cycle: TrackingStatistics = None
     weeks: list[TrackingStatistics] = dataclasses.field(default_factory=list)

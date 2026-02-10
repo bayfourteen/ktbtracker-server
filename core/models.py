@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from datetime import date, timedelta
 from pathlib import Path
 
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -27,79 +27,57 @@ class CycleWeek:
         return self.start + timedelta(days=6)
 
 
-class Users(models.Model):
-    display_name = models.CharField(max_length=255, blank=True, null=True)
-    email = models.CharField(max_length=255)
-    email_verified = models.TextField()  # This field type is a guess.
-    photo_url = models.CharField(max_length=255, blank=True, null=True)
-    user_id = models.CharField(unique=True, max_length=255)
-
-    class Meta:
-        managed = False
-        db_table = 'users'
+class User(AbstractUser):
+    pass
 
 
-class Usergroups(models.Model):
-    description = models.CharField(max_length=255, blank=True, null=True)
-    name = models.CharField(unique=True, max_length=255)
-
-    class Meta:
-        managed = False
-        db_table = 'usergroups'
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
 
 
-class UserUsergroups(models.Model):
-    pk = models.CompositePrimaryKey('usergroup_id', 'user_id')
-    usergroup = models.ForeignKey(Usergroups, models.DO_NOTHING)
-    user = models.ForeignKey(Users, models.DO_NOTHING)
-
-    class Meta:
-        managed = False
-        db_table = 'user_usergroups'
-
-
-class Cycles(models.Model):
+class Cycle(models.Model):
     alias = models.CharField(unique=True, max_length=255)
     cycle_end = models.DateField()
     cycle_post_end = models.DateField(blank=True, null=True)
     cycle_pre_start = models.DateField(blank=True, null=True)
     cycle_start = models.DateField()
     cycle_week_start = models.IntegerField()
-    created = models.DateTimeField(blank=True, null=True)
-    created_by = models.CharField(max_length=255, blank=True, null=True)
-    modified = models.DateTimeField(blank=True, null=True)
-    modified_by = models.CharField(max_length=255, blank=True, null=True)
     burpees = models.IntegerField()
-    class_dream_team = models.IntegerField()
-    class_hyper_pro = models.IntegerField()
-    class_master_q = models.IntegerField()
-    class_pmaa = models.IntegerField()
-    class_saturday = models.IntegerField()
-    class_sparring = models.IntegerField()
-    class_weekday = models.IntegerField()
-    journals = models.IntegerField()
-    jumps = models.FloatField()
-    kicks = models.IntegerField()
-    leadership = models.IntegerField()
-    leadership2 = models.IntegerField()
-    meditation = models.FloatField()
-    mentee = models.IntegerField()
-    mentor = models.IntegerField()
-    miles = models.FloatField()
-    planks = models.IntegerField()
-    poomsae = models.IntegerField()
-    pull_ups = models.IntegerField()
-    push_ups = models.IntegerField()
-    raok = models.IntegerField()
-    rolls_falls = models.IntegerField()
-    self_defense = models.IntegerField()
-    sit_ups = models.IntegerField()
-    sparring = models.FloatField()
+    class_dream_team = models.IntegerField(default=0)
+    class_hyper_pro = models.IntegerField(default=0)
+    class_master_q = models.IntegerField(default=0)
+    class_pmaa = models.IntegerField(default=0)
+    class_saturday = models.IntegerField(default=0)
+    class_sparring = models.IntegerField(default=0)
+    class_weekday = models.IntegerField(default=0)
+    journals = models.IntegerField(default=0)
+    jumps = models.FloatField(default=0)
+    kicks = models.IntegerField(default=0)
+    leadership = models.IntegerField(default=0)
+    leadership2 = models.IntegerField(default=0)
+    meditation = models.FloatField(default=0)
+    mentee = models.IntegerField(default=0)
+    mentor = models.IntegerField(default=0)
+    miles = models.FloatField(default=0)
+    planks = models.IntegerField(default=0)
+    poomsae = models.IntegerField(default=0)
+    pull_ups = models.IntegerField(default=0)
+    push_ups = models.IntegerField(default=0)
+    raok = models.IntegerField(default=0)
+    rolls_falls = models.IntegerField(default=0)
+    self_defense = models.IntegerField(default=0)
+    sit_ups = models.IntegerField(default=0)
+    sparring = models.FloatField(default=0)
     title = models.CharField(max_length=255)
+    # -- Metadata --
+    created = models.DateTimeField(blank=True, null=True)
+    created_by = models.IntegerField(default=0)
+    modified = models.DateTimeField(blank=True, null=True)
+    modified_by = models.IntegerField(null=True)
 
     class Meta:
         managed = False
-        db_table = 'cycles'
+        db_table = 'core_cycles'
 
     @property
     def cycle_days(self) -> int:
@@ -119,39 +97,41 @@ class Cycles(models.Model):
         return self.cycle_week((cycle_date - self.cycle_start).days // 7)
 
 
-class Candidates(models.Model):
-    audit = models.TextField()  # This field type is a guess.
-    belt_rank = models.IntegerField()
-    cycle_cont = models.IntegerField()
-    essays = models.IntegerField()
-    exam_written = models.FloatField()
-    hidden = models.TextField()  # This field type is a guess.
-    letters = models.IntegerField()
+class Candidate(models.Model):
+    audit = models.BooleanField(default=False) # This field type is a guess.
+    belt_rank = models.IntegerField(default=0)
+    cycle_cont = models.IntegerField(default=0)
+    essays = models.IntegerField(default=0)
+    exam_written = models.FloatField(default=0)
+    hidden = models.BooleanField(default=False) # This field type is a guess.
+    letters = models.IntegerField(default=0)
+    exam_burpees = models.IntegerField(default=0)
+    exam_planks = models.IntegerField(default=0)
+    exam_pull_ups = models.IntegerField(default=0)
+    exam_push_ups = models.IntegerField(default=0)
+    exam_run = models.FloatField(default=0)
+    exam_sit_ups = models.IntegerField(default=0)
+    pre_exam_burpees = models.IntegerField(default=0)
+    pre_exam_planks = models.IntegerField(default=0)
+    pre_exam_pull_ups = models.IntegerField(default=0)
+    pre_exam_push_ups = models.IntegerField(default=0)
+    pre_exam_run = models.FloatField(default=0)
+    pre_exam_sit_ups = models.IntegerField(default=0)
+    poom = models.BooleanField(default=False)  # This field type is a guess.
+    pre_exam_written = models.FloatField(default=0)
+    status = models.IntegerField(default=0)
+    # -- Metadata --
     created = models.DateTimeField(blank=True, null=True)
-    created_by = models.CharField(max_length=255, blank=True, null=True)
+    created_by = models.IntegerField(default=0)
     modified = models.DateTimeField(blank=True, null=True)
-    modified_by = models.CharField(max_length=255, blank=True, null=True)
-    exam_burpees = models.IntegerField()
-    exam_planks = models.IntegerField()
-    exam_pull_ups = models.IntegerField()
-    exam_push_ups = models.IntegerField()
-    exam_run = models.FloatField()
-    exam_sit_ups = models.IntegerField()
-    pre_exam_burpees = models.IntegerField()
-    pre_exam_planks = models.IntegerField()
-    pre_exam_pull_ups = models.IntegerField()
-    pre_exam_push_ups = models.IntegerField()
-    pre_exam_run = models.FloatField()
-    pre_exam_sit_ups = models.IntegerField()
-    poom = models.TextField()  # This field type is a guess.
-    pre_exam_written = models.FloatField()
-    status = models.IntegerField()
-    cycle = models.ForeignKey(Cycles, models.DO_NOTHING)
+    modified_by = models.IntegerField(null=True)
+    # -- ORM Relationships --
+    cycle = models.ForeignKey(Cycle, models.DO_NOTHING)
     user = models.ForeignKey(User, models.DO_NOTHING)
 
     class Meta:
         managed = False
-        db_table = 'candidates'
+        db_table = 'core_candidates'
         unique_together = (('user', 'cycle'),)
 
 
@@ -173,10 +153,6 @@ class Tracking(models.Model):
     meditation = models.FloatField(default=0)
     mentee = models.IntegerField(default=0)
     mentor = models.IntegerField(default=0)
-    created = models.DateTimeField(blank=True, null=True)
-    created_by = models.CharField(max_length=255, blank=True, null=True)
-    modified = models.DateTimeField(blank=True, null=True)
-    modified_by = models.CharField(max_length=255, blank=True, null=True)
     miles = models.FloatField(default=0)
     planks = models.IntegerField(default=0)
     poomsae = models.IntegerField(default=0)
@@ -187,24 +163,31 @@ class Tracking(models.Model):
     self_defense = models.IntegerField(default=0)
     sit_ups = models.IntegerField(default=0)
     sparring = models.FloatField(default=0)
-    candidate = models.ForeignKey(Candidates, models.DO_NOTHING)
+    # -- Metadata --
+    created = models.DateTimeField(blank=True, null=True)
+    created_by = models.IntegerField(default=0)
+    modified = models.DateTimeField(blank=True, null=True)
+    modified_by = models.IntegerField(null=True)
+    # -- ORM Relationships --
+    candidate = models.ForeignKey(Candidate, models.DO_NOTHING)
 
     class Meta:
         managed = False
-        db_table = 'tracking'
+        db_table = 'core_tracking'
         unique_together = (('candidate', 'tracking_date'),)
 
 
-class JournalPosts(models.Model):
-    alias = models.CharField(max_length=255)
-    content = models.TextField(blank=True, null=True)
-    created = models.DateTimeField(blank=True, null=True)
-    created_by = models.CharField(max_length=255, blank=True, null=True)
-    modified = models.DateTimeField(blank=True, null=True)
-    modified_by = models.CharField(max_length=255, blank=True, null=True)
-    published = models.TextField()  # This field type is a guess.
+class JournalPost(models.Model):
     title = models.CharField(max_length=255)
+    alias = models.CharField(max_length=255)
+    published = models.BooleanField(default=False)  # This field type is a guess.
+    content = models.TextField(blank=True, null=True)
+    # -- Metadata --
+    created = models.DateTimeField(blank=True, null=True)
+    created_by = models.IntegerField(default=0)
+    modified = models.DateTimeField(blank=True, null=True)
+    modified_by = models.IntegerField(null=True)
 
     class Meta:
         managed = False
-        db_table = 'journal_posts'
+        db_table = 'core_journal_posts'
