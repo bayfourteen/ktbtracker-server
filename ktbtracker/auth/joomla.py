@@ -3,9 +3,10 @@ from hashlib import md5
 
 import bcrypt
 from django.contrib.auth.backends import ModelBackend, BaseBackend
+from django.contrib.auth.hashers import BasePasswordHasher
 from django.contrib.auth.models import User
 
-from core import debug
+from ktbtracker import debug
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +25,7 @@ def check_joomla_password(password: str, hashed_password: str) -> bool:
     # Handle Bcrypt (Blowfish) hashes...
     if hashed_password.startswith("$2y$"):
         password_bytes = password.encode('utf-8')
-        hashed_bytes = hashed_password.strip("$2y$").encode('utf-8')
+        hashed_bytes = hashed_password.strip("$2y$").split("$")[1].encode('utf-8')
 
         return bcrypt.checkpw(password_bytes, hashed_bytes)
 
@@ -39,6 +40,25 @@ def check_joomla_password(password: str, hashed_password: str) -> bool:
 
     return False
 
+
+class JoomlaPasswordHasher(BasePasswordHasher):
+    algorithm = '$2y$'
+
+    @debug
+    def encode(self, password: str) -> str:
+        return md5(password.encode('utf-8')).hexdigest()
+
+    @debug
+    def verify(self, password: str, hashed_password: str) -> bool:
+        return check_joomla_password(password, hashed_password)
+
+    def safe_summary(self, encoded):
+        encoded = encoded.encode('utf-8')
+        encoded = encoded.replace(' ', '')
+        encoded = encoded.replace('\n', '')
+        encoded = encoded.replace('\r', '')
+        encoded = encoded.replace('\t', '')
+        return encoded
 
 class JoomlaAuthBackend(ModelBackend):
     @debug

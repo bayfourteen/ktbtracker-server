@@ -1,25 +1,19 @@
 import logging
 from collections import OrderedDict
 from datetime import date, timedelta, datetime
-from operator import itemgetter
-from typing import Any
 from zoneinfo import ZoneInfo
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import QuerySet
 from django.forms.models import model_to_dict
-from django.http import HttpResponse, HttpRequest
-from django.shortcuts import render
-from django.template import loader
 from django.utils.translation import gettext_lazy as _
 from django.views import View
 from django.views.generic import FormView, ListView
 
 from config.requirements import RequirementsConfig
 from ktbtracker import debug
-from ktbtracker.models import Tracking, Cycle, Candidate, CycleWeek
-from tracking.forms import TrackingForm
-from tracking.models import TrackingStatistics, TrackingFullStatistics
+from ktbtracker.forms import TrackingForm
+from ktbtracker.models import Candidate, Cycle, CycleWeek, Tracking, TrackingFullStatistics
 
 logger = logging.getLogger(__name__)
 

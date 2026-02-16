@@ -5,7 +5,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.utils.translation import gettext_lazy as _
 
 
-class CoreAuthenticationForm(AuthenticationForm):
+class KTBAuthenticationForm(AuthenticationForm):
     remember_me = forms.BooleanField(required=False)
 
     def __init__(self, *args, **kwargs):

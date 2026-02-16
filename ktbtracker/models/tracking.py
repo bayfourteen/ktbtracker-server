@@ -3,12 +3,52 @@ from collections import OrderedDict
 from dataclasses import dataclass
 from datetime import timedelta
 
+from django.contrib.auth.models import AbstractUser
+from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from config.requirements import RequirementsConfig
-from ktbtracker.models import CycleWeek, Candidate, Tracking
+from ktbtracker.models.cycles import CycleWeek
+from ktbtracker.models.candidates import Candidate
 
 TRACKING_NAMES = OrderedDict({e: _(e) for e in (RequirementsConfig.PHYSICAL + RequirementsConfig.CLASS + RequirementsConfig.OTHER)})
+
+
+class Tracking(models.Model):
+    tracking_date = models.DateField()
+    burpees = models.IntegerField(default=0)
+    class_dream_team = models.IntegerField(default=0)
+    class_hyper_pro = models.IntegerField(default=0)
+    class_master_q = models.IntegerField(default=0)
+    class_pmaa = models.IntegerField(default=0)
+    class_saturday = models.IntegerField(default=0)
+    class_sparring = models.IntegerField(default=0)
+    class_weekday = models.IntegerField(default=0)
+    journals = models.IntegerField(default=0)
+    jumps = models.FloatField(default=0)
+    kicks = models.IntegerField(default=0)
+    leadership = models.IntegerField(default=0)
+    leadership2 = models.IntegerField(default=0)
+    meditation = models.FloatField(default=0)
+    mentee = models.IntegerField(default=0)
+    mentor = models.IntegerField(default=0)
+    miles = models.FloatField(default=0)
+    planks = models.IntegerField(default=0)
+    poomsae = models.IntegerField(default=0)
+    pull_ups = models.IntegerField(default=0)
+    push_ups = models.IntegerField(default=0)
+    raok = models.IntegerField(default=0)
+    rolls_falls = models.IntegerField(default=0)
+    self_defense = models.IntegerField(default=0)
+    sit_ups = models.IntegerField(default=0)
+    sparring = models.FloatField(default=0)
+    # -- Metadata --
+    created = models.DateTimeField(blank=True, null=True)
+    created_by = models.IntegerField(default=0)
+    modified = models.DateTimeField(blank=True, null=True)
+    modified_by = models.IntegerField(null=True)
+    # -- ORM Relationships --
+    candidate = models.ForeignKey(Candidate, models.DO_NOTHING)
 
 
 # Create your models here.

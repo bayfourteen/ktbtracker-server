@@ -5,7 +5,7 @@ from typing import Any
 from django.template import library, Context
 from django.template.defaultfilters import stringfilter
 
-from core.models import Tracking
+from ktbtracker.models import Tracking
 from tracking.forms import TrackingForm
 
 logger = logging.getLogger(__name__)

@@ -44,8 +44,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'crispy_bootstrap5',
     # -- Applications --
-    'core',
-    'tracking'
+    'ktbtracker',
 ]
 
 MIDDLEWARE = [
@@ -59,7 +58,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'config.urls'
+ROOT_URLCONF = 'ktbtracker.urls'
 
 TEMPLATES = [
     {
@@ -95,14 +94,14 @@ DATABASES = {
     }
 }
 
-AUTH_USER_MODEL = 'core.User'
+AUTH_USER_MODEL = 'ktbtracker.User'
 
 
 # Authentication
 #
 
 AUTHENTICATION_BACKENDS = [
-    'core.auth.joomla.JoomlaAuthBackend',
+    'ktbtracker.auth.joomla.JoomlaAuthBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
 
@@ -131,6 +130,7 @@ PASSWORD_HASHERS = [
     "django.contrib.auth.hashers.Argon2PasswordHasher",
     "django.contrib.auth.hashers.ScryptPasswordHasher",
     "django.contrib.auth.hashers.BCryptSHA256PasswordHasher",
+    # "ktbtracker.auth.hashers.JoomlaPasswordHasher",
 ]
 
 
@@ -154,7 +154,7 @@ USE_TZ = True
 USE_THOUSAND_SEPARATOR = True
 
 FORMAT_MODULE_PATH = [
-    "core.formats"
+    "ktbtracker.formats"
 ]
 
 
@@ -219,7 +219,7 @@ LOGGING = {
     },
 
     "loggers": {
-        "core": {
+        "ktbtracker": {
             "level": "DEBUG",
             "formatter": "verbose",
             "handlers": ["console", "file"],

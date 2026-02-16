@@ -1,15 +1,12 @@
-from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.views import LoginView
-from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
 
-from core.forms import CoreAuthenticationForm
+from ktbtracker.forms import KTBAuthenticationForm
 
-
-# Create your views here.
 
 class AccountsLoginView(LoginView):
     template_name = "accounts/login.html"
-    form_class = CoreAuthenticationForm
+    form_class = KTBAuthenticationForm
 
     def get_context_data(self, **kwargs):
 

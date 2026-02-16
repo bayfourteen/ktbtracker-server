@@ -1,6 +1,6 @@
 {% load static %}
 {% load i18n %}
-{% load core_filters %}
+{% load ktbtracker_tags %}
 <nav class="navbar navbar-expand-lg sticky-top bg-dark border-bottom border-body" data-bs-theme="dark">
     <div class="container-fluid">
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-toggler"
@@ -52,7 +52,7 @@
                 <button type="submit" class="btn btn-outline-danger{% path_active '/log' emit=' d-none' %}">{{ _('Logout') }}</button>
             </form>
             {% else %}
-            <a href="{% url 'core:accounts-login' %}">
+            <a href="{% url 'accounts-login' %}">
                 <button type="submit" class="btn btn-outline-success{% path_active '/log' emit=' d-none' %}">{{ _('Login') }} </button>
             </a>
             {% endif %}
