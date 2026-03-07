@@ -52,7 +52,7 @@
                 <div class="d-flex flex-column align-items-start" style="min-height: 5.5rem;">
                     <div class="align-self-stretch">
                         <a class="btn" role="button"
-                           href="{% url 'tracking:index' %}{% querystring week=tracking_week.week|sub:1|floatformat:0 %}"
+                           href="{% url 'tracking-list' %}{% querystring week=tracking_week.week|sub:1|floatformat:0 %}"
                            title="{% blocktrans with week=tracking_week.week|sub:1|cycle_week %}Week {{ week }}{% endblocktrans %}">
                             {{ tracking_week.week|sub:1|cycle_week }}
                             <i class="bi bi-calendar-range"></i>
@@ -72,7 +72,7 @@
             <td class="{% if tracking.tracking_date == today %}table-info{% else %}{{ bg_color }}{% endif %}"
                 data-bs-toggle="modal"
                 data-bs-target="#tracking-editor-modal"
-                hx-get="{% url 'tracking:editor' %}{% querystring trackingDate=tracking.tracking_date|date:'Y-m-d' %}"
+                hx-get="{% url 'tracking-edit' %}{% querystring trackingDate=tracking.tracking_date|date:'Y-m-d' %}"
                 hx-target="#tracking-editor"
                 hx-swap="innerHTML">
                 <div class="media align-items-center justify-content-between">
@@ -100,7 +100,7 @@
                 <div class="d-flex flex-column align-items-end justify-content-between" style="min-height: 5.5rem;">
                     <div>
                         <a class="btn" role="button"
-                           href="{% url 'tracking:index' %}{% querystring week=tracking_week.week|add:1|floatformat:0 %}"
+                           href="{% url 'tracking-list' %}{% querystring week=tracking_week.week|add:1|floatformat:0 %}"
                            title="{% blocktrans with week=tracking_week.week|add:1|cycle_week %}Week {{ week }}{% endblocktrans %}">
                             <i class="bi bi-caret-right-fill"></i>
                             <i class="bi bi-calendar-range"></i>
@@ -148,7 +148,7 @@
             <td class="fw-{% if tracking_date == today %}bold table-info{% else %}{{ bg_color }}{% endif %} text-end"
                 data-bs-toggle="modal"
                 data-bs-target="#tracking-editor-modal"
-                hx-get="{% url 'tracking:editor' %}{% querystring trackingDate=tracking_date|date:'Y-m-d' %}"
+                hx-get="{% url 'tracking-edit' %}{% querystring trackingDate=tracking_date|date:'Y-m-d' %}"
                 hx-target="#tracking-editor"
                 hx-swap="innerHTML">
             {% if name|slice:':6' == 'class_' %}
