@@ -101,7 +101,6 @@ AUTH_USER_MODEL = 'ktbtracker.User'
 #
 
 AUTHENTICATION_BACKENDS = [
-    'ktbtracker.auth.joomla.JoomlaAuthBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
 
@@ -131,7 +130,7 @@ PASSWORD_HASHERS = [
     "django.contrib.auth.hashers.ScryptPasswordHasher",
     "django.contrib.auth.hashers.BCryptSHA256PasswordHasher",
     "django.contrib.auth.hashers.BCryptPasswordHasher",
-    # "ktbtracker.auth.hashers.JoomlaPasswordHasher",
+    "django.contrib.auth.hashers.BCryptPasswordHasher",
 ]
 
 
@@ -162,7 +161,7 @@ FORMAT_MODULE_PATH = [
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
@@ -170,9 +169,9 @@ STATICFILES_DIRS = [
 
 
 LOGIN_REDIRECT_URL = '/tracking' # Redirect to home page after login
-LOGIN_URL = '/login'
-LOGOUT_REDIRECT_URL = '/login'
-LOGOUT_URL = '/logout'
+LOGIN_URL = '/accounts/login'
+LOGOUT_REDIRECT_URL = '/accounts/login'
+LOGOUT_URL = '/accounts/logout'
 
 
 # Logging
@@ -266,3 +265,6 @@ LOGGING = {
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 
 CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+
+INTERNAL_IPS = ["127.0.0.1"]

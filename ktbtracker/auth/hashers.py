@@ -2,7 +2,8 @@ import logging
 from hashlib import md5
 
 import bcrypt
-from django.contrib.auth.hashers import BasePasswordHasher
+from django.contrib.auth.hashers import BasePasswordHasher, mask_hash
+from django.utils.translation import gettext_lazy as _
 
 from ktbtracker import debug
 
@@ -21,11 +22,9 @@ def check_joomla_password(password: str, hashed_password: str) -> bool:
     logger.info(f'Checking joomla password. {password=} {hashed_password=}')
 
     # Handle Bcrypt (Blowfish) hashes...
-    if hashed_password.startswith("$2y$"):
+    if hashed_password.startswith("joomla$$2y$"):
         password_bytes = password.encode('utf-8')
-        hashed_bytes = hashed_password.strip("$2y$").split("$")[1].encode('utf-8')
-        salt_bytes =  hashed_bytes.split[:22]
-        hash_bytes = hashed_bytes[22:]
+        hashed_bytes = hashed_password.strip("joomla$").encode('utf-8')
 
         return bcrypt.checkpw(password_bytes, hashed_bytes)
 
@@ -42,7 +41,18 @@ def check_joomla_password(password: str, hashed_password: str) -> bool:
 
 
 class JoomlaPasswordHasher(BasePasswordHasher):
-    algorithm = '$2y'
+    # joomla$$2y $ 10 $ xxxxxxxxx
+    algorithm = 'joomla$'
+
+    def decode(self, encoded):
+        algorithm, iterations, salt, hash = encoded.strip("joomla$$").split("$", 3)
+        assert algorithm == self.algorithm
+        return {
+            "algorithm": algorithm,
+            "hash": hash,
+            "iterations": int(iterations),
+            "salt": salt,
+        }
 
     @debug
     def encode(self, password: str) -> str:
@@ -55,9 +65,10 @@ class JoomlaPasswordHasher(BasePasswordHasher):
         return check_joomla_password(password, hashed_password)
 
     def safe_summary(self, encoded):
-        encoded = encoded.encode('utf-8')
-        encoded = encoded.replace(' ', '')
-        encoded = encoded.replace('\n', '')
-        encoded = encoded.replace('\r', '')
-        encoded = encoded.replace('\t', '')
-        return encoded
+        decoded = self.decode(encoded)
+        return {
+            _("algorithm"): decoded["algorithm"],
+            _("iterations"): decoded["iterations"],
+            _("salt"): mask_hash(decoded["salt"]),
+            _("hash"): mask_hash(decoded["hash"]),
+        }

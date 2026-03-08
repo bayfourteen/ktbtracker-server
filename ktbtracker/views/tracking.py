@@ -13,7 +13,7 @@ from django.views.generic import FormView, ListView
 from config.requirements import RequirementsConfig
 from ktbtracker import debug
 from ktbtracker.forms import TrackingForm
-from ktbtracker.models import Candidate, Cycle, CycleWeek, Tracking, TrackingFullStatistics
+from ktbtracker.models import Candidate, Cycle, CycleWeek, Tracking, TrackingFullStatistics, TrackingStatistics
 
 logger = logging.getLogger(__name__)
 
@@ -110,8 +110,10 @@ class TrackingListView(LoginRequiredMixin, TrackingBaseView, ListView):
             cycle = self._cycle,
             candidate = self._candidate,
             tracking_week=tracking_week,
-            tracking_stats=tracking_statistics.weeks[tracking_week.week].statistics,
-            tracking_totals=tracking_statistics.weeks[tracking_week.week].totals,
+            tracking_stats=tracking_statistics.weeks[tracking_week.week].statistics
+            if tracking_week.week in range(len(tracking_statistics.weeks)) else TrackingStatistics(self._candidate),
+            tracking_totals=tracking_statistics.weeks[tracking_week.week].totals
+            if tracking_week.week in range(len(tracking_statistics.weeks)) else TrackingStatistics(self._candidate),
             cycle_stats=tracking_statistics.cycle.statistics,
             cycle_totals=tracking_statistics.cycle.totals,
             cycle_candidates=cycle_candidates,

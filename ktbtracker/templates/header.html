@@ -47,7 +47,7 @@
             </ul>
             {% include 'color-modes.html' %}
             {% if user.is_authenticated %}
-            <form action="{% url 'accounts-logout'%}" method="POST">
+            <form action="{% url 'core:accounts-logout'%}" method="POST">
                 {% csrf_token %}
                 <button type="submit" class="btn btn-outline-danger{% path_active '/log' emit=' d-none' %}">{{ _('Logout') }}</button>
             </form>

@@ -3,13 +3,12 @@ from collections import OrderedDict
 from dataclasses import dataclass
 from datetime import timedelta
 
-from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from config.requirements import RequirementsConfig
-from ktbtracker.models.cycles import CycleWeek
-from ktbtracker.models.candidates import Candidate
+from .candidates import Candidate
+from .cycles import CycleWeek
 
 TRACKING_NAMES = OrderedDict({e: _(e) for e in (RequirementsConfig.PHYSICAL + RequirementsConfig.CLASS + RequirementsConfig.OTHER)})
 

@@ -6,7 +6,7 @@ from django.template import library, Context
 from django.template.defaultfilters import stringfilter
 
 from ktbtracker.models import Tracking
-from tracking.forms import TrackingForm
+from ktbtracker.forms import TrackingForm
 
 logger = logging.getLogger(__name__)
 
@@ -14,8 +14,8 @@ register = library.Library()
 
 
 @register.filter
-def pct_color(value: int | float, alpha: float = 1.0, basis: float = 0) -> str:
-    pct = normalize(value + basis)
+def pct_color(value: str | int | float, alpha: float = 1.0, basis: float = 0) -> str:
+    pct = normalize(float(value or 0) + basis)
     r = 1 - (2 * (pct - 0.50)) if pct > 0.5  else 1.0
     g = 1.0 if pct > 0.5 else (2 * pct)
     b = 0.0
@@ -25,29 +25,29 @@ def pct_color(value: int | float, alpha: float = 1.0, basis: float = 0) -> str:
 
 
 @register.filter
-def byte_value(value: int | float) -> int | float:
-    return round(normalize(value) * 255)
+def byte_value(value: str | int | float) -> int | float:
+    return round(normalize(float(value or 0)) * 255)
 
 
 @register.filter
-def normalize(value: int | float) -> float:
+def normalize(value: str | int | float) -> float:
     try:
-        return min(max(float(value), 0.0), 1.0)
+        return min(max(float(value or 0), 0.0), 1.0)
     except (ValueError, TypeError):
         return 0.0
 
 @register.filter
-def pct(value: int | float) -> float:
+def pct(value: str | int | float) -> float:
     try:
-        return normalize(value) * 100.0
+        return normalize(float(value or 0)) * 100.0
     except (ValueError, TypeError):
         return 0.0
 
 
 @register.filter
-def percent(value: int | float) -> float:
+def percent(value: str | int | float) -> float:
     try:
-        return float(value) * 100.0
+        return float(value or 0) * 100.0
     except (ValueError, TypeError):
         return 0.0
 
@@ -95,7 +95,7 @@ def keyof(value, arg):
             if isinstance(value, object):
                 return getattr(value, arg)
             return ''
-        except IndexError | AttributeError | TypeError:
+        except (IndexError, AttributeError, TypeError):
             return ''
     return ''
 
