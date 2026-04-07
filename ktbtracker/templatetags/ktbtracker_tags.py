@@ -165,14 +165,12 @@ def path_active(context: Context, *args: str | None, emit: str = " active") -> s
     return ""
 
 
-@debug
 @register.simple_tag(takes_context=True)
 def tracking_for_date(context: Context, *args: Any | None) -> Tracking:
-    object_list = context.get("object_list") or Tracking.objects.none()
-    candidate = context.get("candidate")
+    object_list = list(context.get("object_list") or Tracking.objects.none())
     tracking_date = args[0] if args and isinstance(args[0], date) else date.today()
 
-    if object_list.filter(tracking_date=tracking_date).exists():
-        return object_list.get(tracking_date=tracking_date)
+    if tracking := next(filter(lambda t: t.tracking_date == tracking_date, object_list), None):
+        return tracking
 
-    return Tracking(candidate=candidate, tracking_date=tracking_date)
+    return Tracking(candidate=context.get("candidate"), tracking_date=tracking_date)
