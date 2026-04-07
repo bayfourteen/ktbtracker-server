@@ -9,6 +9,7 @@ from django.utils.translation import gettext_lazy as _
 from config.requirements import RequirementsConfig
 from .candidates import Candidate
 from .cycles import CycleWeek
+from .. import debug
 
 TRACKING_NAMES = OrderedDict({e: _(e) for e in (RequirementsConfig.PHYSICAL + RequirementsConfig.CLASS + RequirementsConfig.OTHER)})
 
@@ -92,14 +93,14 @@ class TrackingStatistics:
     def __post_init__(self):
         self.calculate()
 
+    @debug
     def calculate(self):
         eligible_names = [e for e in TRACKING_NAMES.keys() if getattr(self.candidate.cycle, e, 0) > 0]
         start_date = self.cycle_week.start if self.cycle_week else self.candidate.cycle.cycle_start
         end_date = self.cycle_week.end if self.cycle_week else self.candidate.cycle.cycle_end
-        candidate_tracking = Tracking.objects.filter(
+        candidate_tracking = Tracking.objects.select_related("candidate").filter(
             candidate=self.candidate,
-            tracking_date__gte=start_date,
-            tracking_date__lt=end_date + timedelta(days=1)
+            tracking_date__range=(start_date, end_date + timedelta(days=1))
         )
 
         # Calculate the multiplication factor between 0.0 and 1.0 based on the date range of the statistics
@@ -125,6 +126,7 @@ class TrackingFullStatistics:
     def __post_init__(self):
         self.calculate()
 
+    @debug
     def calculate(self):
         for cycle_week in range(self.candidate.cycle.cycle_weeks):
             self.weeks.append(TrackingStatistics(candidate=self.candidate, cycle_week=self.candidate.cycle.cycle_week(cycle_week)))

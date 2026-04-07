@@ -5,6 +5,7 @@ from typing import Any
 from django.template import library, Context
 from django.template.defaultfilters import stringfilter
 
+from ktbtracker import debug
 from ktbtracker.models import Tracking
 from ktbtracker.forms import TrackingForm
 
@@ -164,6 +165,7 @@ def path_active(context: Context, *args: str | None, emit: str = " active") -> s
     return ""
 
 
+@debug
 @register.simple_tag(takes_context=True)
 def tracking_for_date(context: Context, *args: Any | None) -> Tracking:
     object_list = context.get("object_list") or Tracking.objects.none()

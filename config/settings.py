@@ -43,11 +43,13 @@ INSTALLED_APPS = [
     'django_bootstrap5',
     'crispy_forms',
     'crispy_bootstrap5',
+    'nplusone',
     # -- Applications --
     'ktbtracker',
 ]
 
 MIDDLEWARE = [
+    'nplusone.ext.django.NPlusOneMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
@@ -214,8 +216,9 @@ LOGGING = {
     },
 
     "root": {
-        "level": "INFO",
+        "level": "DEBUG",
         "handlers": ["console", "file"],
+        "propagate": False,
     },
 
     "loggers": {
@@ -223,42 +226,54 @@ LOGGING = {
             "level": "DEBUG",
             "formatter": "verbose",
             "handlers": ["console", "file"],
+            "propagate": False,
         },
         "tracking": {
             "level": "DEBUG",
             "formatter": "verbose",
             "handlers": ["console", "file"],
+            "propagate": False,
         },
         "call_trace": {
             "level": "DEBUG",
             "formatter": "call_trace",
             "handlers": ["file"],
+            "propagate": False,
         },
         "django": {
             "level": "ERROR",
             "formatter": "verbose",
             "handlers": ["file"],
+            "propagate": False,
         },
         "django.db": {
-            "level": "ERROR",
+            "level": "DEBUG" if DEBUG else "ERROR",
             "formatter": "verbose",
             "handlers": ["file"],
+            "propagate": False,
         },
         "django.auth": {
             "level": "DEBUG",
             "formatter": "verbose",
             "handlers": ["file"],
+            "propagate": False,
         },
         "django.request": {
             "level": "DEBUG",
             "formatter": "verbose",
             "handlers": ["file"],
+            "propagate": False,
         },
         "django.server": {
             "level": "INFO",
             "formatter": "verbose",
             "handlers": ["file"],
-        }
+            "propagate": False,
+        },
+        'nplusone': {
+            'handlers': ['console'],
+            'level': 'WARN',
+        },
     },
 }
 

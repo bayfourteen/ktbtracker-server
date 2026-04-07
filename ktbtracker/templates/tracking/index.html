@@ -52,7 +52,7 @@
                 <div class="d-flex flex-column align-items-start" style="min-height: 5.5rem;">
                     <div class="align-self-stretch">
                         <a class="btn" role="button"
-                           href="{% url 'tracking-list' %}{% querystring week=tracking_week.week|sub:1|floatformat:0 %}"
+                           href="{% url 'tracking-list' %}{% querystring week=tracking_week.week|sub:1|cycle_week|floatformat:0 %}"
                            title="{% blocktrans with week=tracking_week.week|sub:1|cycle_week %}Week {{ week }}{% endblocktrans %}">
                             {{ tracking_week.week|sub:1|cycle_week }}
                             <i class="bi bi-calendar-range"></i>
@@ -100,7 +100,7 @@
                 <div class="d-flex flex-column align-items-end justify-content-between" style="min-height: 5.5rem;">
                     <div>
                         <a class="btn" role="button"
-                           href="{% url 'tracking-list' %}{% querystring week=tracking_week.week|add:1|floatformat:0 %}"
+                           href="{% url 'tracking-list' %}{% querystring week=tracking_week.week|add:1|cycle_week|floatformat:0 %}"
                            title="{% blocktrans with week=tracking_week.week|add:1|cycle_week %}Week {{ week }}{% endblocktrans %}">
                             <i class="bi bi-caret-right-fill"></i>
                             <i class="bi bi-calendar-range"></i>
