@@ -13,6 +13,9 @@ import os
 from pathlib import Path
 
 import environ
+from django.urls import register_converter
+
+from ktbtracker import converters
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -281,3 +284,6 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 
 INTERNAL_IPS = ["127.0.0.1"]
+
+# Register the custom converter with a name (e.g., 'date')
+register_converter(converters.DateConverter, 'date')

@@ -2,8 +2,12 @@
 {% load ktbtracker_tags %}
 {% load i18n %}
 {% if form %}
-<form id="tracking-editor-form" class="form-floating modal-content"
-      hx-post="{{ request.path }}" hx-headers='{"X-CSRFToken":"{{ csrf_token }}"}'>
+<form id="tracking-editor-form"
+      class="form-floating modal-content"
+      hx-post="{{ request.path }}"
+      hx-headers='{"X-CSRFToken":"{{ csrf_token }}"}'
+      hx-target="#tracking-{{ tracking_date|date:'Y-m-d' }}"
+      hx-swap="outerHTML">
     <div class="modal-header justify-content-start">
         <h2 class="h2 modal-title" style="font-variant: small-caps;">{{ cycle.title|upper }}
             &mdash; {% blocktrans %}Day {{ cycle_day }}{% endblocktrans %}
@@ -12,12 +16,12 @@
     </div>
     <div class="modal-body" id="tracking-editor-body">
         <div class="p-6">
-        <div>
-            <h3 class="d-block h3" style="font-variant: small-caps;">{{ candidate.user.first_name }} {{ candidate.user.last_name }}</h3>
-            <h5 class="d-block h5">{{ tracking_date|date:'FULL_DATE_FORMAT' }}</h5>
+            <div>
+                <h3 class="d-block h3" style="font-variant: small-caps;">{{ candidate.user.first_name }} {{
+                    candidate.user.last_name }}</h3>
+                <h5 class="d-block h5">{{ tracking_date|date:'FULL_DATE_FORMAT' }}</h5>
+            </div>
         </div>
-        </div>
-        {% csrf_token %}
         {% crispy form %}
     </div>
     <div class="modal-footer">

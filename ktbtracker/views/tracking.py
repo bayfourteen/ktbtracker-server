@@ -4,9 +4,11 @@ from datetime import date, timedelta, datetime
 from itertools import cycle
 from zoneinfo import ZoneInfo
 
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import QuerySet
 from django.forms.models import model_to_dict
+from django.shortcuts import render
 from django.utils.translation import gettext_lazy as _
 from django.views import View
 from django.views.generic import FormView, ListView
@@ -143,18 +145,20 @@ class TrackingFormView(LoginRequiredMixin, TrackingBaseView, FormView):
 
         return model_to_dict(tracking)
 
+    @debug
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
         context.update(
+            TRACKING_NAMES=TRACKING_NAMES,
             cycle = self._cycle,
             candidate=self._candidate,
             cycle_day=self._cycle.cycle_day(self._tracking_date),
-            tracking_date=self._tracking_date
+            tracking=self.get_initial(),
         )
 
         return context
 
+    @debug
     def get_form_kwargs(self):
         # Add additional keywords to initialize the ModelForm
         kwargs = super(TrackingFormView, self).get_form_kwargs()
@@ -162,6 +166,7 @@ class TrackingFormView(LoginRequiredMixin, TrackingBaseView, FormView):
 
         return kwargs
 
+    @debug
     def form_valid(self, form: TrackingForm):
         logger.info(f"TrackingForm.form_valid({form.fields})")
-        return super().form_valid(form)
+        return render(self.request, "tracking/partials/tracking.html", self.get_context_data())

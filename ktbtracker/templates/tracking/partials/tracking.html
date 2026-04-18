@@ -1,0 +1,48 @@
+{% load ktbtracker_tags %}
+{% load i18n %}
+<tr id="tracking-{{ tracking_date|date:'Y-m-d' }}"
+    class="d-inline-flex flex-column">
+    <td class="{% if tracking.tracking_date == today %}table-info{% else %}{{ bg_color }}{% endif %}"
+        style="min-height: 5.75rem;"
+        data-bs-toggle="modal"
+        data-bs-target="#tracking-editor-modal"
+        hx-get="{% url 'tracking-edit' tracking_date %}{% querystring %}"
+        hx-target="#tracking-editor"
+        hx-swap="innerHTML">
+        <div class="media align-items-center justify-content-between">
+            <div class="text-center">
+                <strong class="text-center">
+                    {% blocktrans with day=tracking_week.days|index:forloop.counter0|cycle_day %}DAY {{ day }}{% endblocktrans %}
+                </strong>
+            </div>
+            <span class="d-block text-center">
+                <small class="fw-{% if tracking.tracking_date == today %}bold{% else %}normal{% endif %}"
+                       style="font-variant: all-small-caps;">
+                    {{ tracking.tracking_date|date:'l' }}
+                </small>
+            </span>
+            <span class="d-block text-center">
+                <small class="fw-{% if tracking.tracking_date == today %}bold{% else %}normal{% endif %}">
+                    {{ tracking.tracking_date|date:'SHORT_DATE_FORMAT' }}
+                </small>
+            </span>
+        </div>
+    </td>
+{% for name, title in TRACKING_NAMES.items %}
+{% if cycle|keyof:name > 0 %}
+    <td class="fw-{% if tracking_date == today %}bold table-info{% else %}{{ bg_color }}{% endif %} text-end"
+        style="min-height: 5.5rem;"
+        data-bs-toggle="modal"
+        data-bs-target="#tracking-editor-modal"
+        hx-get="{% url 'tracking-edit' tracking_date %}{% querystring %}"
+        hx-target="#tracking-editor"
+        hx-swap="innerHTML">
+    {% if name|slice:':6' == 'class_' %}
+        <i class="{% if tracking.tracking_date|available:name %}bi bi-{% if tracking|keyof:name > 0 %}check-lg{% else %}x-lg{% endif %}{% endif %}"></i>
+    {% else %}
+        {{ tracking|keyof:name|default:0 }}
+    {% endif %}
+    </td>
+{% endif %}
+{% endfor %}
+</tr>
