@@ -138,10 +138,11 @@ class TrackingFormView(LoginRequiredMixin, TrackingBaseView, FormView):
 
     @debug
     def get_initial(self):
+        tracking_date: date = self.kwargs.get("tracking_date")
         try:
-            tracking = Tracking.objects.select_related("candidate").get(candidate=self._candidate, tracking_date=self._tracking_date)
+            tracking = Tracking.objects.select_related("candidate").get(candidate=self._candidate, tracking_date=tracking_date)
         except Tracking.DoesNotExist:
-            tracking = Tracking(candidate=self._candidate, tracking_date=self._tracking_date)
+            tracking = Tracking(candidate=self._candidate, tracking_date=tracking_date)
 
         return model_to_dict(tracking)
 
@@ -152,7 +153,7 @@ class TrackingFormView(LoginRequiredMixin, TrackingBaseView, FormView):
             TRACKING_NAMES=TRACKING_NAMES,
             cycle = self._cycle,
             candidate=self._candidate,
-            cycle_day=self._cycle.cycle_day(self._tracking_date),
+            cycle_day=self._cycle.cycle_day(self.kwargs.get("tracking_date")),
             tracking=self.get_initial(),
         )
 

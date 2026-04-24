@@ -6,7 +6,7 @@
     <table class="table table-hover">
         <tbody>
             {# The first row is our tracking labels and is non-selectable #}
-            <tr class="d-inline-flex flex-column" style="pointer-events: none;">
+            <tr class="d-inline-flex flex-column">
                 <td style="min-height: 5.75rem;">
                     <div class="d-flex flex-column align-items-start">
                         <div class="align-self-stretch">
@@ -27,7 +27,7 @@
             </td>
             {% for name, title in TRACKING_NAMES.items %}
             {% if cycle|keyof:name > 0 %}
-                <td style="min-height: 5.5rem;">
+                <td style="min-height: 5.5rem; pointer-events: none;">
                      <div class="d-flex flex-column justify-content-between">
                         <div class="mb-auto">
                             {{ title }}
@@ -56,7 +56,7 @@
         {% endfor %}
         {% resetcycle %}
             {# The last row contains the overall statistics for the tracking activities and is non-selectable#}
-            <tr class="d-inline-flex flex-column" style="pointer-events: none;">
+            <tr class="d-inline-flex flex-column">
                 <td style="min-height: 5.75rem;">
                     <div class="d-flex flex-column align-items-end justify-content-between">
                         <div>
@@ -79,7 +79,7 @@
                 </td>
             {% for name, title in TRACKING_NAMES.items %}
             {% if cycle|keyof:name > 0 %}
-                <td class="text-end" style="min-height: 5.5rem;">
+                <td class="text-end" style="min-height: 5.5rem; pointer-events: none;">
                     <div class="d-flex justify-content-end">
                         <div class="text-end px-3">
                             <div>
