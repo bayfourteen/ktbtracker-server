@@ -1,4 +1,5 @@
-name: Snapshtot Workflow
+name: Snapshot Workflow
+run-name: Snapshot Workflow
 
 on:
   push:
