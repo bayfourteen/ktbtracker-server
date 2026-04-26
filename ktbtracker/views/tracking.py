@@ -1,5 +1,5 @@
 import logging
-from collections import OrderedDict
+from collections import OrderedDict, defaultdict
 from datetime import date, timedelta, datetime
 from itertools import cycle
 from zoneinfo import ZoneInfo
@@ -109,17 +109,23 @@ class TrackingListView(LoginRequiredMixin, TrackingBaseView, ListView):
         ).all()
 
     @debug
-    def get_context_data(self, *, object_list = ..., **kwargs):
+    def get_context_data(self, **kwargs):
         tracking_week = self._cycle.cycle_week(self._week) if self._week is not None else self._cycle.cycle_week_of(self._tracking_date)
         tracking_statistics = TrackingStatistics(self._candidate, tracking_week)
         cycle_statistics = TrackingStatistics(self._candidate, None)
         cycle_candidates = Candidate.objects.select_related("cycle", "user").filter(cycle=self._cycle).order_by("user__last_name", "user__first_name").all()
 
+        tracking_data = defaultdict(list)
+        for tracking in self.object_list.values('tracking_date', *[k for k, v in TRACKING_NAMES.items() if getattr(self._cycle, k, None)]):
+            for k, v in tracking.items():
+                tracking_data[k].append(v)
+
         context = super().get_context_data(**kwargs)
         context.update(
             TRACKING_NAMES=TRACKING_NAMES,
-            cycle = self._cycle,
-            candidate = self._candidate,
+            cycle=self._cycle,
+            candidate=self._candidate,
+            tracking=tracking_data,
             tracking_week=tracking_week,
             tracking_stats=tracking_statistics.statistics,
             tracking_totals=tracking_statistics.totals,
