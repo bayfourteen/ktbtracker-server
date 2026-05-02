@@ -11,7 +11,7 @@ from django.forms.models import model_to_dict
 from django.shortcuts import render
 from django.utils.translation import gettext_lazy as _
 from django.views import View
-from django.views.generic import FormView, ListView
+from django.views.generic import FormView, ListView, UpdateView
 
 from config.requirements import RequirementsConfig
 from ktbtracker import debug
@@ -104,28 +104,33 @@ class TrackingListView(LoginRequiredMixin, TrackingBaseView, ListView):
         return Tracking.objects.select_related("candidate").filter(
             candidate=self._candidate,
             tracking_date__range=(tracking_week.start, tracking_week.end),
-            #tracking_date__gte=tracking_week.start,
-            #tracking_date__lt=tracking_week.end + timedelta(days=1)
         ).all()
 
     @debug
     def get_context_data(self, **kwargs):
         tracking_week = self._cycle.cycle_week(self._week) if self._week is not None else self._cycle.cycle_week_of(self._tracking_date)
+        tracking_data = defaultdict(list)
         tracking_statistics = TrackingStatistics(self._candidate, tracking_week)
         cycle_statistics = TrackingStatistics(self._candidate, None)
         cycle_candidates = Candidate.objects.select_related("cycle", "user").filter(cycle=self._cycle).order_by("user__last_name", "user__first_name").all()
 
-        tracking_data = defaultdict(list)
+        # Transpose rows and columns...
         for tracking in self.object_list.values('tracking_date', *[k for k, v in TRACKING_NAMES.items() if getattr(self._cycle, k, None)]):
             for k, v in tracking.items():
                 tracking_data[k].append(v)
 
+        # Fill-in any missing tracking records for the week with 0s...
+        for tdate_idx, tdate in [(idx, t) for idx, t in enumerate(tracking_week.dates) if t not in tracking_data.get("tracking_date", [])]:
+            logger.info(f"{tdate_idx} {tdate} not in data!")
+            for k in ["tracking_date"] + [k for k, v in TRACKING_NAMES.items() if getattr(self._cycle, k, None)]:
+                tracking_data[k].insert(tdate_idx, tdate if k == "tracking_date" else 0)
+
         context = super().get_context_data(**kwargs)
         context.update(
-            TRACKING_NAMES=TRACKING_NAMES,
+            TRACKING_NAMES={k: v for k, v in TRACKING_NAMES.items() if getattr(self._cycle, k, None)},
             cycle=self._cycle,
             candidate=self._candidate,
-            tracking=tracking_data,
+            tracking_data=tracking_data,
             tracking_week=tracking_week,
             tracking_stats=tracking_statistics.statistics,
             tracking_totals=tracking_statistics.totals,
@@ -133,6 +138,63 @@ class TrackingListView(LoginRequiredMixin, TrackingBaseView, ListView):
             cycle_totals=cycle_statistics.totals,
             cycle_candidates=cycle_candidates,
             today=datetime.now(ZoneInfo("America/New_York")).date(),
+        )
+
+        return context
+
+
+class TrackingEditView(LoginRequiredMixin, UpdateView):
+    template_name = "tracking/editor.html"
+    form_class = TrackingForm
+    model = Tracking
+
+    @debug
+    def dispatch(self, request, *args, **kwargs):
+        # Determine the most recent cycle (or cycle chosen by a staff member)...
+        if self.request.user.is_staff and self.request.GET.get("cycle") and self.request.GET.get("cycle").isdigit():
+            self.cycle = Cycle.objects.get(id=int(self.request.GET.get("cycle")))
+        else:
+            self.cycle = Cycle.objects.all().order_by("-id").first()
+
+        # Determine the candidate being updated, either the current user or overridden by staff...
+        try:
+            if request.user.is_staff and request.GET.get("canid") and request.GET.get("canid").isdigit():
+                self.candidate = Candidate.objects.select_related("cycle", "user").get(id=int(request.GET.get("canid")))
+            else:
+                self.candidate = Candidate.objects.select_related("cycle", "user").filter(user__id=request.user.id).order_by("-id").first()
+        except Candidate.DoesNotExist:
+            self.candidate = Candidate(cycle=self.cycle)
+
+        return super(TrackingEditView, self).dispatch(request, *args, **kwargs)
+
+    @debug
+    def get_object(self, queryset: QuerySet | None = None ) -> Tracking:
+        tracking_date: date = self.kwargs.get("tracking_date")
+        try:
+            tracking = Tracking.objects.select_related("candidate").get(candidate=self.candidate, tracking_date=tracking_date)
+        except Tracking.DoesNotExist:
+            tracking = Tracking(candidate=self.candidate, tracking_date=tracking_date)
+
+        return tracking
+
+    @debug
+    def get_form_kwargs(self):
+        kwargs = super(TrackingEditView, self).get_form_kwargs()
+        kwargs.update({
+            "candidate": self.candidate
+        })
+
+        return kwargs
+
+    @debug
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update(
+            TRACKING_NAMES=TRACKING_NAMES,
+            cycle = self.candidate.cycle,
+            candidate=self.candidate,
+            cycle_day=self.candidate.cycle.cycle_day(self.kwargs.get("tracking_date")),
+            tracking=self.get_initial(),
         )
 
         return context

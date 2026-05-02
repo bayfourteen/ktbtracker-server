@@ -1,7 +1,8 @@
 {% load ktbtracker_tags %}
 {% load i18n %}
 <tr id="tracking-{{ tracking_date|date:'Y-m-d' }}"
-    class="d-inline-flex flex-column">
+    class="d-inline-flex flex-column"
+    style="width: 9%;">
     <td class="{% if tracking.tracking_date == today %}table-info{% else %}{{ bg_color }}{% endif %}"
         style="min-height: 5.75rem;"
         data-bs-toggle="modal"

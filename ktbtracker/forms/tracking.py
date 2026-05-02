@@ -10,7 +10,8 @@ from django.forms import fields
 from django.utils.translation import gettext_lazy as _
 
 from config.requirements import RequirementsConfig
-from ktbtracker.models import Tracking, Cycle
+from ktbtracker import debug
+from ktbtracker.models import Tracking, Cycle, Candidate
 
 TRACKING_NAMES = OrderedDict(
     {e: _(e) for e in (RequirementsConfig.PHYSICAL + RequirementsConfig.CLASS + RequirementsConfig.OTHER)})
@@ -25,13 +26,16 @@ class TrackingForm(forms.ModelForm):
     tracking_date = forms.DateField(widget=forms.DateInput(attrs={"class": "datepicker"}))
 
     def __init__(self, *args, **kwargs):
-        self.cycle = kwargs.pop("cycle", Cycle())
+        self.candidate = kwargs.pop("candidate", Candidate())
         super(TrackingForm, self).__init__(*args, **kwargs)
+
+        logger.info(f"{kwargs=} {self.fields=}")
+
         self.helper = FormHelper()
 
         self.fields["tracking_date"] = forms.DateField(widget=forms.DateInput(attrs={"class": "datepicker"}))
 
-        for name in [name for name in RequirementsConfig.PHYSICAL + RequirementsConfig.OTHER if getattr(self.cycle, name, 0) > 0]:
+        for name in [name for name in RequirementsConfig.PHYSICAL + RequirementsConfig.OTHER if getattr(self.candidate.cycle, name, 0) > 0]:
             logger.debug(f"Adding {name} {type(self.fields[name])} {isinstance(self.fields[name], fields.FloatField)}")
             if isinstance(self.fields[name], fields.FloatField):
                 self.fields[name] = forms.FloatField(
@@ -48,12 +52,12 @@ class TrackingForm(forms.ModelForm):
                         attrs=dict(**self.fields[name].widget.attrs, pattern=r"^\d+$")),
                     min_value=0,
                     step_size=1,
-                    initial=getattr(self.cycle, name, 0),
+                    initial=getattr(self.candidate.cycle, name, 0),
                     required=False
                 )
 
         # Override any valid CLASS fields as BooleanField
-        for name in [name for name in RequirementsConfig.CLASS if getattr(self.cycle, name, 0) > 0]:
+        for name in [name for name in RequirementsConfig.CLASS if getattr(self.candidate.cycle, name, 0) > 0]:
             logger.info(f"{type(self.instance)} {getattr(self.instance, name, None)}")
             self.fields[name] = forms.BooleanField(
                 label=_(name),
@@ -64,13 +68,13 @@ class TrackingForm(forms.ModelForm):
                 required=False)
 
         # Remove any invalid fields
-        for name in [name for name in TRACKING_NAMES if getattr(self.cycle, name, 0) == 0]:
+        for name in [name for name in TRACKING_NAMES if getattr(self.candidate.cycle, name, 0) == 0]:
             del self.fields[name]
 
         self.helper.layout = Layout(
-            *[name for name in RequirementsConfig.PHYSICAL if getattr(self.cycle, name, 0) > 0],
-            *[Switch(name, wrapper_class="form-check-reverse") for name in RequirementsConfig.CLASS if getattr(self.cycle, name, 0) > 0],
-            *[name for name in RequirementsConfig.OTHER if getattr(self.cycle, name, 0) > 0]
+            *[name for name in RequirementsConfig.PHYSICAL if getattr(self.candidate.cycle, name, 0) > 0],
+            *[Switch(name, wrapper_class="form-check-reverse") for name in RequirementsConfig.CLASS if getattr(self.candidate.cycle, name, 0) > 0],
+            *[name for name in RequirementsConfig.OTHER if getattr(self.candidate.cycle, name, 0) > 0]
         )
 
     class Meta:

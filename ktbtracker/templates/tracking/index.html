@@ -2,13 +2,57 @@
 {% load ktbtracker_tags %}
 {% load i18n %}
 {% block content %}
+<div class="d-flex align-items-center justify-content-center p-3 my-3 rounded shadow-sm bg-body">
+    <div class="">
+        <div class="text-center">
+            <h1 class="d-block h3 mb-0" style="font-variant: small-caps;">{{ cycle.title|upper }}
+                &mdash; {% blocktrans with week=tracking_week.week|cycle_week %}Week {{ week }}{% endblocktrans %}</h1>
+        </div>
+        <div class="d-flex align-items-center justify-content-between mx-3">
+            <small style="font-variant: all-small-caps;">
+            {% blocktrans with weeks=cycle.cycle_weeks %}
+                {{ weeks }} Weeks
+            {% endblocktrans %}
+            </small>
+            &nbsp; | &nbsp;
+            <small style="font-variant: all-small-caps;">{{ cycle.cycle_start|date:'LONG_DATE_FORMAT' }}
+                &ndash; {{ cycle.cycle_end|date:'LONG_DATE_FORMAT' }}
+            </small>
+            &nbsp; | &nbsp;
+            <small style="font-variant: all-small-caps;">
+                {% blocktrans with days=cycle.cycle_weeks|mul:7|floatformat:0 %}{{ days }} Days{% endblocktrans %}
+            </small>
+        </div>
+        <div class="d-flex align-items-center justify-content-center mx-3">
+            <strong style="font-variant: all-small-caps;">{{ candidate.user.first_name }} {{ candidate.user.last_name }}</strong>
+            {% if user.is_staff or user.is_superuser %}
+            &nbsp;
+            <div class="dropdown">
+                <button class="btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-people-fill"></i>
+                </button>
+                <ul class="dropdown-menu" style="max-height:80rem;overflow-y:auto;">
+                    <li><a class="dropdown-item" href="{% querystring canid='' %}">-{{ _('Current User') }}-</a></li>
+                    {% for cycle_candidate in cycle_candidates %}
+                    <li>
+                        <a class="dropdown-item" href="{% querystring canid=cycle_candidate.id %}">
+                            {{ cycle_candidate.user.last_name }}, {{ cycle_candidate.user.first_name }}
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
 <div class="my-3 p-3 bg-body rounded shadow-sm">
-    <table class="table table-hover">
-        <tbody>
-            {# The first row is our tracking labels and is non-selectable #}
-            <tr class="d-inline-flex flex-column">
-                <td style="min-height: 5.75rem;">
-                    <div class="d-flex flex-column align-items-start">
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <td>
+                    <div class="d-flex flex-column align-items-start" style="min-height: 5.5rem;">
                         <div class="align-self-stretch">
                             <a class="btn" role="button"
                                href="{% url 'tracking-list' %}{% querystring week=tracking_week.week|sub:1|cycle_week|floatformat:0 %}"
@@ -18,47 +62,46 @@
                                 <i class="bi bi-caret-left-fill"></i>
                             </a>
                         </div>
-                    <div class="mt-auto">
-                        <small style="font-variant: all-small-caps;">
-                            {{ _('Activity') }} / {{ _('Weekly Progress') }}
-                        </small>
-                    </div>
-                </div>
-            </td>
-            {% for name, title in TRACKING_NAMES.items %}
-            {% if cycle|keyof:name > 0 %}
-                <td style="min-height: 5.5rem; pointer-events: none;">
-                     <div class="d-flex flex-column justify-content-between">
-                        <div class="mb-auto">
-                            {{ title }}
-                        </div>
-                        <div class="">
-                            <div class="progress" role="progressbar" aria-valuenow="{{ tracking_stats|keyof:name|pct|floatformat:0 }}"
-                                 aria-valuemin="0" aria-valuemax="100" style="height: 4px">
-                                <div class="progress-bar" style="width:{{ tracking_stats|keyof:name|pct|floatformat:0 }}%; background-color:{{ tracking_stats|keyof:name|pct_color }};">
-                                </div>
-                            </div>
-                            <small class="m-0 text-muted" style="font-variant: all-small-caps;">
-                                {% blocktrans with progress=tracking_stats|keyof:name|percent|floatformat:2 actual=tracking_totals|keyof:name|floatformat:-2 goal=cycle|keyof:name|div:cycle.cycle_weeks|floatformat:-2 %}
-                                    Weekly {{ progress }}% ({{ actual }} / {{ goal }})
-                                {% endblocktrans %}
+                        <div class="mt-auto">
+                            <small style="font-variant: all-small-caps;">
+                                {{ _('Activity') }} / {{ _('Weekly Progress') }}
                             </small>
                         </div>
-                     </div>
+                    </div>
                 </td>
-            {% endif %}
-            {% endfor %}
-            </tr>
-        {% for tracking_date in tracking_week.dates %}
-        {% cycle 'normal bg-body-tertiary' 'normal' as bg_color silent %}
-        {% tracking_for_date tracking_date as tracking %}
-            {% include 'tracking/partials/tracking.html' %}
-        {% endfor %}
-        {% resetcycle %}
-            {# The last row contains the overall statistics for the tracking activities and is non-selectable#}
-            <tr class="d-inline-flex flex-column">
-                <td style="min-height: 5.75rem;">
-                    <div class="d-flex flex-column align-items-end justify-content-between">
+                {% for tracking_date in tracking_week.dates %}
+                {% cycle 'normal bg-body-tertiary' 'normal' as bg_color silent %}
+                <td class="{% if tracking_date == today %}table-active{% else %}{{ bg_color }}{% endif %}"
+                    data-bs-toggle="modal"
+                    data-bs-target="#tracking-editor-modal"
+                    hx-get="{% url 'tracking-edit' tracking_date %}{% querystring %}"
+                    hx-target="#tracking-editor"
+                    hx-swap="innerHTML">
+                    <div class="media align-items-center justify-content-between">
+                        <div class="text-center">
+                            <strong class="text-center">
+                            {% blocktrans with day=tracking_week.days|index:forloop.counter0|cycle_day %}
+                                DAY {{ day  }}
+                            {% endblocktrans %}
+                            </strong>
+                        </div>
+                        <span class="d-block text-center">
+                        <small class="fw-{% if tracking_date == today %}bold{% else %}normal{% endif %}"
+                               style="font-variant: all-small-caps;">
+                            {{ tracking_date|date:'l' }}
+                        </small>
+                    </span>
+                        <span class="d-block text-center">
+                        <small class="fw-{% if tracking_date == today %}bold{% else %}normal{% endif %}">
+                            {{ tracking_date|date:'SHORT_DATE_FORMAT' }}
+                        </small>
+                    </span>
+                    </div>
+                </td>
+                {% endfor %}
+                {% resetcycle %}
+                <td>
+                    <div class="d-flex flex-column align-items-end justify-content-between" style="min-height: 5.5rem;">
                         <div>
                             <a class="btn" role="button"
                                href="{% url 'tracking-list' %}{% querystring week=tracking_week.week|add:1|cycle_week|floatformat:0 %}"
@@ -69,17 +112,58 @@
                             </a>
                         </div>
                         <div>
-                            <span class="d-block">
-                                <small style="font-variant: all-small-caps;">
-                                    {{ _('Overall Progress') }}
-                                </small>
-                            </span>
+                        <span class="d-block">
+                            <small style="font-variant: all-small-caps;">
+                                {{ _('Overall Progress') }}
+                            </small>
+                        </span>
+                        </div>
+
+                    </div>
+                </td>
+            </tr>
+            </thead>
+            <tbody class="table-group-divider">
+            {% for name, title in TRACKING_NAMES.items %}
+            <tr>
+                <td style="pointer-events: none;">
+                    <div class="d-flex flex-column justify-content-between" style="min-height: 4.45rem;">
+                        <div class="mb-auto">
+                            {{ title }}
+                        </div>
+                        <div class="">
+                            <div class="progress" role="progressbar"
+                                 aria-valuenow="{{ tracking_stats|keyof:name|pct|floatformat:0 }}"
+                                 aria-valuemin="0" aria-valuemax="100" style="height: 4px">
+                                <div class="progress-bar"
+                                     style="width:{{ tracking_stats|keyof:name|pct|floatformat:0 }}%; background-color:{{ tracking_stats|keyof:name|pct_color }};">
+                                </div>
+                            </div>
+                            <small class="m-0 text-muted" style="font-variant: all-small-caps;">
+                            {% blocktrans with progress=tracking_stats|keyof:name|percent|floatformat:2 actual=tracking_totals|keyof:name|floatformat:-2 goal=cycle|keyof:name|div:cycle.cycle_weeks|floatformat:-2 %}
+                                Weekly {{ progress }}% ({{ actual }} / {{ goal }})
+                            {% endblocktrans %}
+                            </small>
                         </div>
                     </div>
                 </td>
-            {% for name, title in TRACKING_NAMES.items %}
-            {% if cycle|keyof:name > 0 %}
-                <td class="text-end" style="min-height: 5.5rem; pointer-events: none;">
+                {% for tracking in tracking_data|keyof:name %}
+                {% cycle 'normal bg-body-tertiary' 'normal' as bg_color silent %}
+                <td class="fw-{% if tracking_data.tracking_date|index:forloop.counter0 == today %}bold table-active{% else %}{{ bg_color }}{% endif %} text-end"
+                    data-bs-toggle="modal"
+                    data-bs-target="#tracking-editor-modal"
+                    hx-get="{% url 'tracking-edit' tracking_data.tracking_date|index:forloop.counter0 %}{% querystring %}"
+                    hx-target="#tracking-editor"
+                    hx-swap="innerHTML">
+                    {% if name|slice:':6' == 'class_' %}
+                    <i class="{% if tracking_data.tracking_date|index:forloop.counter0|available:name %}bi bi-{% if tracking > 0 %}check-lg{% else %}x-lg{% endif %}{% endif %}"></i>
+                    {% else %}
+                    {{ tracking|default:0 }}
+                    {% endif %}
+                </td>
+                {% endfor %}
+                {% resetcycle %}
+                <td class="text-end" style="pointer-events: none;">
                     <div class="d-flex justify-content-end">
                         <div class="text-end px-3">
                             <div>
@@ -99,23 +183,46 @@
                     <div class="d-flex justify-content-end">
                         <small style="font-variant: all-small-caps;">
                             {% blocktrans with progress=cycle_stats|keyof:name|percent|floatformat:2 %}
-                                Overall {{ progress }}%
+                            Overall {{ progress }}%
                             {% endblocktrans %}
                         </small>
                     </div>
                 </td>
-                {% endif %}
-                {% endfor %}
             </tr>
-        </tbody>
-    </table>
-</div>
-<div id="tracking-editor-modal"
-     class="modal fade"
-     data-bs-backdrop="static"
-     data-bs-keyboard="false"
-     tabindex="-1" aria-labelledby="tracking-editor-label" aria-hidden="true">
-    <div id="tracking-editor" class="modal-dialog modal-dialog-centered modal-dialog-scrollable" hx-target="this">
+            {% endfor %}
+            </tbody>
+        </table>
+        <div class="modal fade"
+             id="tracking-editor-modal"
+             data-bs-backdrop="static"
+             data-bs-keyboard="false"
+             tabindex="-1" aria-labelledby="tracking-editor-label" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" id="tracking-editor">
+                {% include 'tracking/editor.html' %}
+            </div>
+        </div>
     </div>
 </div>
+<script>
+    function closeModal(event) {
+        // Check if the request was successful (e.g., HTTP status 2xx)
+        if (event.detail.xhr.status >= 200 && event.detail.xhr.status < 300) {
+            // Get the modal element
+            var myModalEl = document.getElementById('tracking-editor-modal');
+            // Get the Bootstrap modal instance
+            var modal = bootstrap.Modal.getInstance(myModalEl);
+            // Hide the modal
+            modal.hide();
+
+            // Optional: Clear modal content after it's hidden to prevent stale data
+            myModalEl.addEventListener('hidden.bs.modal', function (e) {
+                document.getElementById('tracking-editor').innerHTML = '';
+            }, {once: true}); // Use {once: true} to ensure the event listener runs only once
+        }
+    }
+</script>
+<script type="module">
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+</script>
 {% endblock %}
