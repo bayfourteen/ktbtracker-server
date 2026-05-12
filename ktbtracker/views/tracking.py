@@ -2,6 +2,7 @@ import logging
 from collections import OrderedDict, defaultdict
 from datetime import date, timedelta, datetime
 from itertools import cycle
+from typing import Any
 from zoneinfo import ZoneInfo
 
 from django.contrib.auth.decorators import login_required
@@ -98,8 +99,64 @@ class TrackingListView(LoginRequiredMixin, TrackingBaseView, ListView):
     model = Tracking
 
     @debug
+    def setup(self, request, *args, **kwargs):
+        super(TrackingListView, self).setup(request, *args, **kwargs)
+
+        #
+        # Determine the current cycle from the session if available, otherwise use the latest cycle or administrator selected...
+        #
+        if cycle_id := request.session.get("_cycle", 0):
+            self.cycle = Cycle.objects.get(id=int(cycle_id))
+        else:
+            self.cycle = Cycle.objects.all().order_by("-id").first()
+            request.session.update({"_cycle": self.cycle.id})
+
+        if request.user.is_staff and request.GET.get("cycle") and request.GET.get("cycle").isdigit():
+            if self.cycle.id != int(request.GET.get("cycle", 0)):
+                self.cycle = Cycle.objects.get(id=int(request.GET.get("cycle", 0)))
+                request.session.update({"_cycle": self.cycle.id})
+        logger.debug(f"TrackingListView.setup {cycle_id=} {self.cycle=}")
+
+        #
+        # Determine the current candidate from the session if available, otherwise from the logged-in user or administrator selected...
+        #
+        if candidate_id := request.session.get("_candidate", 0):
+            try:
+                self.candidate = Candidate.objects.select_related("cycle", "user").get(id=int(candidate_id))
+            except Candidate.DoesNotExist:
+                self.candidate = None
+                request.session.delete("_candidate")
+        else:
+            try:
+                self.candidate = Candidate.objects.select_related("cycle", "user").filter(user__id=request.user.id).order_by("-id").first()
+                request.session.update({"_candidate": self.candidate.id})
+            except Candidate.DoesNotExist:
+                self.candidate = Candidate(cycle=self.cycle)
+                request.session.delete("_candidate")
+
+        if request.user.is_staff and request.GET.get("canid") and request.GET.get("canid").isdigit():
+            if self.candidate.id != int(request.GET.get("canid", 0)):
+                try:
+                    self.candidate = Candidate.objects.select_related("cycle", "user").get(id=int(request.GET.get("canid", 0)))
+                    request.session.update({"_candidate": self.candidate.id})
+                except Candidate.DoesNotExist:
+                    self.candidate = Candidate(cycle=self.cycle)
+                    request.session.delete("_candidate")
+
+        if self.candidate.cycle.id != self.cycle.id:
+            logger.warning(f"The current candidate ({self.candidate.id or 0}) is not part of the current cycle.")
+            self.candidate = Candidate(cycle=self.cycle)
+            request.session.delete("_candidate")
+
+        logger.debug(f"TrackingListView.setup {candidate_id=} {self.candidate=}")
+
+    @debug
+    def dispatch(self, request, *args, **kwargs):
+        return super(TrackingListView, self).dispatch(request, *args, **kwargs)
+
+    @debug
     def get_queryset(self) -> QuerySet:
-        tracking_week = self._cycle.cycle_week(self._week) if self._week is not None else self._cycle.cycle_week_of(self._tracking_date)
+        tracking_week = self.cycle.cycle_week(self._week) if self._week is not None else self.cycle.cycle_week_of(self._tracking_date)
 
         return Tracking.objects.select_related("candidate").filter(
             candidate=self._candidate,
@@ -149,23 +206,40 @@ class TrackingEditView(LoginRequiredMixin, UpdateView):
     model = Tracking
 
     @debug
-    def dispatch(self, request, *args, **kwargs):
-        # Determine the most recent cycle (or cycle chosen by a staff member)...
-        if self.request.user.is_staff and self.request.GET.get("cycle") and self.request.GET.get("cycle").isdigit():
-            self.cycle = Cycle.objects.get(id=int(self.request.GET.get("cycle")))
+    def setup(self, request, *args, **kwargs):
+        super().setup(request, *args, **kwargs)
+
+        #
+        # Determine the current candidate from the session if available, otherwise from the logged-in user or administrator selected...
+        #
+        if candidate_id := request.session.get("_candidate", 0):
+            try:
+                self.candidate = Candidate.objects.select_related("cycle", "user").get(id=int(candidate_id))
+            except Candidate.DoesNotExist:
+                self.candidate = None
+                request.session.delete("_candidate")
         else:
-            self.cycle = Cycle.objects.all().order_by("-id").first()
-
-        # Determine the candidate being updated, either the current user or overridden by staff...
-        try:
-            if request.user.is_staff and request.GET.get("canid") and request.GET.get("canid").isdigit():
-                self.candidate = Candidate.objects.select_related("cycle", "user").get(id=int(request.GET.get("canid")))
-            else:
+            try:
                 self.candidate = Candidate.objects.select_related("cycle", "user").filter(user__id=request.user.id).order_by("-id").first()
-        except Candidate.DoesNotExist:
-            self.candidate = Candidate(cycle=self.cycle)
+                request.session.update({"_candidate": self.candidate.id})
+            except Candidate.DoesNotExist:
+                self.candidate = Candidate(cycle=self.cycle)
+                request.session.delete("_candidate")
 
-        return super(TrackingEditView, self).dispatch(request, *args, **kwargs)
+        if request.user.is_staff and request.GET.get("canid") and request.GET.get("canid").isdigit():
+            if self.candidate.id != int(request.GET.get("canid", 0)):
+                try:
+                    self.candidate = Candidate.objects.select_related("cycle", "user").get(id=int(request.GET.get("canid", 0)))
+                    request.session.update({"_candidate": self.candidate.id})
+                except Candidate.DoesNotExist:
+                    self.candidate = Candidate(cycle=self.cycle)
+                    request.session.delete("_candidate")
+
+        logger.debug(f"TrackingEditView.setup {kwargs.get('tracking_date')=} {candidate_id=} {self.candidate=}")
+
+    @debug
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
 
     @debug
     def get_object(self, queryset: QuerySet | None = None ) -> Tracking:
@@ -179,7 +253,7 @@ class TrackingEditView(LoginRequiredMixin, UpdateView):
 
     @debug
     def get_form_kwargs(self):
-        kwargs = super(TrackingEditView, self).get_form_kwargs()
+        kwargs = super().get_form_kwargs()
         kwargs.update({
             "candidate": self.candidate
         })
@@ -198,6 +272,14 @@ class TrackingEditView(LoginRequiredMixin, UpdateView):
         )
 
         return context
+
+    @debug
+    def form_valid(self, form):
+        return super().form_valid(form)
+
+    @debug
+    def form_invalid(self, form):
+        return super().form_invalid(form)
 
 
 class TrackingFormView(LoginRequiredMixin, TrackingBaseView, FormView):

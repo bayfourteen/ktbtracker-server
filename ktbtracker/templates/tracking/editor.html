@@ -4,7 +4,7 @@
 {% if form %}
 <form id="tracking-editor-form"
       class="form-floating modal-content"
-      hx-post="{{ request.path }}"
+      hx-post="{% url 'tracking-edit' form.instance.tracking_date %}{% querystring %}"
       hx-headers='{"X-CSRFToken":"{{ csrf_token }}"}'
       hx-target="#tracking-{{ tracking_date|date:'Y-m-d' }}"
       hx-swap="outerHTML">

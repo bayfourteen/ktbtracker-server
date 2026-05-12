@@ -32,6 +32,7 @@ class TrackingForm(forms.ModelForm):
         logger.info(f"{kwargs=} {self.fields=}")
 
         self.helper = FormHelper()
+        self.helper.form_tag = False
 
         self.fields["tracking_date"] = forms.DateField(widget=forms.DateInput(attrs={"class": "datepicker"}))
 
