@@ -6,6 +6,7 @@
       class="form-floating modal-content"
       data-hx-post="{% url 'tracking-edit' form.instance.tracking_date %}{% querystring %}"
       data-hx-headers='{"X-CSRFToken":"{{ csrf_token }}"}'
+
       data-hx-target="#tracking-editor-dialog"
       data-hx-swap="innerHTML">
     <div class="modal-header justify-content-start">

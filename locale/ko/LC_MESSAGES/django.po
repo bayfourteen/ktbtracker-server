@@ -117,15 +117,15 @@ msgstr ""
 
 #: config/requirements.py:38
 msgid "self_defense"
-msgstr ""
+msgstr "Self-Defense"
 
 #: config/requirements.py:39
 msgid "sit_ups"
-msgstr ""
+msgstr "Sit-ups"
 
 #: config/requirements.py:40
 msgid "sparring"
-msgstr ""
+msgstr "Sparring"
 
 #: src/ktbtracker_server__fastapi/templates/_layout/base.html:6
 #: templates/_layout/base.html:7

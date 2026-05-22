@@ -6,12 +6,12 @@ from datetime import timedelta
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from config.requirements import RequirementsConfig
+from config.requirements import Requirements
 from .candidates import Candidate
 from .cycles import CycleWeek
 from .. import debug
 
-TRACKING_NAMES = OrderedDict({e: _(e) for e in (RequirementsConfig.PHYSICAL + RequirementsConfig.CLASS + RequirementsConfig.OTHER)})
+TRACKING_NAMES = OrderedDict({e.key: e.title for e in Requirements})
 
 
 class Tracking(models.Model):

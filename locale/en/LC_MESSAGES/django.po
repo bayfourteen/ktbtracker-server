@@ -25,107 +25,107 @@ msgstr ""
 
 #: config/requirements.py:9
 msgid "class_dream_team"
-msgstr ""
+msgstr "DreamTeam Class"
 
 #: config/requirements.py:10
 msgid "class_hyper_pro"
-msgstr ""
+msgstr "HyperPro Class"
 
 #: config/requirements.py:11
 msgid "class_master_q"
-msgstr ""
+msgstr "MasterQuest Class"
 
 #: config/requirements.py:12
 msgid "class_pmaa"
-msgstr ""
+msgstr "PMAA Class"
 
 #: config/requirements.py:13
 msgid "class_saturday"
-msgstr "Saturday Black Belt Class"
+msgstr "Saturday Class (Black Belt)"
 
 #: config/requirements.py:14
 msgid "class_sparring"
-msgstr ""
+msgstr "Sparring Class"
 
 #: config/requirements.py:15
 msgid "class_weekday"
-msgstr ""
+msgstr "Weekday Class"
 
 #: config/requirements.py:19
 msgid "journals"
-msgstr ""
+msgstr "Journal Entries"
 
 #: config/requirements.py:20
 msgid "leadership"
-msgstr ""
+msgstr "Lead Class/Activity"
 
 #: config/requirements.py:21
 msgid "leadership2"
-msgstr ""
+msgstr "Assist Class/Activity"
 
 #: config/requirements.py:22
 msgid "meditation"
-msgstr ""
+msgstr "Meditation"
 
 #: config/requirements.py:23
 msgid "mentee"
-msgstr ""
+msgstr "Be Mentored"
 
 #: config/requirements.py:24
 msgid "mentor"
-msgstr ""
+msgstr "Mentor Someone"
 
 #: config/requirements.py:25
 msgid "raok"
-msgstr ""
+msgstr "Random Acts of Kindness"
 
 #: config/requirements.py:29
 msgid "burpees"
-msgstr ""
+msgstr "Burpees"
 
 #: config/requirements.py:30
 msgid "jumps"
-msgstr ""
+msgstr "Jump Rope"
 
 #: config/requirements.py:31
 msgid "kicks"
-msgstr ""
+msgstr "Kicks"
 
 #: config/requirements.py:32
 msgid "miles"
-msgstr ""
+msgstr "Miles Run"
 
 #: config/requirements.py:33
 msgid "planks"
-msgstr ""
+msgstr "Planks"
 
 #: config/requirements.py:34
 msgid "poomsae"
-msgstr ""
+msgstr "Poomsae"
 
 #: config/requirements.py:35
 msgid "pull_ups"
-msgstr ""
+msgstr "Pull-ups"
 
 #: config/requirements.py:36
 msgid "push_ups"
-msgstr ""
+msgstr "Push-ups"
 
 #: config/requirements.py:37
 msgid "rolls_falls"
-msgstr ""
+msgstr "Rolls and Falls"
 
 #: config/requirements.py:38
 msgid "self_defense"
-msgstr ""
+msgstr "Self-Defense"
 
 #: config/requirements.py:39
 msgid "sit_ups"
-msgstr ""
+msgstr "Sit-ups"
 
 #: config/requirements.py:40
 msgid "sparring"
-msgstr ""
+msgstr "Sparring"
 
 #: src/ktbtracker_server__fastapi/templates/_layout/base.html:6
 #: templates/_layout/base.html:7
