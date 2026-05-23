@@ -25,7 +25,7 @@ from ktbtracker.models import Candidate, Cycle, CycleWeek, Tracking, TrackingFul
 
 logger = logging.getLogger(__name__)
 
-TRACKING_NAMES = OrderedDict({e.key: e.title for e in Requirements})
+#TRACKING_NAMES = OrderedDict({e.key: e.title for e in Requirements})
 
 
 @debug
@@ -36,7 +36,7 @@ def calculate_tracking_totals(candidate: Candidate, cycle_week: CycleWeek | None
         tracking_date_range=(cycle_week.start if cycle_week else candidate.cycle.cycle_start, cycle_week.end if cycle_week else candidate.cycle.cycle_end)
     ).values_list()
 
-    for name in TRACKING_NAMES.keys():
+    for name in Requirements.TRACKING_NAMES().keys():
         tracking_totals[name] = sum([t.get(name, 0) for t in candidate_tracking])
 
     return tracking_totals
@@ -55,7 +55,7 @@ def calculate_full_statistics(candidate: Candidate):
         candidate=candidate,
         tracking_date__range=(candidate.cycle.cycle_start, candidate.cycle.cycle_end + timedelta(days=1))
     ).values_list()
-    for name in TRACKING_NAMES.keys():
+    for name in Requirements.TRACKING_NAMES().keys():
         full_statistics[name] = [t.get(name, 0) for t in full_tracking]
 
 
@@ -195,19 +195,19 @@ class TrackingListView(TrackingBaseView, ListView):
         cycle_candidates = Candidate.objects.select_related("cycle", "user").filter(cycle=self.cycle).order_by("user__last_name", "user__first_name").all()
 
         # Transpose rows and columns...
-        for tracking in self.object_list.values('tracking_date', *[k for k, v in TRACKING_NAMES.items() if getattr(self.cycle, k, None)]):
+        for tracking in self.object_list.values('tracking_date', *[k for k, v in Requirements.TRACKING_NAMES().items() if getattr(self.cycle, k, None)]):
             for k, v in tracking.items():
                 tracking_data[k].append(v)
 
         # Fill-in any missing tracking records for the week with 0s...
         for tdate_idx, tdate in [(idx, t) for idx, t in enumerate(self.tracking_week.dates) if t not in tracking_data.get("tracking_date", [])]:
             logger.info(f"{tdate_idx} {tdate} not in data!")
-            for k in ["tracking_date"] + [k for k, v in TRACKING_NAMES.items() if getattr(self.cycle, k, None)]:
+            for k in ["tracking_date"] + [k for k, v in Requirements.TRACKING_NAMES().items() if getattr(self.cycle, k, None)]:
                 tracking_data[k].insert(tdate_idx, tdate if k == "tracking_date" else 0)
 
         context = super().get_context_data(**kwargs)
         context.update(
-            TRACKING_NAMES={k: v for k, v in TRACKING_NAMES.items() if getattr(self.cycle, k, None)},
+            TRACKING_NAMES={k: v for k, v in Requirements.TRACKING_NAMES().items() if getattr(self.cycle, k, None)},
             cycle=self.cycle,
             candidate=self.candidate,
             tracking_week=self.tracking_week,
@@ -254,7 +254,7 @@ class TrackingEditView(TrackingBaseView, UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context.update(
-            TRACKING_NAMES=TRACKING_NAMES,
+            TRACKING_NAMES=Requirements.TRACKING_NAMES(),
             cycle = self.cycle,
             candidate=self.candidate,
             cycle_day=self.cycle.cycle_day(self.kwargs.get("tracking_date")),
@@ -300,7 +300,7 @@ class TrackingFormView(TrackingBaseView, FormView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context.update(
-            TRACKING_NAMES=TRACKING_NAMES,
+            TRACKING_NAMES=Requirements.TRACKING_NAMES,
             cycle = self._cycle,
             candidate=self._candidate,
             cycle_day=self._cycle.cycle_day(self.kwargs.get("tracking_date")),

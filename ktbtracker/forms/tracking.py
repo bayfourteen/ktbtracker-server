@@ -14,7 +14,7 @@ from ktbtracker import debug
 from ktbtracker.models import Tracking, Cycle, Candidate
 
 
-TRACKING_NAMES = OrderedDict({e.key: e.title for e in Requirements})
+#TRACKING_NAMES = OrderedDict({e.key: e.title for e in Requirements})
 
 INTEGER_INPUT_WIDGET = forms.NumberInput(attrs={"min": "0", "step": "1", "pattern": r"^\d+$"})
 FLOAT_INPUT_WIDGET = forms.NumberInput(attrs={"min": "0", "pattern": r"^\d+(?:\.\d+)?$"})
@@ -36,40 +36,40 @@ class TrackingForm(forms.ModelForm):
 
         self.fields["tracking_date"] = forms.DateField(widget=forms.DateInput(attrs={"class": "datepicker"}))
 
-        for name in [e.key for e in Requirements if getattr(self.candidate.cycle, e.key, 0) > 0]:
-            logger.debug(f"Adding {name} {type(self.fields[name])} {isinstance(self.fields[name], fields.FloatField)}")
-            if isinstance(self.fields[name], fields.FloatField):
-                self.fields[name] = forms.FloatField(
-                    label=_(name),
+        for e in [e for e in Requirements if getattr(self.candidate.cycle, e.key, 0) > 0]:
+            logger.debug(f"Adding {e.key} {type(self.fields[e.key])} {isinstance(self.fields[e.key], fields.FloatField)}")
+            if isinstance(self.fields[e.key], fields.FloatField):
+                self.fields[e.key] = forms.FloatField(
+                    label=e.title,
                     widget=forms.NumberInput(
-                        attrs=dict(**self.fields[name].widget.attrs)),
+                        attrs=dict(**self.fields[e.key].widget.attrs)),
                     min_value=0,
                     required=False
                 )
             else:
-                self.fields[name] = forms.IntegerField(
-                    label=_(name),
+                self.fields[e.key] = forms.IntegerField(
+                    label=e.title,
                     widget=forms.NumberInput(
-                        attrs=dict(**self.fields[name].widget.attrs, pattern=r"^\d+$")),
+                        attrs=dict(**self.fields[e.key].widget.attrs, pattern=r"^\d+$")),
                     min_value=0,
                     step_size=1,
-                    initial=getattr(self.candidate.cycle, name, 0),
+                    initial=getattr(self.candidate.cycle, e.key, 0),
                     required=False
                 )
 
         # Override any valid CLASS fields as BooleanField
-        for name in [e.key for e in Requirements if getattr(self.candidate.cycle, e.key, 0) > 0]:
-            logger.info(f"{type(self.instance)} {getattr(self.instance, name, None)}")
-            self.fields[name] = forms.BooleanField(
-                label=_(name),
+        for e in [e for e in Requirements.CLASS() if getattr(self.candidate.cycle, e.key, 0) > 0]:
+            logger.info(f"{type(self.instance)} {getattr(self.instance, e.key, None)}")
+            self.fields[e.key] = forms.BooleanField(
+                label=e.title,
                 widget=forms.CheckboxInput(
-                    attrs=dict(**self.fields[name].widget.attrs),
+                    attrs=dict(**self.fields[e.key].widget.attrs),
                     check_test=lambda value: value == 1),
-                initial=getattr(self.instance, name, 0) == 1,
+                initial=getattr(self.instance, e.key, 0) == 1,
                 disabled=(
                         (self.instance.tracking_date.weekday() > 5) or
-                        (self.instance.tracking_date.weekday() == 5 and name != "class_saturday") or
-                        (self.instance.tracking_date.weekday() < 5 and name == "class_saturday")
+                        (self.instance.tracking_date.weekday() == 5 and e.key != "class_saturday") or
+                        (self.instance.tracking_date.weekday() < 5 and e.key == "class_saturday")
                 ),
                 required=False)
 
@@ -81,11 +81,11 @@ class TrackingForm(forms.ModelForm):
             Hidden("id", self.instance.id),
             Hidden("tracking_date", self.instance.tracking_date),
             Hidden("candidate", self.instance.candidate.id),
-            *[key for key in Requirements.PHYSICAL() if getattr(self.candidate.cycle, key, 0) > 0],
-            *[Switch(key, wrapper_class="form-check-reverse") for key in Requirements.CLASS() if getattr(self.candidate.cycle, key, 0) > 0],
+            *[e.key for e in Requirements.PHYSICAL() if getattr(self.candidate.cycle, e.key, 0) > 0],
+            *[Switch(e.key, wrapper_class="form-check-reverse") for e in Requirements.CLASS() if getattr(self.candidate.cycle, e.key, 0) > 0],
             *[e.key for e in Requirements.OTHER() if getattr(self.candidate.cycle, e.key, 0) > 0]
         )
 
     class Meta:
         model = Tracking
-        fields = list(TRACKING_NAMES.keys())
+        fields = list(Requirements.TRACKING_NAMES().keys())

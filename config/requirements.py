@@ -99,14 +99,14 @@ class Requirements(Enum):
         return {e.key: e.title for e in cls}
 
     @classmethod
-    def CLASS(cls) -> Iterable[str]:
+    def CLASS(cls) -> Iterable[Requirements]:
         return [
-            cls.CLASS_DREAM_TEAM.key,
-            cls.CLASS_HYPER_PRO.key,
-            cls.CLASS_MASTER_Q.key,
-            cls.CLASS_SATURDAY.key,
-            cls.CLASS_SPARRING.key,
-            cls.CLASS_WEEKDAY.key,
+            cls.CLASS_DREAM_TEAM,
+            cls.CLASS_HYPER_PRO,
+            cls.CLASS_MASTER_Q,
+            cls.CLASS_SATURDAY,
+            cls.CLASS_SPARRING,
+            cls.CLASS_WEEKDAY,
         ]
 
     @classmethod
@@ -122,18 +122,18 @@ class Requirements(Enum):
         ]
 
     @classmethod
-    def PHYSICAL(cls) -> Iterable[str]:
+    def PHYSICAL(cls) -> Iterable[Requirements]:
         return [
-            cls.BURPEES.key,
-            cls.JUMPS.key,
-            cls.KICKS.key,
-            cls.MILES.key,
-            cls.PLANKS.key,
-            cls.POOMSAE.key,
-            cls.PULL_UPS.key,
-            cls.PUSH_UPS.key,
-            cls.ROLLS_FALLS.key,
-            cls.SELF_DEFENSE.key,
-            cls.SIT_UPS.key,
-            cls.SPARRING.key,
+            cls.BURPEES,
+            cls.JUMPS,
+            cls.KICKS,
+            cls.MILES,
+            cls.PLANKS,
+            cls.POOMSAE,
+            cls.PULL_UPS,
+            cls.PUSH_UPS,
+            cls.ROLLS_FALLS,
+            cls.SELF_DEFENSE,
+            cls.SIT_UPS,
+            cls.SPARRING,
         ]
