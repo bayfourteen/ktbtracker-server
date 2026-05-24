@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-26 05:01+0000\n"
+"POT-Creation-Date: 2026-05-23 13:16-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,183 +16,399 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? "
-"1 : 2;\n"
-
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 #: build/lib/ktbtracker_server__fastapi/webui/auth/views.py:96
 #: src/ktbtracker_server__fastapi/webui/auth/views.py:96
 msgid "INVALID_LOGIN_CREDENTIALS"
 msgstr ""
 
-#: config/requirements.py:9
-msgid "class_dream_team"
+#: config/requirements.py:26
+msgid "Burpees"
 msgstr ""
 
-#: config/requirements.py:10
-msgid "class_hyper_pro"
+#: config/requirements.py:26 config/requirements.py:27
+#: config/requirements.py:28 config/requirements.py:29
+#: config/requirements.py:30 config/requirements.py:31
+#: config/requirements.py:32 config/requirements.py:33
+#: config/requirements.py:34 config/requirements.py:35
+#: config/requirements.py:36 config/requirements.py:37
+#: config/requirements.py:39 config/requirements.py:40
+#: config/requirements.py:41 config/requirements.py:42
+#: config/requirements.py:43 config/requirements.py:44
+#: config/requirements.py:45 config/requirements.py:47
+#: config/requirements.py:48 config/requirements.py:49
+#: config/requirements.py:50 config/requirements.py:51
+#: config/requirements.py:52 config/requirements.py:53
+msgid "dream_team"
 msgstr ""
 
-#: config/requirements.py:11
-msgid "class_master_q"
+#: config/requirements.py:27
+msgid "Jumps"
 msgstr ""
 
-#: config/requirements.py:12
-msgid "class_pmaa"
-msgstr ""
-
-#: config/requirements.py:13
-msgid "class_saturday"
-msgstr ""
-
-#: config/requirements.py:14
-msgid "class_sparring"
-msgstr ""
-
-#: config/requirements.py:15
-msgid "class_weekday"
-msgstr ""
-
-#: config/requirements.py:19
-msgid "journals"
-msgstr ""
-
-#: config/requirements.py:20
-msgid "leadership"
-msgstr ""
-
-#: config/requirements.py:21
-msgid "leadership2"
-msgstr ""
-
-#: config/requirements.py:22
-msgid "meditation"
-msgstr ""
-
-#: config/requirements.py:23
-msgid "mentee"
-msgstr ""
-
-#: config/requirements.py:24
-msgid "mentor"
-msgstr ""
-
-#: config/requirements.py:25
-msgid "raok"
+#: config/requirements.py:28
+msgid "Kicks"
 msgstr ""
 
 #: config/requirements.py:29
-msgid "burpees"
+msgid "Miles"
 msgstr ""
 
 #: config/requirements.py:30
-msgid "jumps"
+msgid "Planks"
 msgstr ""
 
 #: config/requirements.py:31
-msgid "kicks"
+msgid "Poomsae"
 msgstr ""
 
 #: config/requirements.py:32
-msgid "miles"
+msgid "Pull-ups"
 msgstr ""
 
 #: config/requirements.py:33
-msgid "planks"
+msgid "Push-ups"
 msgstr ""
 
 #: config/requirements.py:34
-msgid "poomsae"
+msgid "Rolls & Falls"
 msgstr ""
 
 #: config/requirements.py:35
-msgid "pull_ups"
+msgid "Self-Defense"
 msgstr ""
 
 #: config/requirements.py:36
-msgid "push_ups"
+msgid "Sit-Ups"
 msgstr ""
 
 #: config/requirements.py:37
-msgid "rolls_falls"
-msgstr ""
-
-#: config/requirements.py:38
-msgid "self_defense"
+msgid "Sparring"
 msgstr ""
 
 #: config/requirements.py:39
-msgid "sit_ups"
+msgid "DreamTeam Class"
 msgstr ""
 
 #: config/requirements.py:40
-msgid "sparring"
+msgid "HyperQuest Class"
 msgstr ""
 
-#: src/ktbtracker_server__fastapi/templates/_layout/base.html:6
-#: templates/_layout/base.html:7
-msgid "King Tiger Black Belt Cycle"
+#: config/requirements.py:41
+msgid "MasterQuest Class"
 msgstr ""
 
-#: src/ktbtracker_server__fastapi/templates/_layout/header.html:6
-#: templates/_layout/header.html:6
-msgid "Toggle navigation"
+#: config/requirements.py:42
+msgid "PMAA Class"
 msgstr ""
 
+#: config/requirements.py:43
+msgid "Saturday Class (Black Belt)"
+msgstr ""
+
+#: config/requirements.py:44
+msgid "Sparring Class"
+msgstr ""
+
+#: config/requirements.py:45
+msgid "Weekday Class"
+msgstr ""
+
+#: config/requirements.py:47
+msgid "Journals"
+msgstr ""
+
+#: config/requirements.py:48
+msgid "Lead Class/Activity"
+msgstr ""
+
+#: config/requirements.py:49
+msgid "Assist Class/Activity"
+msgstr ""
+
+#: config/requirements.py:50
+msgid "Meditation"
+msgstr ""
+
+#: config/requirements.py:51
+msgid "Be Mentored"
+msgstr ""
+
+#: config/requirements.py:52
+msgid "Mentor Someone"
+msgstr ""
+
+#: config/requirements.py:53
+msgid "Random Acts of Kindness"
+msgstr ""
+
+#: ktbtracker/auth/hashers.py:70
+msgid "algorithm"
+msgstr ""
+
+#: ktbtracker/auth/hashers.py:71
+msgid "iterations"
+msgstr ""
+
+#: ktbtracker/auth/hashers.py:72
+msgid "salt"
+msgstr ""
+
+#: ktbtracker/auth/hashers.py:73
+msgid "hash"
+msgstr ""
+
+#: ktbtracker/forms/accounts.py:21
+#: src/ktbtracker_server__fastapi/templates/login/index.html:80
+msgid "Log in now"
+msgstr ""
+
+#: ktbtracker/templates/accounts/login.html:17
+#: src/ktbtracker_server__fastapi/templates/login/index.html:14
+msgid "King Tiger Tae Kwon Do"
+msgstr ""
+
+#: ktbtracker/templates/accounts/login.html:19
+#: ktbtracker/templates/header.html:14
 #: src/ktbtracker_server__fastapi/templates/_layout/header.html:13
 #: src/ktbtracker_server__fastapi/templates/login/index.html:16
-#: templates/_layout/header.html:13
 msgid "Black Belt Cycle"
 msgstr ""
 
+#: ktbtracker/templates/accounts/login.html:37
+#: src/ktbtracker_server__fastapi/templates/login/index.html:34
+msgid "Log in"
+msgstr ""
+
+#: ktbtracker/templates/accounts/login.html:38
+#: src/ktbtracker_server__fastapi/templates/login/index.html:35
+msgid "Don't have an account?"
+msgstr ""
+
+#: ktbtracker/templates/accounts/login.html:38
+#: src/ktbtracker_server__fastapi/templates/login/index.html:35
+msgid "Sign up"
+msgstr ""
+
+#: ktbtracker/templates/accounts/login.html:60
+#: src/ktbtracker_server__fastapi/templates/login/index.html:89
+msgid "Forgot password"
+msgstr ""
+
+#: ktbtracker/templates/accounts/login.html:67
+#: src/ktbtracker_server__fastapi/templates/login/index.html:96
+msgid "Or continue with"
+msgstr ""
+
+#: ktbtracker/templates/base.html:8
+#: src/ktbtracker_server__fastapi/templates/_layout/base.html:6
+msgid "King Tiger Black Belt Cycle"
+msgstr ""
+
+#: ktbtracker/templates/color-modes.html:35
+msgid "Toggle theme (auto)"
+msgstr ""
+
+#: ktbtracker/templates/color-modes.html:40
+msgid "Toggle theme"
+msgstr ""
+
+#: ktbtracker/templates/color-modes.html:56
+msgid "Light"
+msgstr ""
+
+#: ktbtracker/templates/color-modes.html:72
+msgid "Dark"
+msgstr ""
+
+#: ktbtracker/templates/color-modes.html:88
+msgid "Auto"
+msgstr ""
+
+#: ktbtracker/templates/header.html:7
+#: src/ktbtracker_server__fastapi/templates/_layout/header.html:6
+msgid "Toggle navigation"
+msgstr ""
+
+#: ktbtracker/templates/header.html:19
 #: src/ktbtracker_server__fastapi/templates/_layout/header.html:18
 #: src/ktbtracker_server__fastapi/templates/sysdown.html:12
-#: templates/_layout/header.html:18
 msgid "Home"
 msgstr ""
 
+#: ktbtracker/templates/header.html:23
 #: src/ktbtracker_server__fastapi/templates/_layout/header.html:22
-#: templates/_layout/header.html:22
 msgid "Tracking"
 msgstr ""
 
+#: ktbtracker/templates/header.html:28 ktbtracker/templates/header.html:32
 #: src/ktbtracker_server__fastapi/templates/_layout/header.html:27
 #: src/ktbtracker_server__fastapi/templates/_layout/header.html:31
-#: templates/_layout/header.html:27 templates/_layout/header.html:31
 msgid "Admin"
 msgstr ""
 
+#: ktbtracker/templates/header.html:36 ktbtracker/templates/header.html:74
 #: src/ktbtracker_server__fastapi/templates/_layout/header.html:35
 #: src/ktbtracker_server__fastapi/templates/_layout/header.html:68
-#: templates/_layout/header.html:35 templates/_layout/header.html:68
 msgid "Dashboard"
 msgstr ""
 
+#: ktbtracker/templates/header.html:38 ktbtracker/templates/header.html:78
 #: src/ktbtracker_server__fastapi/templates/_layout/header.html:37
 #: src/ktbtracker_server__fastapi/templates/_layout/header.html:72
 #: src/ktbtracker_server__fastapi/templates/admin/cycles/index.html:5
 #: src/ktbtracker_server__fastapi/templates/admin/index.html:5
 #: src/ktbtracker_server__fastapi/templates/index.html:5
-#: templates/_layout/header.html:37 templates/_layout/header.html:72
 msgid "Cycles"
 msgstr ""
 
+#: ktbtracker/templates/header.html:40 ktbtracker/templates/header.html:82
 #: src/ktbtracker_server__fastapi/templates/_layout/header.html:39
 #: src/ktbtracker_server__fastapi/templates/_layout/header.html:76
 #: src/ktbtracker_server__fastapi/templates/admin/cycles/index.html:24
 #: src/ktbtracker_server__fastapi/templates/admin/index.html:24
 #: src/ktbtracker_server__fastapi/templates/index.html:24
-#: templates/_layout/header.html:39 templates/_layout/header.html:76
 msgid "Candidates"
 msgstr ""
 
+#: ktbtracker/templates/header.html:52
+msgid "Logout"
+msgstr ""
+
+#: ktbtracker/templates/header.html:56
 #: src/ktbtracker_server__fastapi/templates/_layout/header.html:50
-#: templates/_layout/header.html:50
 msgid "Login"
 msgstr ""
 
+#: ktbtracker/templates/header.html:68
 #: src/ktbtracker_server__fastapi/templates/_layout/header.html:62
-#: templates/_layout/header.html:62
 msgid "Administration"
+msgstr ""
+
+#: ktbtracker/templates/tracking/editor.html:14
+#: ktbtracker/templates/tracking/partials/tracking_form.html:15
+#, python-format
+msgid "Day %(cycle_day)s"
+msgstr ""
+
+#: ktbtracker/templates/tracking/editor.html:27
+#: ktbtracker/templates/tracking/partials/tracking_form.html:28
+msgid "Cancel"
+msgstr ""
+
+#: ktbtracker/templates/tracking/editor.html:28
+#: ktbtracker/templates/tracking/partials/tracking_form.html:29
+msgid "Save"
+msgstr ""
+
+#: ktbtracker/templates/tracking/index2.html:9
+#: ktbtracker/templates/tracking/index2.html:59
+#: ktbtracker/templates/tracking/index2.html:108
+#: ktbtracker/templates/tracking/partials/tracking_header.html:6
+#: ktbtracker/templates/tracking/partials/tracking_list.html:7
+#: ktbtracker/templates/tracking/partials/tracking_list.html:56
+#: ktbtracker/templates/tracking/partials/tracking_list.html:107
+#: src/ktbtracker_server__fastapi/templates/tracking/index.html:8
+#: src/ktbtracker_server__fastapi/templates/tracking/index.html:29
+#: src/ktbtracker_server__fastapi/templates/tracking/index.html:87
+#, python-format
+msgid "Week %(week)s"
+msgstr ""
+
+#: ktbtracker/templates/tracking/index2.html:13
+#: ktbtracker/templates/tracking/partials/tracking_list.html:11
+#, python-format
+msgid ""
+"\n"
+"                %(weeks)s Weeks\n"
+"            "
+msgstr ""
+
+#: ktbtracker/templates/tracking/index2.html:23
+#: ktbtracker/templates/tracking/partials/tracking_header.html:20
+#: ktbtracker/templates/tracking/partials/tracking_list.html:21
+#: src/ktbtracker_server__fastapi/templates/tracking/index.html:15
+#, python-format
+msgid "%(days)s Days"
+msgstr ""
+
+#: ktbtracker/templates/tracking/index2.html:35
+#: ktbtracker/templates/tracking/partials/tracking_header.html:32
+#: ktbtracker/templates/tracking/partials/tracking_list.html:33
+msgid "Current User"
+msgstr ""
+
+#: ktbtracker/templates/tracking/index2.html:67
+#: ktbtracker/templates/tracking/partials/tracking_list.html:67
+msgid "Activity"
+msgstr ""
+
+#: ktbtracker/templates/tracking/index2.html:67
+#: ktbtracker/templates/tracking/partials/tracking_list.html:67
+msgid "Weekly Progress"
+msgstr ""
+
+#: ktbtracker/templates/tracking/index2.html:83
+#: ktbtracker/templates/tracking/partials/tracking_list.html:83
+#, python-format
+msgid ""
+"\n"
+"                                DAY %(day)s\n"
+"                            "
+msgstr ""
+
+#: ktbtracker/templates/tracking/index2.html:117
+#: ktbtracker/templates/tracking/partials/tracking_list.html:119
+msgid "Overall Progress"
+msgstr ""
+
+#: ktbtracker/templates/tracking/index2.html:143
+#: ktbtracker/templates/tracking/partials/tracking_list.html:145
+#, python-format
+msgid ""
+"\n"
+"                                Weekly %(progress)s%% (%(actual)s / "
+"%(goal)s)\n"
+"                            "
+msgstr ""
+
+#: ktbtracker/templates/tracking/index2.html:185
+#: ktbtracker/templates/tracking/partials/tracking_list.html:187
+#, python-format
+msgid ""
+"\n"
+"                            Overall %(progress)s%%\n"
+"                            "
+msgstr ""
+
+#: ktbtracker/templates/tracking/partials/tracking.html:16
+#: src/ktbtracker_server__fastapi/templates/tracking/index.html:38
+#, python-format
+msgid "DAY %(day)s"
+msgstr ""
+
+#: ktbtracker/templates/tracking/partials/tracking_header.html:10
+#, python-format
+msgid ""
+"\n"
+"            %(weeks)s Weeks\n"
+"        "
+msgstr ""
+
+#: ktbtracker/templates/tracking/tracking_list.html:19
+#, python-format
+msgid ""
+"\n"
+"                    Weekly %(progress)s%% (%(actual)s / %(goal)s)\n"
+"                "
+msgstr ""
+
+#: ktbtracker/templates/tracking/tracking_list.html:61
+#, python-format
+msgid ""
+"\n"
+"                Overall %(progress)s%%\n"
+"                "
 msgstr ""
 
 #: src/ktbtracker_server__fastapi/templates/admin/cycles/index.html:31
@@ -203,22 +419,6 @@ msgstr ""
 
 #: src/ktbtracker_server__fastapi/templates/error.html:5
 msgid "OOPS!"
-msgstr ""
-
-#: src/ktbtracker_server__fastapi/templates/login/index.html:14
-msgid "King Tiger Tae Kwon Do"
-msgstr ""
-
-#: src/ktbtracker_server__fastapi/templates/login/index.html:34
-msgid "Log in"
-msgstr ""
-
-#: src/ktbtracker_server__fastapi/templates/login/index.html:35
-msgid "Don't have an account?"
-msgstr ""
-
-#: src/ktbtracker_server__fastapi/templates/login/index.html:35
-msgid "Sign up"
 msgstr ""
 
 #: src/ktbtracker_server__fastapi/templates/login/index.html:56
@@ -241,18 +441,6 @@ msgstr ""
 msgid "Keep me logged in"
 msgstr ""
 
-#: src/ktbtracker_server__fastapi/templates/login/index.html:80
-msgid "Log in now"
-msgstr ""
-
-#: src/ktbtracker_server__fastapi/templates/login/index.html:89
-msgid "Forgot password"
-msgstr ""
-
-#: src/ktbtracker_server__fastapi/templates/login/index.html:96
-msgid "Or continue with"
-msgstr ""
-
 #: src/ktbtracker_server__fastapi/templates/sysdown.html:6
 msgid "System Temporarily Unavailable"
 msgstr ""
@@ -267,76 +455,7 @@ msgstr ""
 msgid "Please try again later."
 msgstr ""
 
-#: src/ktbtracker_server__fastapi/templates/tracking/index.html:8
-#: src/ktbtracker_server__fastapi/templates/tracking/index.html:29
-#: src/ktbtracker_server__fastapi/templates/tracking/index.html:87
-#: tracking/templates/tracking/index.html:9
-#: tracking/templates/tracking/index.html:36
-#: tracking/templates/tracking/index.html:85
-#, python-format
-msgid "Week %(week)s"
-msgstr ""
-
 #: src/ktbtracker_server__fastapi/templates/tracking/index.html:11
 #, python-format
 msgid "%(weeks)s Weeks"
-msgstr ""
-
-#: src/ktbtracker_server__fastapi/templates/tracking/index.html:15
-#: tracking/templates/tracking/index.html:21
-#, python-format
-msgid "%(days)s Days"
-msgstr ""
-
-#: src/ktbtracker_server__fastapi/templates/tracking/index.html:38
-#: tracking/templates/tracking/index.html:47
-#, python-format
-msgid "DAY %(day)s"
-msgstr ""
-
-#: templates/_layout/color-modes.html:35
-msgid "Toggle theme (auto)"
-msgstr ""
-
-#: templates/_layout/color-modes.html:40
-msgid "Toggle theme"
-msgstr ""
-
-#: templates/_layout/color-modes.html:56
-msgid "Light"
-msgstr ""
-
-#: templates/_layout/color-modes.html:72
-msgid "Dark"
-msgstr ""
-
-#: templates/_layout/color-modes.html:88
-msgid "Auto"
-msgstr ""
-
-#: templates/_layout/header.html:50
-msgid "Logout"
-msgstr ""
-
-#: tracking/templates/tracking/index.html:12
-#, python-format
-msgid ""
-"%(weeks)s\n"
-"                Weeks"
-msgstr ""
-
-#: tracking/templates/tracking/index.html:105
-#, python-format
-msgid ""
-"\n"
-"                        Week %(progress)s%% (%(actual)s / %(goal)s)\n"
-"                    "
-msgstr ""
-
-#: tracking/templates/tracking/index.html:137
-#, python-format
-msgid ""
-"\n"
-"                            Overall %(progress)s%%\n"
-"                        "
 msgstr ""

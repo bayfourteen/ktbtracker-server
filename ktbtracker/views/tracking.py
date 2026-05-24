@@ -63,7 +63,7 @@ class TrackingBaseView(LoginRequiredMixin, View):
 
     def setup(self, request, *args, **kwargs):
         super().setup(request, *args, **kwargs)
-
+        logger.info(f"...setup {request=}")
         #
         # Determine the current cycle from the session if available, otherwise use the latest cycle or administrator selected...
         #
@@ -78,7 +78,7 @@ class TrackingBaseView(LoginRequiredMixin, View):
                 self.cycle = Cycle.objects.get(id=int(request.GET.get("cycle", 0)))
                 request.session.update({"_cycle": self.cycle.id})
 
-        logger.debug(f"...setup {cycle_id=} {self.cycle=}")
+        logger.debug(f"...setup {cycle_id=} {request.GET.get('cycle')=} {self.cycle=}")
 
         #
         # Determine the current candidate from the session if available, otherwise from the logged-in user or administrator selected...
@@ -94,7 +94,7 @@ class TrackingBaseView(LoginRequiredMixin, View):
                 self.candidate = Candidate.objects.select_related("cycle", "user").filter(user__id=request.user.id).order_by("-id").first()
                 request.session.update({"_candidate": self.candidate.id})
             except Candidate.DoesNotExist:
-                self.candidate = Candidate(cycle=self.cycle)
+                self.candidate = None
                 request.session.delete("_candidate")
 
         if request.user.is_staff and request.GET.get("canid") and request.GET.get("canid").isdigit():
@@ -103,7 +103,7 @@ class TrackingBaseView(LoginRequiredMixin, View):
                     self.candidate = Candidate.objects.select_related("cycle", "user").get(id=int(request.GET.get("canid", 0)))
                     request.session.update({"_candidate": self.candidate.id})
                 except Candidate.DoesNotExist:
-                    self.candidate = Candidate(cycle=self.cycle)
+                    self.candidate = None
                     request.session.delete("_candidate")
 
         if self.candidate.cycle.id != self.cycle.id:
@@ -111,7 +111,7 @@ class TrackingBaseView(LoginRequiredMixin, View):
             self.candidate = Candidate(cycle=self.cycle)
             request.session.delete("_candidate")
 
-        logger.debug(f"...setup {candidate_id=} {self.candidate=}")
+        logger.debug(f"...setup {candidate_id=} {request.GET.get('canid')=} {self.candidate=}")
 
         if tracking_date := request.session.get("_tracking_date", None):
             if self.request.GET.get("trackingDate"):
@@ -129,28 +129,50 @@ class TrackingBaseView(LoginRequiredMixin, View):
             self.tracking_date = datetime.now(ZoneInfo("America/New_York")).date()
             request.session.update({"_tracking_date": self.tracking_date.isoformat()})
 
-        logger.debug(f"...setup {tracking_date=} {self.tracking_date=}")
+        logger.debug(f"...setup {tracking_date=} {request.GET.get('trackingDate')=} {self.tracking_date=}")
 
-        if week_idx := request.session.get("_week", 0):
-            if self.request.GET.get("week") and request.GET.get("week").isdigit():
-                try:
-                    q_week = int(self.request.GET.get("week"))
-                    self.tracking_week = self.cycle.cycle_week(q_week if q_week <= 0 else q_week - 1)
-                    request.session.update({"_week": week_idx})
-                except ValueError:
-                    self.tracking_week = self.cycle.cycle_week_of(self._tracking_date or date.today())
-                    request.session.update({"_week": self.tracking_week.week})
-            else:
+        #
+        # Mange the cycle week being viewed...
+        #
+        if self.request.GET.get("week", None):
+            logger.debug(f"...setup - week from query parameter: {request.GET.get('week')=}")
+            try:
+                week_idx = int(self.request.GET.get("week", 0))
+                self.tracking_week = self.cycle.cycle_week(week_idx if week_idx <= 0 else week_idx - 1)
+                request.session.update({"_week": week_idx})
+            except ValueError:
                 self.tracking_week = self.cycle.cycle_week_of(self.tracking_date or date.today())
-                request.session.update({"_week": self.tracking_week.week})
+                week_idx = self.tracking_week.week if self.tracking_week.week < 0 else self.tracking_week.week + 1
+                request.session.update({"_week": week_idx})
+        elif week_idx := request.session.get("_week", 0):
+            logger.debug(f"...setup - week from session: {week_idx=}")
+            self.tracking_week = self.cycle.cycle_week(week_idx if week_idx <= 0 else week_idx - 1)
         else:
+            logger.debug(f"...setup - week defaulting to tracking_date/today: {self.tracking_date or date.today()=}")
             self.tracking_week = self.cycle.cycle_week_of(self.tracking_date or date.today())
-            request.session.update({"_week": self.tracking_week.week})
-        logger.debug(f"...setup {week_idx=} {self.tracking_week=}")
+            week_idx = self.tracking_week.week if self.tracking_week.week < 0 else self.tracking_week.week + 1
+            request.session.update({"_week": week_idx})
+        logger.debug(f"...setup - tracking_week: {self.tracking_week=}")
 
 
 class TrackingIndexView(TrackingBaseView, TemplateView):
     template_name = "tracking/index.html"
+
+    @debug
+    def setup(self, request, *args, **kwargs):
+        super().setup(request, *args, **kwargs)
+
+    @debug
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update(
+            cycle=self.cycle,
+            candidate=self.candidate,
+            tracking_week=self.tracking_week,
+            today=datetime.now(ZoneInfo("America/New_York")).date(),
+        )
+
+        return context
 
 
 class TrackingHeaderView(TrackingBaseView, TemplateView):
@@ -176,14 +198,22 @@ class TrackingListView(TrackingBaseView, ListView):
     template_name = "tracking/partials/tracking_list.html"
     model = Tracking
 
+
+    @debug
+    def setup(self, request, *args, **kwargs):
+        super().setup(request, *args, **kwargs)
+
     @debug
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
 
     @debug
     def get_queryset(self) -> QuerySet:
+        if not self.candidate or self.candidate.cycle.id != self.cycle.id:
+            return Tracking.objects.none()
+
         return Tracking.objects.select_related("candidate").filter(
-            candidate=self.candidate,
+            candidate__id=self.candidate.id,
             tracking_date__range=(self.tracking_week.start, self.tracking_week.end),
         ).order_by("tracking_date").all()
 
@@ -217,6 +247,8 @@ class TrackingListView(TrackingBaseView, ListView):
             cycle_stats=cycle_statistics.statistics,
             cycle_totals=cycle_statistics.totals,
             cycle_candidates=cycle_candidates,
+            cycle_start=self.cycle.cycle_pre_start or self.cycle.cycle_start,
+            cycle_end=self.cycle.cycle_post_end or self.cycle.cycle_end,
             today=datetime.now(ZoneInfo("America/New_York")).date(),
         )
 
@@ -234,8 +266,14 @@ class TrackingEditView(TrackingBaseView, UpdateView):
 
     @debug
     def get_object(self, queryset: QuerySet | None = None ) -> Tracking:
+        if not self.candidate or self.candidate.cycle.id != self.cycle.id:
+            return Tracking.objects.none()
+
         try:
-            tracking = Tracking.objects.select_related("candidate").get(candidate=self.candidate, tracking_date=self.kwargs.get("tracking_date"))
+            tracking = (Tracking.objects.select_related("candidate").get(
+                candidate__id=self.candidate.id or 0,
+                tracking_date=self.kwargs.get("tracking_date"))
+            )
         except Tracking.DoesNotExist:
             tracking = Tracking(candidate=self.candidate, tracking_date=self.kwargs.get("tracking_date"))
 

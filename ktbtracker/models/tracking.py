@@ -95,11 +95,14 @@ class TrackingStatistics:
 
     @debug
     def calculate(self):
+        if not self.candidate:
+            return
+
         eligible_names = [e for e in TRACKING_NAMES.keys() if getattr(self.candidate.cycle, e, 0) > 0]
         start_date = self.cycle_week.start if self.cycle_week else self.candidate.cycle.cycle_start
         end_date = self.cycle_week.end if self.cycle_week else self.candidate.cycle.cycle_end
         candidate_tracking = Tracking.objects.select_related("candidate").filter(
-            candidate=self.candidate,
+            candidate__id=self.candidate.id or 0,
             tracking_date__range=(start_date, end_date + timedelta(days=1))
         )
 
@@ -128,6 +131,9 @@ class TrackingFullStatistics:
 
     @debug
     def calculate(self):
+        if not self.candidate:
+            return
+
         for cycle_week in range(self.candidate.cycle.cycle_weeks):
             self.weeks.append(TrackingStatistics(candidate=self.candidate, cycle_week=self.candidate.cycle.cycle_week(cycle_week)))
 

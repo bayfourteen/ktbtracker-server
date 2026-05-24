@@ -40,9 +40,9 @@ class Requirements(Enum):
     CLASS_HYPER_PRO = RequirementsConfig(_("HyperQuest Class"), _("dream_team"))
     CLASS_MASTER_Q = RequirementsConfig(_("MasterQuest Class"), _("dream_team"))
     CLASS_PMAA = RequirementsConfig(_("PMAA Class"), _("dream_team"))
-    CLASS_SATURDAY = RequirementsConfig(_("Weekday Class"), _("dream_team"))
+    CLASS_SATURDAY = RequirementsConfig(_("Saturday Class (Black Belt)"), _("dream_team"))
     CLASS_SPARRING = RequirementsConfig(_("Sparring Class"), _("dream_team"))
-    CLASS_WEEKDAY = RequirementsConfig(_("Saturday Class (Black Belt)"), _("dream_team"))
+    CLASS_WEEKDAY = RequirementsConfig(_("Weekday Class"), _("dream_team"))
     # --- Other Requirements ---
     JOURNALS = RequirementsConfig(_("Journals"), _("dream_team"))
     LEADERSHIP = RequirementsConfig(_("Lead Class/Activity"), _("dream_team"))

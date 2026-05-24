@@ -78,6 +78,9 @@
                     data-hx-target="#tracking-editor"
                     data-hx-swap="innerHTML">
                     <div class="media align-items-center justify-content-between">
+                        {% if tracking_date < cycle_start or tracking_date > cycle_end %}
+                        <div><small><i class="bi bi-exclamation-triangle text-warning" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="{{ _('This day is not part of a testing cycle and will not be counted.') }}"></i></small></div>
+                        {% endif %}
                         <div class="text-center">
                             <strong class="text-center">
                             {% blocktrans with day=tracking_week.days|index:forloop.counter0|cycle_day %}
@@ -206,4 +209,7 @@
         </div>
     </div>
 </div>
-
+<script type="module">
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+</script>
