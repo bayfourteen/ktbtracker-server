@@ -155,53 +155,15 @@ class TrackingBaseView(LoginRequiredMixin, View):
         logger.debug(f"...setup - tracking_week: {self.tracking_week=}")
 
 
-class TrackingIndexView(TrackingBaseView, TemplateView):
-    template_name = "tracking/index.html"
-
-    @debug
-    def setup(self, request, *args, **kwargs):
-        super().setup(request, *args, **kwargs)
-
-    @debug
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context.update(
-            cycle=self.cycle,
-            candidate=self.candidate,
-            tracking_week=self.tracking_week,
-            today=datetime.now(ZoneInfo("America/New_York")).date(),
-        )
-
-        return context
-
-
-class TrackingHeaderView(TrackingBaseView, TemplateView):
-    template_name = "tracking/partials/tracking_header.html"
-
-    @debug
-    def setup(self, request, *args, **kwargs):
-        super().setup(request, *args, **kwargs)
-
-    @debug
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context.update(
-            cycle=self.cycle,
-            candidate=self.candidate,
-            tracking_week=self.tracking_week,
-        )
-
-        return context
-
-
 class TrackingListView(TrackingBaseView, ListView):
-    template_name = "tracking/partials/tracking_list.html"
+    template_name = "tracking/index.html"
     model = Tracking
 
-
     @debug
     def setup(self, request, *args, **kwargs):
         super().setup(request, *args, **kwargs)
+        if request.htmx:
+            self.template_name += "#tracking-list"
 
     @debug
     def dispatch(self, request, *args, **kwargs):
@@ -219,6 +181,7 @@ class TrackingListView(TrackingBaseView, ListView):
 
     @debug
     def get_context_data(self, **kwargs):
+        today = datetime.now(ZoneInfo("America/New_York")).date()
         tracking_data = defaultdict(list)
         tracking_statistics = TrackingStatistics(self.candidate, self.tracking_week)
         cycle_statistics = TrackingStatistics(self.candidate, None)
@@ -249,14 +212,16 @@ class TrackingListView(TrackingBaseView, ListView):
             cycle_candidates=cycle_candidates,
             cycle_start=self.cycle.cycle_pre_start or self.cycle.cycle_start,
             cycle_end=self.cycle.cycle_post_end or self.cycle.cycle_end,
-            today=datetime.now(ZoneInfo("America/New_York")).date(),
+            editable_start=today - timedelta(days=3),
+            editable_end=today + timedelta(days=3),
+            today=today,
         )
 
         return context
 
-    def render_to_response(self, context, **response_kwargs):
-        response = super().render_to_response(context, **response_kwargs)
-        return trigger_client_event(response, "trackingListUpdated")
+    #def render_to_response(self, context, **response_kwargs):
+    #    response = super().render_to_response(context, **response_kwargs)
+    #    return trigger_client_event(response, "trackingListUpdated")
 
 
 class TrackingEditView(TrackingBaseView, UpdateView):
