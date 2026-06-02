@@ -26,7 +26,8 @@ class TrackingForm(forms.ModelForm):
     tracking_date = forms.DateField(widget=forms.DateInput(attrs={"class": "datepicker"}))
 
     def __init__(self, *args, **kwargs):
-        self.candidate = kwargs.pop("candidate", Candidate())
+        self.cycle = kwargs.pop("cycle", None)
+        self.candidate = kwargs.pop("candidate", None)
         super(TrackingForm, self).__init__(*args, **kwargs)
 
         logger.info(f"{kwargs=} {self.fields=}")
@@ -36,55 +37,56 @@ class TrackingForm(forms.ModelForm):
 
         self.fields["tracking_date"] = forms.DateField(widget=forms.DateInput(attrs={"class": "datepicker"}))
 
-        for e in [e for e in Requirements if getattr(self.candidate.cycle, e.key, 0) > 0]:
-            logger.debug(f"Adding {e.key} {type(self.fields[e.key])} {isinstance(self.fields[e.key], fields.FloatField)}")
-            if isinstance(self.fields[e.key], fields.FloatField):
-                self.fields[e.key] = forms.FloatField(
+        if self.cycle and self.candidate:
+            for e in [e for e in Requirements if getattr(self.candidate.cycle, e.key, 0) > 0]:
+                logger.debug(f"Adding {e.key} {type(self.fields[e.key])} {isinstance(self.fields[e.key], fields.FloatField)}")
+                if isinstance(self.fields[e.key], fields.FloatField):
+                    self.fields[e.key] = forms.FloatField(
+                        label=e.title,
+                        widget=forms.NumberInput(
+                            attrs=dict(**self.fields[e.key].widget.attrs)),
+                        min_value=0,
+                        required=False
+                    )
+                else:
+                    self.fields[e.key] = forms.IntegerField(
+                        label=e.title,
+                        widget=forms.NumberInput(
+                            attrs=dict(**self.fields[e.key].widget.attrs, pattern=r"^\d+$")),
+                        min_value=0,
+                        step_size=1,
+                        initial=getattr(self.candidate.cycle, e.key, 0),
+                        required=False
+                    )
+
+            # Override any valid CLASS fields as BooleanField
+            for e in [e for e in Requirements.CLASS() if getattr(self.candidate.cycle, e.key, 0) > 0]:
+                logger.info(f"{type(self.instance)} {getattr(self.instance, e.key, None)}")
+                self.fields[e.key] = forms.BooleanField(
                     label=e.title,
-                    widget=forms.NumberInput(
-                        attrs=dict(**self.fields[e.key].widget.attrs)),
-                    min_value=0,
-                    required=False
-                )
-            else:
-                self.fields[e.key] = forms.IntegerField(
-                    label=e.title,
-                    widget=forms.NumberInput(
-                        attrs=dict(**self.fields[e.key].widget.attrs, pattern=r"^\d+$")),
-                    min_value=0,
-                    step_size=1,
-                    initial=getattr(self.candidate.cycle, e.key, 0),
-                    required=False
-                )
+                    widget=forms.CheckboxInput(
+                        attrs=dict(**self.fields[e.key].widget.attrs),
+                        check_test=lambda value: value == 1),
+                    initial=getattr(self.instance, e.key, 0) == 1,
+                    disabled=(
+                            (self.instance.tracking_date.weekday() > 5) or
+                            (self.instance.tracking_date.weekday() == 5 and e.key != "class_saturday") or
+                            (self.instance.tracking_date.weekday() < 5 and e.key == "class_saturday")
+                    ),
+                    required=False)
 
-        # Override any valid CLASS fields as BooleanField
-        for e in [e for e in Requirements.CLASS() if getattr(self.candidate.cycle, e.key, 0) > 0]:
-            logger.info(f"{type(self.instance)} {getattr(self.instance, e.key, None)}")
-            self.fields[e.key] = forms.BooleanField(
-                label=e.title,
-                widget=forms.CheckboxInput(
-                    attrs=dict(**self.fields[e.key].widget.attrs),
-                    check_test=lambda value: value == 1),
-                initial=getattr(self.instance, e.key, 0) == 1,
-                disabled=(
-                        (self.instance.tracking_date.weekday() > 5) or
-                        (self.instance.tracking_date.weekday() == 5 and e.key != "class_saturday") or
-                        (self.instance.tracking_date.weekday() < 5 and e.key == "class_saturday")
-                ),
-                required=False)
+            # Remove any invalid fields
+            for name in [e.key for e in Requirements if getattr(self.candidate.cycle, e.key, 0) == 0]:
+                del self.fields[name]
 
-        # Remove any invalid fields
-        for name in [e.key for e in Requirements if getattr(self.candidate.cycle, e.key, 0) == 0]:
-            del self.fields[name]
-
-        self.helper.layout = Layout(
-            Hidden("id", self.instance.id),
-            Hidden("tracking_date", self.instance.tracking_date),
-            Hidden("candidate", self.instance.candidate.id),
-            *[e.key for e in Requirements.PHYSICAL() if getattr(self.candidate.cycle, e.key, 0) > 0],
-            *[Switch(e.key, wrapper_class="form-check-reverse") for e in Requirements.CLASS() if getattr(self.candidate.cycle, e.key, 0) > 0],
-            *[e.key for e in Requirements.OTHER() if getattr(self.candidate.cycle, e.key, 0) > 0]
-        )
+            self.helper.layout = Layout(
+                Hidden("id", self.instance.id),
+                Hidden("tracking_date", self.instance.tracking_date),
+                Hidden("candidate", self.instance.candidate.id),
+                *[e.key for e in Requirements.PHYSICAL() if getattr(self.candidate.cycle, e.key, 0) > 0],
+                *[Switch(e.key, wrapper_class="form-check-reverse") for e in Requirements.CLASS() if getattr(self.candidate.cycle, e.key, 0) > 0],
+                *[e.key for e in Requirements.OTHER() if getattr(self.candidate.cycle, e.key, 0) > 0]
+            )
 
     class Meta:
         model = Tracking

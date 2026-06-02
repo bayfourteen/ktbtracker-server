@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load crispy_forms_tags %}
 {% load ktbtracker_tags %}
 {% load i18n %}
 {% block content %}
@@ -80,11 +81,20 @@
                             data-bs-toggle="modal"
                             data-bs-target="#tracking-editor-modal"
                             data-hx-get="{% url 'tracking-edit' tracking_date %}{% querystring %}"
-                            data-hx-target="#tracking-editor"
+                            data-hx-target="#tracking-editor-dialog"
                             data-hx-swap="innerHTML">
                             <div class="media align-items-center justify-content-between">
                                 {% if tracking_date < cycle_start or tracking_date > cycle_end %}
-                                <div><small><i class="bi bi-exclamation-triangle text-warning" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="{{ _('This day is not part of a testing cycle and will not be counted.') }}"></i></small></div>
+                                <div>
+                                    <small>
+                                        <i class="bi bi-exclamation-triangle text-warning"
+                                           data-bs-toggle="tooltip"
+                                           data-bs-placement="bottom"
+                                           data-bs-title="{{ _('This day is not part of a testing cycle and will not be counted.') }}">
+
+                                        </i>
+                                    </small>
+                                </div>
                                 {% endif %}
                                 <div class="text-center">
                                     <strong class="text-center">
@@ -163,7 +173,7 @@
                             data-bs-toggle="modal"
                             data-bs-target="#tracking-editor-modal"
                             data-hx-get="{% url 'tracking-edit' tracking_data.tracking_date|index:forloop.counter0 %}{% querystring %}"
-                            data-hx-target="#tracking-editor"
+                            data-hx-target="#tracking-editor-dialog"
                             data-hx-swap="innerHTML">
                             {% if name|slice:':6' == 'class_' %}
                             <i class="{% if tracking_data.tracking_date|index:forloop.counter0|available:name %}bi bi-{% if tracking > 0 %}check-lg{% else %}x-lg{% endif %}{% endif %}"></i>
@@ -219,7 +229,88 @@
          aria-hidden="true">
         <div id="tracking-editor-dialog"
              class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-            {% include 'tracking/editor.html' %}
+        {% partialdef tracking-editor inline %}
+            {% if form and candidate %}
+            <form id="tracking-editor-form"
+                  class="form-floating modal-content"
+                  data-hx-post="{% url 'tracking-edit' form.instance.tracking_date %}{% querystring %}"
+                  data-hx-headers='{"X-CSRFToken":"{{ csrf_token }}"}'
+
+                  data-hx-target="#tracking-editor-dialog"
+                  data-hx-swap="innerHTML">
+                <div class="modal-header justify-content-start">
+                    <div>
+                        {% if tracking_date < cycle_start or tracking_date > cycle_end %}
+                        <div>
+                            <small>
+                                <i class="bi bi-exclamation-triangle text-warning"
+                                   data-bs-toggle="tooltip"
+                                   data-bs-placement="right"
+                                   data-bs-title="{{ _('This day is not part of a testing cycle and will not be counted.') }}">
+
+                                </i>
+                            </small>
+                        </div>
+                        {% endif %}
+                        <h3 class="h2 modal-title" style="font-variant: small-caps;">
+                            {{ candidate.cycle.title|upper }} &mdash; {% blocktrans %}Day {{ tracking_day }}{% endblocktrans %}
+                        </h3>
+                        <h4 class="d-block h3" style="font-variant: small-caps;">
+                            {{ candidate.user.first_name }} {{ candidate.user.last_name }}
+                        </h4>
+                        <h6 class="d-block h5">{{ tracking_date|date:'FULL_DATE_FORMAT' }}</h6>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ _('Close') }}"></button>
+                </div>
+                <div id="tracking-editor-body" class="modal-body">
+                    {% crispy form %}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ _('Cancel') }}</button>
+                    <button type="submit" class="btn btn-primary">{{ _('Save') }}</button>
+                </div>
+            </form>
+            {% else %}
+            <div class="modal-content">
+                <div class="modal-header justify-content-startr">
+                    <div>
+                        {% if tracking_date < cycle_start or tracking_date > cycle_end %}
+                        <div>
+                            <small>
+                                <i class="bi bi-exclamation-triangle text-warning"
+                                   data-bs-toggle="tooltip"
+                                   data-bs-placement="right"
+                                   data-bs-title="{{ _('This day is not part of a testing cycle and will not be counted.') }}">
+
+                                </i>
+                            </small>
+                        </div>
+                        {% endif %}
+                        <h3 class="h2 modal-title" style="font-variant: small-caps;">
+                            {{ cycle.title|upper }} &mdash; {% blocktrans %}Day {{ tracking_day }}{% endblocktrans %}
+                        </h3>
+                        <h6 class="d-block h5">{{ tracking_date|date:'FULL_DATE_FORMAT' }}</h6>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ _('Close') }}"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="d-flex flex-column align-items-center justify-content-center p-3 my-3 rounded shadow-sm bg-body">
+                        <div class="text-center">
+                            <h1 class="d-block h3 mb-0" style="font-variant: small-caps;">{{ _('No Candidate') }}</h1>
+                            <p>{{ _('There is no tracking data available for this day.') }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ _('Close') }}</button>
+                </div>
+            </div>
+            {% endif %}
+            <script type="module">
+                const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+                const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+            </script>
+        {% endpartialdef tracking-editor %}
         </div>
     </div>
 </div>
