@@ -100,7 +100,9 @@ class TrackingBaseView(LoginRequiredMixin, View):
                 request.session.delete("_candidate")
         else:
             try:
-                self.candidate = Candidate.objects.select_related("cycle", "user").filter(user__id=request.user.id).order_by("-id").first()
+                self.candidate = Candidate.objects.select_related("cycle", "user").filter(
+                    user__id=request.user.id
+                ).order_by("-id").first()
                 request.session.update({"_candidate": self.candidate.id})
             except Candidate.DoesNotExist:
                 self.candidate = None
@@ -116,7 +118,7 @@ class TrackingBaseView(LoginRequiredMixin, View):
                 self.candidate = None
                 request.session.delete("_candidate")
 
-        if self.candidate.cycle.id != self.cycle.id:
+        if self.candidate and self.candidate.cycle.id != self.cycle.id:
             logger.warning(f"The current candidate ({self.candidate.id or 0}) is not part of the current cycle.")
             self.candidate = None
             request.session.delete("_candidate")
@@ -202,7 +204,9 @@ class TrackingListView(TrackingBaseView, ListView):
         tracking_data = defaultdict(list)
         tracking_statistics = TrackingStatistics(self.candidate, self.tracking_week)
         cycle_statistics = TrackingStatistics(self.candidate, None)
-        cycle_candidates = Candidate.objects.select_related("cycle", "user").filter(cycle=self.cycle).order_by("user__last_name", "user__first_name").all()
+        cycle_candidates = Candidate.objects.select_related("cycle", "user").filter(
+            cycle=self.cycle
+        ).order_by("user__last_name", "user__first_name").all()
 
         # Transpose rows and columns...
         for tracking in self.object_list.values('tracking_date', *[k for k, v in Requirements.TRACKING_NAMES().items() if getattr(self.cycle, k, None)]):
