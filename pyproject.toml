@@ -5,15 +5,19 @@ version = "1.0.0"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "bcrypt",
     "crispy-bootstrap5",
     "django",
     "django-bootstrap5",
     "django-environ",
     "django-htmx",
+    "djangorestframework>=3.17.1",
+    "djangorestframework-simplejwt[crypto]>=5.5.1",
+    "djangorestframework-stubs>=3.17.0",
     "gunicorn",
     "mysqlclient",
     "uvicorn",
-    "uvicorn-worker"
+    "uvicorn-worker",
 ]
 authors = [
     {name = "daviduczen-b14",email = "david.uczen@bayfourteen.com"}
@@ -49,6 +53,9 @@ dev = [
     { include-group = "lint" },
     "tox"
 ]
+
+[tool.setuptools.packages.find]
+where = ["src"]
 
 [tool.pytest.ini_options]
 addopts = "--junitxml=./xunit-result-report.xml"

@@ -1,0 +1,18 @@
+### Authenticate to Django (Simple JWT)
+run ../token.http
+
+###
+GET {{client.host.url}}/api/v1/cycles
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+###
+< {%
+    request.variables.set("cycle_id", [37, 36, 35, 20, 10, 5, 2, 1, 0]);
+%}
+
+GET {{client.host.url}}/api/v1/cycles/{{cycle_id}}
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+###

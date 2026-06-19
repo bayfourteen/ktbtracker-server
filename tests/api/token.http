@@ -1,0 +1,10 @@
+### GET request to example server
+POST {{client.host.url}}/api/token/
+Content-Type: application/json
+
+{
+  "username": "{{client.consumer.key}}",
+  "password": "{{client.consumer.secret}}"
+}
+
+> {% client.global.set("auth_token", response.body.access); %}
