@@ -1,0 +1,19 @@
+### Authenticate to Django (Simple JWT)
+run ../token.http
+
+###
+GET {{client.host.url}}/api/v1/candidates
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+###
+< {%
+    request.variables.set("canid", [500, 510, 649, 322]);
+%}
+
+GET {{client.host.url}}/api/v1/candidates/{{canid}}
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+###
+/html>
