@@ -1,6 +1,11 @@
 from django.contrib.auth.views import LogoutView
 from django.urls import include, path
 from rest_framework.routers import SimpleRouter
+from drf_spectacular.views import (
+    SpectacularAPIView,
+    SpectacularRedocView,
+    SpectacularSwaggerView,
+)
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
@@ -11,16 +16,28 @@ from ktbtracker.api.urls import router as api_router
 
 
 urlpatterns = [
-    # iOS clients send username/password here to receive access + refresh tokens
+    #
+    # --- Application Programming Interface (API) Paths ---
+    #
+    # -- JWT Authentication Endpoints --
     path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
-    # iOS clients send refresh token here to receive a new access token
     path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
-    path("api/token/verify/", TokenVerifyView.as_view(), name="token_verify"),
-    # -- API v1 Paths --
+    # -- Swagger Documentation Endpoints --
+    path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
+    path(
+        "api/docs/",
+        SpectacularSwaggerView.as_view(url_name="schema"),
+        name="swagger-ui",
+    ),
+    # -- Application API Endpoints --
     path("api/", include(api_router.urls)),
-    # -- UI Paths --
+    #
+    # --- User Interface (UI) Paths ---
+    #
+    # -- Accounts (Authentication) Endpoints --
     path("accounts/login/", AccountsLoginView.as_view(), name="accounts-login"),
     path("accounts/logout/", LogoutView.as_view(), name="accounts-logout"),
+    # -- Tracking Emdpoints --
     path("tracking/", TrackingListView.as_view(), name="tracking-list"),
     path(
         "tracking/<date:tracking_date>/editor",

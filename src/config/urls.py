@@ -21,6 +21,6 @@ from config import settings
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("api/v1/", include("ktbtracker.api.urls")),
+    # ... your application api routes
     path("", include("ktbtracker.urls", namespace="ktbtracker")),
 ]

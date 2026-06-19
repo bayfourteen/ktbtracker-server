@@ -41,21 +41,22 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
     # --- Third Party Applications ---
-    'rest_framework',
-    'rest_framework_simplejwt',
-    'django_bootstrap5',
-    'django_htmx',
-    'crispy_forms',
-    'crispy_bootstrap5',
+    "rest_framework",
+    "rest_framework_simplejwt",
+    "drf_spectacular",
+    "django_bootstrap5",
+    "django_htmx",
+    "crispy_forms",
+    "crispy_bootstrap5",
     # --- Applications ---
-    'ktbtracker',
+    "ktbtracker",
 ]
 
 MIDDLEWARE = [
@@ -300,16 +301,40 @@ register_converter(converters.DateConverter, 'date')
 # Django REST Framework
 #
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-    )
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ),
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
+    "PAGE_SIZE": 100,
 }
 
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Your Project API",
+    "DESCRIPTION": "Your project description",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+    # OTHER SETTINGS
+    "COMPONENT_SPLIT_REQUEST": True,
+    # Define the security scheme for Swagger UI
+    'SECURITY': [{'BearerAuth': []}],
+    'APPEND_COMPONENTS': {
+        'securitySchemes': {
+            'BearerAuth': {
+                'type': 'http',
+                'scheme': 'bearer',
+                'bearerFormat': 'JWT',
+            }
+        }
+    },
+}
 
 SIMPLE_JWT = {
+    # Use RSA-PSS 256-bit Signing
     "ALGORITHM": "PS256",
     "SIGNING_KEY": env("JWT_PRIVATE_KEY").replace("\\n", "\n"),
     "VERIFYING_KEY": env("JWT_PUBLIC_KEY").replace("\\n", "\n"),
+    "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
     # Standard Simple JWT configs
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
