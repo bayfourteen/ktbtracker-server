@@ -1,10 +1,16 @@
-from api.views import CandidateViewSet, CycleViewSet, GroupViewSet, UserViewSet
 from django.urls import include, path
 from rest_framework import routers
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
     TokenVerifyView,
+)
+
+from ktbtracker.api.views import (
+    CandidateViewSet,
+    CycleViewSet,
+    GroupViewSet,
+    UserViewSet,
 )
 
 router = routers.DefaultRouter(trailing_slash=False)

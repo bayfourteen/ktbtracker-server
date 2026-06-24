@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework_simplejwt",
     "drf_spectacular",
+    "oauth2_provider",
     "django_bootstrap5",
     "django_htmx",
     "crispy_forms",
@@ -71,7 +72,7 @@ MIDDLEWARE = [
     'django_htmx.middleware.HtmxMiddleware',
 ]
 
-ROOT_URLCONF = 'ktbtracker.urls'
+ROOT_URLCONF = 'config.urls'
 
 TEMPLATES = [
     {
@@ -166,7 +167,7 @@ USE_TZ = True
 USE_THOUSAND_SEPARATOR = True
 
 FORMAT_MODULE_PATH = [
-    "ktbtracker.formats"
+    'ktbtracker.formats'
 ]
 
 
@@ -186,107 +187,7 @@ LOGOUT_REDIRECT_URL = '/accounts/login'
 LOGOUT_URL = '/accounts/logout'
 
 
-# Logging
-# https://docs.djangoproject.com/en/6.0/howto/logging/
-
-LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-
-    "formatters": {
-        "simple": {
-            "format": "[%(asctime)s] [%(levelname)-8s] [%(name)s] %(message)s",
-        },
-        "verbose": {
-            "format": "[%(asctime)s] [%(levelname)-8s] [%(name)s] %(message)s (%(filename)s:%(lineno)s)",
-        },
-        "call_trace": {
-            "format": "[%(asctime)s] [%(levelname)-8s] %(message)s (%(pathname)s:%(lineno)s)",
-        }
-    },
-
-    "handlers": {
-        "console": {
-            "level": "DEBUG",
-            "formatter": "simple",
-            "class": "logging.StreamHandler",
-        },
-        "file": {
-            "level": "DEBUG",
-            "formatter": "verbose",
-            "class": "logging.FileHandler",
-            "filename": "general.log",
-        },
-        "call_trace": {
-            "level": "DEBUG",
-            "formatter": "call_trace",
-            "class": "logging.FileHandler",
-            "filename": "general.log",
-        },
-    },
-
-    "root": {
-        "level": "DEBUG",
-        "handlers": ["console", "file"],
-        "propagate": False,
-    },
-
-    "loggers": {
-        "ktbtracker": {
-            "level": "DEBUG",
-            "formatter": "verbose",
-            "handlers": ["console", "file"],
-            "propagate": False,
-        },
-        "tracking": {
-            "level": "DEBUG",
-            "formatter": "verbose",
-            "handlers": ["console", "file"],
-            "propagate": False,
-        },
-        "call_trace": {
-            "level": "DEBUG",
-            "formatter": "call_trace",
-            "handlers": ["file"],
-            "propagate": False,
-        },
-        "django": {
-            "level": "ERROR",
-            "formatter": "verbose",
-            "handlers": ["file"],
-            "propagate": False,
-        },
-        "django.db": {
-            "level": "DEBUG" if DEBUG else "ERROR",
-            "formatter": "verbose",
-            "handlers": ["file"],
-            "propagate": False,
-        },
-        "django.auth": {
-            "level": "DEBUG",
-            "formatter": "verbose",
-            "handlers": ["file"],
-            "propagate": False,
-        },
-        "django.request": {
-            "level": "DEBUG",
-            "formatter": "verbose",
-            "handlers": ["file"],
-            "propagate": False,
-        },
-        "django.server": {
-            "level": "INFO",
-            "formatter": "verbose",
-            "handlers": ["file"],
-            "propagate": False,
-        },
-        'nplusone': {
-            'handlers': ['console'],
-            'level': 'WARN',
-        },
-    },
-}
-
+#
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 
 CRISPY_TEMPLATE_PACK = "bootstrap5"

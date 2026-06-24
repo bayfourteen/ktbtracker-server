@@ -1,7 +1,7 @@
 from django.contrib.auth.models import Group
 from rest_framework import permissions, viewsets
 
-from api.serializers import GroupSerializer
+from ktbtracker.api.serializers import GroupSerializer
 
 
 class GroupViewSet(viewsets.ModelViewSet):

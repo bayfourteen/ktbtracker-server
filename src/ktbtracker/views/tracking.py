@@ -11,7 +11,6 @@ from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import FormView, ListView, UpdateView
 from django_htmx.http import HttpResponseClientRefresh, trigger_client_event
-from utils import debug
 
 from ktbtracker.forms import TrackingForm
 from ktbtracker.models import (
@@ -22,6 +21,7 @@ from ktbtracker.models import (
     Tracking,
     TrackingStatistics,
 )
+from ktbtracker.utils import debug
 
 logger = logging.getLogger(__name__)
 

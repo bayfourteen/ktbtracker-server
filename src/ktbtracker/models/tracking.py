@@ -4,7 +4,8 @@ from dataclasses import dataclass
 from datetime import timedelta
 
 from django.db import models
-from utils import debug
+
+from ktbtracker.utils import debug
 
 from .candidates import Candidate
 from .cycles import CycleWeek

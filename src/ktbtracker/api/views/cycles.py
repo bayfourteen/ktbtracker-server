@@ -2,10 +2,10 @@ import logging
 
 from rest_framework import permissions, viewsets
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from utils import debug
 
+from ktbtracker.api.serializers import CycleSerializer
 from ktbtracker.models import Cycle
-from api.serializers import CycleSerializer
+from ktbtracker.utils import debug
 
 logger = logging.getLogger(__name__)
 

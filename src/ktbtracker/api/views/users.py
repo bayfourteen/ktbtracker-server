@@ -1,8 +1,8 @@
 
 from rest_framework import permissions, viewsets
 
+from ktbtracker.api.serializers import UserSerializer
 from ktbtracker.models import User
-from api.serializers import UserSerializer
 
 
 class UserViewSet(viewsets.ModelViewSet):

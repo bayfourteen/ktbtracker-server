@@ -20,7 +20,8 @@ from django.urls import path, include
 from config import settings
 
 urlpatterns = [
+    # --- Django Administration Paths ---
     path("admin/", admin.site.urls),
-    # ... your application api routes
-    path("", include("ktbtracker.urls", namespace="ktbtracker")),
+    # --- Application Paths ---
+    path("", include("ktbtracker.urls")),
 ]
