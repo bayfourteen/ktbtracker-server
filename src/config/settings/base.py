@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     # --- Third Party Applications ---
+    'django_extensions',
     "rest_framework",
     "rest_framework_simplejwt",
     "drf_spectacular",
@@ -228,6 +229,11 @@ SPECTACULAR_SETTINGS = {
             }
         }
     },
+}
+
+OAUTH2_PROVIDER = {
+    "ALLOWED_REDIRECT_URI_SCHEMES": ["https", "ktbtracker"],  # Allows 'ktbtracker://'
+    "PKCE_REQUIRED": True,  # Globally enforce PKCE for added security
 }
 
 SIMPLE_JWT = {

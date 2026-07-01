@@ -11,6 +11,7 @@ dependencies = [
     "django",
     "django-bootstrap5",
     "django-environ",
+    "django-extensions>=4.1",
     "django-htmx",
     "django-oauth-toolkit>=3.3.0",
     "djangorestframework>=3.17.1",
@@ -19,8 +20,10 @@ dependencies = [
     "drf-spectacular>=0.29.0",
     "gunicorn",
     "mysqlclient",
+    "pyopenssl>=26.3.0",
     "uvicorn",
     "uvicorn-worker",
+    "werkzeug>=3.1.8",
 ]
 authors = [
     {name = "daviduczen-b14",email = "david.uczen@bayfourteen.com"}
