@@ -15,8 +15,8 @@ import pymysql
 from django.core.asgi import get_asgi_application
 
 # Add src folder to sys.path
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
-sys.path.append(os.path.join(BASE_DIR, 'src'))
+BASE_DIR = Path(__file__).resolve().parent.parent
+sys.path.append(BASE_DIR)
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 

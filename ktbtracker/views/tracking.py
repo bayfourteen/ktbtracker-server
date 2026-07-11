@@ -103,7 +103,8 @@ class TrackingBaseView(LoginRequiredMixin, View):
                 self.candidate = Candidate.objects.select_related("cycle", "user").filter(
                     user__id=request.user.id
                 ).order_by("-id").first()
-                request.session.update({"_candidate": self.candidate.id})
+                if self.candidate:
+                    request.session.update({"_candidate": self.candidate.id})
             except Candidate.DoesNotExist:
                 self.candidate = None
                 request.session.delete("_candidate")

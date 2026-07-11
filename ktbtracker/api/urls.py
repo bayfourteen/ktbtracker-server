@@ -1,4 +1,5 @@
 from django.urls import include, path
+from oauth2_provider import urls as oauth2_urls
 from rest_framework import routers
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
@@ -23,6 +24,7 @@ router.register(r"groups", GroupViewSet)
 # Additionally, we include login URLs for the browsable API.
 
 urlpatterns = [
+    path('o/', include(oauth2_urls)),
     # iOS clients send username/password here to receive access + refresh tokens
     path("token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     # iOS clients send refresh token here to receive a new access token
