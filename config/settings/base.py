@@ -22,16 +22,19 @@ from ktbtracker import converters
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 environ.Env.read_env(str(BASE_DIR / '.env')) # Load the .env file
-env = environ.FileAwareEnv()
+env = environ.FileAwareEnv(
+    DEBUG=(bool, False),
+    PRODUCTION=(bool, False),
+)
+env.read_env()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-7uur3dwa2!!6!bq3a&773z6kg241)$s=yk7l-ilxshpce#ax0r'
+PRODUCTION = env('PRODUCTION')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env('DEBUG') if 'DEBUG' in env else not PRODUCTION
 
 APPEND_SLASH = True
 
@@ -48,10 +51,10 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     # --- Third Party Applications ---
-    'django_extensions',
+    "django_extensions",
+    "oauth2_provider",
     "rest_framework",
     "rest_framework_simplejwt",
-    'oauth2_provider',
     "drf_spectacular",
     "django_bootstrap5",
     "django_htmx",
@@ -229,20 +232,4 @@ SPECTACULAR_SETTINGS = {
             }
         }
     },
-}
-
-OAUTH2_PROVIDER = {
-    "ALLOWED_REDIRECT_URI_SCHEMES": ["https", "ktbtracker"],  # Allows 'ktbtracker://'
-    "PKCE_REQUIRED": True,  # Globally enforce PKCE for added security
-}
-
-SIMPLE_JWT = {
-    # Use RSA-PSS 256-bit Signing
-    "ALGORITHM": "PS256",
-    "SIGNING_KEY": env("JWT_PRIVATE_KEY").replace("\\n", "\n"),
-    "VERIFYING_KEY": env("JWT_PUBLIC_KEY").replace("\\n", "\n"),
-    "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
-    # Standard Simple JWT configs
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
 }
