@@ -19,7 +19,7 @@ dependencies = [
     "djangorestframework-stubs>=3.17.0",
     "drf-spectacular>=0.29.0",
     "gunicorn",
-    "mysqlclient",
+    "pymysql",
     "pyopenssl>=26.3.0",
     "uvicorn",
     "uvicorn-worker",
@@ -62,6 +62,9 @@ dev = [
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.uv]
+package = false
 
 [tool.pytest.ini_options]
 addopts = "--junitxml=./xunit-result-report.xml"
