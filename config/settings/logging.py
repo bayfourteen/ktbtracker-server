@@ -35,13 +35,13 @@ LOGGING = {
             "level": "DEBUG",
             "formatter": "verbose",
             "class": "logging.FileHandler",
-            "filename": BASE_DIR / ".." / "debug.log",
+            "filename": BASE_DIR / "debug.log",
         },
         "call_trace": {
             "level": "DEBUG",
             "formatter": "call_trace",
             "class": "logging.FileHandler",
-            "filename": BASE_DIR / ".." / "trace.log",
+            "filename": BASE_DIR / "trace.log",
         },
     },
 
