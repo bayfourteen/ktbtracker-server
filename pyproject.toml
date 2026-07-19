@@ -1,6 +1,6 @@
 [build-system]
-requires = ["setuptools>=61.0.0", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["uv_build>=0.11.28,<0.12"]
+build-backend = "uv_build"
 
 [project]
 name = "ktbtracker-server"
@@ -17,6 +17,7 @@ dependencies = [
     "django-environ",
     "django-extensions>=4.1",
     "django-htmx",
+    "django-mobile>=0.7.0",
     "django-oauth-toolkit>=3.3.0",
     "djangorestframework>=3.17.1",
     "djangorestframework-simplejwt[crypto]>=5.5.1",
@@ -25,6 +26,7 @@ dependencies = [
     "gunicorn",
     "pymysql",
     "pyopenssl>=26.3.0",
+    "uv-build>=0.11.28",
     "uvicorn",
     "uvicorn-worker",
     "werkzeug>=3.1.8",
@@ -62,6 +64,16 @@ dev = [
     { include-group = "test" },
     { include-group = "lint" },
     "tox"
+]
+
+[tool.uv.build-backend]
+module-name = ["config", "ktbtracker"]
+module-root = ""
+source-include = [
+    "manage.py",
+    "locale/**/*",
+    "templates/**/*.html",
+    "static/**/*"
 ]
 
 [tool.setuptools.packages.find]

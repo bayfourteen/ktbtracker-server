@@ -1,3 +1,4 @@
+import base64
 from datetime import timedelta
 from pathlib import Path
 
@@ -21,7 +22,14 @@ CSRF_COOKIE_SECURE = True
 # Trust X-Forwarded-Proto header if behind a reverse proxy (Nginx/Heroku/AWS Cloudfront)
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
+ALLOWED_HOSTS = ['*'] if DEBUG else ['.ktbtracker.com', 'localhost', '127.0.0.1', '[::1]']
+
+#
 # Django OAuth Toolkit (DOT)
+#
+# OIDC_ISS_ENDPOINT is the OIDC Issuer endpoint (https://127.0.0.1, https://[test.]kingtigerblackbelt.com)
+# OIDC_RSA_PRIVATE_KEYS is a a base64 encoded private key (base64 -w 0 < /etc/ssl/private/oidc.key)
+#
 OAUTH2_PROVIDER = {
     "OAUTH2_VALIDATOR_CLASS": "oauth2_provider.oauth2_validators.OAuth2Validator",
     "SECURE_SERVER": True,
@@ -36,7 +44,7 @@ OAUTH2_PROVIDER = {
     # Set the OIDC Issuer endpoint (must use https://)
     "OIDC_ISS_ENDPOINT": env('OIDC_ISS_ENDPOINT'),
     # Supply your generated keys for RS256 signing
-    "OIDC_RSA_PRIVATE_KEYS": [env('OIDC_RSA_PRIVATE_KEY')],
+    "OIDC_RSA_PRIVATE_KEYS": [base64.b64decode(env('OIDC_RSA_PRIVATE_KEY')).decode('utf-8')],
 }
 
 SIMPLE_JWT = {
@@ -49,3 +57,38 @@ SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
 }
+
+# Authentication
+#
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+]
+
+
+# Password validation
+# https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
+
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    },
+]
+
+PASSWORD_HASHERS = [
+    "django.contrib.auth.hashers.PBKDF2PasswordHasher",
+    "django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher",
+    "django.contrib.auth.hashers.Argon2PasswordHasher",
+    "django.contrib.auth.hashers.ScryptPasswordHasher",
+    "django.contrib.auth.hashers.BCryptSHA256PasswordHasher",
+    "django.contrib.auth.hashers.BCryptPasswordHasher",
+]

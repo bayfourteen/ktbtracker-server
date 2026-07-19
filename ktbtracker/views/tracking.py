@@ -130,30 +130,29 @@ class TrackingBaseView(LoginRequiredMixin, View):
         # Mange the cycle week being viewed (default to the cycle week of the current date)...
         #
         logger.debug(f"...setup: week <<< Session: _week={request.session.get('_week', None)}, Query: week={request.GET.get('week', None)}")
-        if week_idx := request.session.get("_week", None) is not None:
+        self.tracking_week = self.cycle.cycle_week_of(today_date)
+        if (week_idx := request.session.get("_week", None)) is not None:
+            logger.debug(f"...setup: week <<< Session: _week={week_idx}")
             try:
                 week_idx = int(week_idx)
                 self.tracking_week = self.cycle.cycle_week(week_idx if week_idx <= 0 else week_idx - 1)
             except ValueError:
-                self.tracking_week = self.cycle.cycle_week_of(today_date)
-                request.session.update({"_week": self.tracking_week.week if self.tracking_week.week < 0 else self.tracking_week.week + 1})
-        else:
-            self.tracking_week = self.cycle.cycle_week_of(today_date)
-            request.session.update({"_week": self.tracking_week.week if self.tracking_week.week < 0 else self.tracking_week.week + 1})
+                pass
 
         if self.request.GET.get("week", None) is not None:
+            logger.debug(f"...setup: week <<< Query: week={self.request.GET.get('week', None)}")
             try:
                 q_week = int(self.request.GET.get("week", 0))
                 self.tracking_week = self.cycle.cycle_week(q_week if q_week <= 0 else q_week - 1)
                 request.session.update({"_week": self.tracking_week.week if self.tracking_week.week < 0 else self.tracking_week.week + 1})
             except ValueError:
-                self.tracking_week = self.cycle.cycle_week_of(today_date)
-                request.session.update({"_week": self.tracking_week.week if self.tracking_week.week < 0 else self.tracking_week.week + 1})
+                pass
 
         logger.debug(f"...setup: week >>> {self.tracking_week}")
 
         logger.debug(f"...setup: tracking_date <<< Session: _tracking_date={request.session.get('_tracking_date', None)}, Query: trackingDate={request.GET.get('trackingDate', None)}")
-        if tracking_date := request.session.get("_tracking_date", None):
+        if (tracking_date := request.session.get("_tracking_date", None)) is not None:
+            logger.debug(f"...setup: tracking_date <<< Session: _tracking_date={tracking_date}")
             try:
                 self.tracking_date = date.fromisoformat(tracking_date or "")
             except ValueError:
@@ -163,6 +162,7 @@ class TrackingBaseView(LoginRequiredMixin, View):
             self.tracking_date = None
 
         if self.request.GET.get("trackingDate") is not None:
+            logger.debug(f"...setup: tracking_date <<< Query: trackingDate={self.request.GET.get('trackingDate', None)}")
             try:
                 q_tracking_date = date.fromisoformat(self.request.GET.get("trackingDate", ""))
                 self.tracking_date = q_tracking_date

@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.views import LogoutView
 from django.urls import include, path
+from django.views.generic import TemplateView
 from drf_spectacular.views import (
     SpectacularAPIView,
     SpectacularRedocView,
@@ -42,4 +43,5 @@ urlpatterns = [
     # - - - Tracking Endpoints - - -
     path("tracking/", TrackingListView.as_view(), name="tracking-list"),
     path("tracking/<date:tracking_date>/editor", TrackingEditView.as_view(), name="tracking-edit"),
+    path("", TemplateView.as_view(template_name="index.html"), name="home"),
 ]

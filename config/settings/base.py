@@ -38,8 +38,6 @@ DEBUG = env('DEBUG') if 'DEBUG' in env else not PRODUCTION
 
 APPEND_SLASH = True
 
-ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -51,15 +49,15 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     # --- Third Party Applications ---
+    "django_htmx",
+    "crispy_forms",
+    "django_bootstrap5",
+    "crispy_bootstrap5",
     "django_extensions",
     "oauth2_provider",
     "rest_framework",
     "rest_framework_simplejwt",
     "drf_spectacular",
-    "django_bootstrap5",
-    "django_htmx",
-    "crispy_forms",
-    "crispy_bootstrap5",
     # --- Applications ---
     "ktbtracker",
 ]
@@ -74,32 +72,50 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django_htmx.middleware.HtmxMiddleware',
+    'ktbtracker.mobile.middleware.MobileDetectionMiddleware',
+    'ktbtracker.mobile.middleware.SetFlavourMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [
-            BASE_DIR / 'templates',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [
+            BASE_DIR / "templates",
         ],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
+                "ktbtracker.mobile.context_processors.flavour",
+                "ktbtracker.mobile.context_processors.is_mobile",
             ],
         },
     },
 ]
 
+TEMPLATE_LOADERS = "django_mobile.loader.Loader"
+
+TEMPLATE_CONTEXT_PROCESSORS = (
+    "django.template.context_processors.request",
+    "django.contrib.auth.context_processors.auth",
+    "django.contrib.messages.context_processors.messages",
+    "ktbtracker.mobile.context_processors.flavour",
+    "ktbtracker.mobile.context_processors.is_mobile",
+)
+
 WSGI_APPLICATION = 'config.wsgi.application'
 
 
+# ----------------------------------------------------------------------------------------------------------------------
+#
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
+#
+# ----------------------------------------------------------------------------------------------------------------------
 
 DATABASES = {
     'default': {
@@ -115,44 +131,12 @@ DATABASES = {
 AUTH_USER_MODEL = 'ktbtracker.User'
 
 
-# Authentication
+# ----------------------------------------------------------------------------------------------------------------------
 #
-
-AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',
-]
-
-
-# Password validation
-# https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
-
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
-]
-
-PASSWORD_HASHERS = [
-    "django.contrib.auth.hashers.PBKDF2PasswordHasher",
-    "django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher",
-    "django.contrib.auth.hashers.Argon2PasswordHasher",
-    "django.contrib.auth.hashers.ScryptPasswordHasher",
-    "django.contrib.auth.hashers.BCryptSHA256PasswordHasher",
-    "django.contrib.auth.hashers.BCryptPasswordHasher",
-]
-
-
-# Internationalization
+# Internationalization (i18n)
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
+#
+# ----------------------------------------------------------------------------------------------------------------------
 
 LOCALE_PATHS = [
     BASE_DIR / 'locale',
@@ -175,14 +159,21 @@ FORMAT_MODULE_PATH = [
 ]
 
 
+# ----------------------------------------------------------------------------------------------------------------------
+#
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
+#
+# ----------------------------------------------------------------------------------------------------------------------
 
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
+
+# This is the location of the static files in production (python manage.py collectstatic)
+STATIC_ROOT = BASE_DIR / '..' /'staticfiles'
 
 
 LOGIN_REDIRECT_URL = '/tracking' # Redirect to home page after login
