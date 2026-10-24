@@ -20,7 +20,7 @@ services:
       - database
 
   database:
-    image: mysql:8.0
+    image: mysql:latest
     extra_hosts: [ 'host.docker.internal:8000' ]
     env_file:
       - .env

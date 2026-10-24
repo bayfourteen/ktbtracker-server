@@ -1,4 +1,0 @@
-
-SHORT_DATE_FORMAT = "m/d/y"
-LONG_DATE_FORMAT = "F d, Y"
-FULL_DATE_FORMAT = "l, F d, Y"

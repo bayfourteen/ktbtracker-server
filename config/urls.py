@@ -2,7 +2,7 @@
 URL configuration for config project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/6.0/topics/http/urls/
+    https://docs.djangoproject.com/en/6.1/topics/http/urls/
 Examples:
 Function views
     1. Add an import:  from my_app import views
@@ -15,13 +15,20 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
+from django.contrib.auth.views import LogoutView, LoginView
+from django.urls import path
+from django.views.generic import TemplateView
 
-from config import settings
+from tracking.views import TrackingListView, TrackingEditView
 
 urlpatterns = [
-    # --- Django Administration Paths ---
     path("admin/", admin.site.urls),
-    # --- Application Paths ---
-    path("", include("ktbtracker.urls")),
+    # - - - Accounts (Authentication) Endpoints - - -
+    path("accounts/login/", LoginView.as_view(), name="accounts-login"),
+    path("accounts/logout/", LogoutView.as_view(), name="accounts-logout"),
+    # - - - Tracking Endpoints - - -
+    path("tracking/", TrackingListView.as_view(), name="tracking-list"),
+    path("tracking/<date:tracking_date>/editor", TrackingEditView.as_view(), name="tracking-edit"),
+    # - - - Home Page - - -
+    path("", TemplateView.as_view(template_name="index.html"), name="home"),
 ]
