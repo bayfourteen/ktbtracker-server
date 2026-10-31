@@ -16,16 +16,21 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.contrib.auth.views import LogoutView, LoginView
-from django.urls import path
+from django.urls import path, include
 from django.views.generic import TemplateView
 
+from cycles import urls as cycles_urls
 from tracking.views import TrackingListView, TrackingEditView
+from users.views import AccountsLoginView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     # - - - Accounts (Authentication) Endpoints - - -
-    path("accounts/login/", LoginView.as_view(), name="accounts-login"),
+    path("accounts/login/", AccountsLoginView.as_view(), name="accounts-login"),
     path("accounts/logout/", LogoutView.as_view(), name="accounts-logout"),
+    path("journals/", include("journals.urls")),
+    path("candidates/", include("candidates.urls")),
+    path("cycles/", include("cycles.urls")),
     # - - - Tracking Endpoints - - -
     path("tracking/", TrackingListView.as_view(), name="tracking-list"),
     path("tracking/<date:tracking_date>/editor", TrackingEditView.as_view(), name="tracking-edit"),

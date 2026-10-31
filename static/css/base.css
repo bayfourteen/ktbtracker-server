@@ -6,6 +6,12 @@
     50% { background: #655; }
 }
 
+body {
+  margin: 0;             /* Removes default browser margins */
+  min-height: 100dvh;    /* Ensures body is at least the full height of the viewport */
+  display: flex;         /* Optional: Helps position children inside the body */
+  flex-direction: column;
+}
 
 svg.ProgressCircle {
     width: 100px; height: 100px;

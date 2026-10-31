@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% load i18n static ktbtracker_tags crispy_forms_tags %}
+{% block content %}
+    <div id="candidates-list-container" class="container p-4">
+        <div class="card shadow-sm mb-3">
+            <div class="card-body d-flex align-items-center justify-content-center">
+                <h1 class="h2">{% trans 'Candidates' %}</h1>
+            </div>
+        </div>
+        {% partialdef candidates-list inline %}
+            <div class="card h-100 shadow-sm">
+                <div class="card-header">
+                    {% if is_paginated %}
+                        <div class="d-flex justify-content-end align-items-center">
+                            <nav aria-label="{% trans 'Page navigation' %}">
+                                <ul class="pagination">
+                                    {% if page_obj.has_previous %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}"
+                                               aria-label="{% trans 'First' %}">
+                                                <span aria-hidden="true">&laquo;</span>
+                                            </a>
+                                        </li>
+                                    {% else %}
+                                        <li class="page-item disabled">
+                                            <span class="page-link" aria-hidden="true">&laquo;</span>
+                                        </li>
+                                    {% endif %}
+                                    <!-- PAGE NUMBERS -->
+                                    {% for num in page_range %}
+                                        {% if num == page_obj.paginator.ELLIPSIS %}
+                                            <li class="page-item disabled">
+                                                <span class="page-link">{{ num }}</span>
+                                            </li>
+                                        {% else %}
+                                            <li class="page-item{% if page_obj.number == num %} active{% endif %}">
+                                                <a class="page-link" href="?page={{ num|stringformat:'d' }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">{{ num }}</a>
+                                            </li>
+                                        {% endif %}
+                                    {% endfor %}
+                                    {% if page_obj.has_next %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ page_obj.next_page_number }}"
+                                               aria-label="{% trans 'Next' %}">
+                                                <span aria-hidden="true">&rsaquo;</span>
+                                            </a>
+                                        </li>
+                                    {% else %}
+                                        <li class="page-item disabled">
+                                            <span class="page-link" aria-hidden="true">&raquo;</span>
+                                        </li>
+                                    {% endif %}
+                                </ul>
+                            </nav>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    <table id="candidates-list" class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th scope="col">{% trans 'Candidate' %}</th>
+                            <th scope="col">{% trans 'Cycle' %}</th>
+                            <th class="text-end" scope="col">{% trans 'Created' %}</th>
+                        </tr>
+                        <tbody>
+                        {% for candidate in candidates %}
+                            <tr>
+                                <td class="text-truncate">
+                                    {{ candidate.user.first_name }}
+                                    {{ candidate.user.last_name|upper }}.
+                                    ( {{ candidate.user.username }} )
+                                </td>
+                                <td class="text-end">{{ candidate.cycle.id }}</td>
+                                <td class="text-end">{{ candidate.created }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        {% endpartialdef candidates-list %}
+    </div>
+{% endblock %}

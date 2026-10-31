@@ -3,40 +3,52 @@
     <nav class="navbar navbar-expand-lg sticky-top bg-dark border-bottom border-body" data-bs-theme="dark">
         <div class="container-fluid">
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-toggler"
-                    aria-controls="navbar-toggler" aria-expanded="false" aria-label="{{ _('Toggle navigation') }}">
+                    aria-controls="navbar-toggler" aria-expanded="false" aria-label="{% trans 'Toggle navigation' %}">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbar-toggler">
                 <a class="navbar-brand" href="/static">
                     <img src="{% static 'images/ktb-logo-dark.png' %}" alt="" width="auto" height="50"
                          class="d-inline-block align-text-middle">
-                    {{ _('Black Belt Cycle') }}
+                    {% trans 'Black Belt Cycle' %}
                 </a>
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
                         <a class="nav-link{% path_active '/log' emit=' disabled' %}{% path_active '' '/' %}" aria-current="page"
-                           href="/">{{ _('Home') }}</a>
+                           href="/">{% trans 'Home' %}</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link{% path_active '/log' emit=' disabled' %}{% path_active '/tracking' %}" {% path_active '/log' emit='aria-disabled="true"' %}
-                           href="/tracking">{{ _('Tracking') }}</a>
+                           href="/tracking">{% trans 'Tracking' %}</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link{% path_active '/log' emit=' disabled' %}{% path_active '/journals' %}" {% path_active '/log' emit='aria-disabled="true"' %}
+                           href="/journals">{% trans 'Journals' %}</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link{% path_active '/log' emit=' disabled' %}{% path_active '/candidates' %}" {% path_active '/log' emit='aria-disabled="true"' %}
+                           href="/candidates/">{% trans 'Candidates' %}</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link{% path_active '/log' emit=' disabled' %}{% path_active '/cycles' %}" {% path_active '/log' emit='aria-disabled="true"' %}
+                           href="/cycles">{% trans 'Cycles' %}</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link{% path_active '/log' emit=' disabled' %}{% path_active '/admin' %} d-none d-lg-block" {% path_active '/log' emit='aria-disabled="true"' %}
                            href="/admin">
-                            {{ _('Admin') }}
+                            {% trans 'Admin' %}
                         </a>
                         <a class="nav-link dropdown-toggle{% path_active '/log' emit=' disabled' %}{% if request.url.path|slice:6 == '/admin' %} active{% endif %} d-block d-lg-none" {% path_active '/log' emit='aria-disabled="true"' %}
                            href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            {{ _('Admin') }}
+                            {% trans 'Admin' %}
                         </a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item{% path_active '/log' emit=' disabled' %}{% path_active '/admin' '/admin/' %}" {% path_active '/log' emit='aria-disabled="true"' %}
-                                   href="/admin">{{ _('Dashboard') }}</a></li>
+                                   href="/admin">{% trans 'Dashboard' %}</a></li>
                             <li><a class="dropdown-item{% path_active '/log' emit=' disabled' %}{% path_active '/admin' %}" {% path_active '/log' emit='aria-disabled="true"' %}
-                                   href="/admin/cycles">{{ _('Cycles') }}</a></li>
+                                   href="/admin/cycles">{% trans 'Cycles' %}</a></li>
                             <li><a class="dropdown-item{% path_active '/log' emit=' disabled' %}{% path_active '/admin' %}" {% path_active '/log' emit='aria-disabled="true"' %}
-                                   href="/admin/candidates">{{ _('Candidates') }}</a></li>
+                                   href="/admin/candidates">{% trans 'Candidates' %}</a></li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
@@ -48,11 +60,11 @@
                 {% if user.is_authenticated %}
                 <form action="{% url 'accounts-logout'%}" method="POST">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-outline-danger{% path_active '/log' emit=' d-none' %}">{{ _('Logout') }}</button>
+                    <button type="submit" class="btn btn-outline-danger{% path_active '/log' emit=' d-none' %}">{% trans 'Logout' %}</button>
                 </form>
                 {% else %}
                 <a href="{% url 'accounts-login' %}">
-                    <button type="submit" class="btn btn-outline-success{% path_active '/log' emit=' d-none' %}">{{ _('Login') }} </button>
+                    <button type="submit" class="btn btn-outline-success{% path_active '/log' emit=' d-none' %}">{% trans 'Login' %} </button>
                 </a>
                 {% endif %}
             </div>
@@ -64,21 +76,21 @@
      data-bs-theme="dark">
         <div class="container-fluid">
             <div class="container-fluid">
-                <span class="navbar-brand mb-0 h1">{{ _('Administration') }}</span>
+                <span class="navbar-brand mb-0 h1">{% trans 'Administration' %}</span>
             </div>
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
                     <a class="nav-link{% path_active '/admin' '/admin/' %}"
                        aria-current="page"
-                       href="/admin">{{ _('Dashboard') }}</a>
+                       href="/admin">{% trans 'Dashboard' %}</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link{% path_active '/admin/cycles' %}"
-                       href="/admin/cycles">{{ _('Cycles') }}</a>
+                       href="/admin/cycles">{% trans 'Cycles' %}</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link{% path_active '/admin/candidates' %}"
-                       href="/admin/candidates">{{ _('Candidates') }}</a>
+                       href="/admin/candidates">{% trans 'Candidates' %}</a>
                 </li>
             </ul>
         </div>

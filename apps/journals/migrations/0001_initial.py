@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
                 ('published', models.BooleanField(default=False)),
                 ('content', models.TextField(blank=True, null=True)),
                 ('created', models.DateTimeField(blank=True, null=True)),
-                ('created_by', models.IntegerField(default=0)),
+                ('created_by', models.IntegerField(null=True)),
                 ('modified', models.DateTimeField(blank=True, null=True)),
                 ('modified_by', models.IntegerField(null=True)),
             ],

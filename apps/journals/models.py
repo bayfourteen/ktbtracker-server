@@ -1,5 +1,7 @@
 from django.db import models
 
+from config import settings
+
 
 class JournalPost(models.Model):
     title = models.CharField(max_length=255)
@@ -11,3 +13,5 @@ class JournalPost(models.Model):
     created_by = models.IntegerField(default=0)
     modified = models.DateTimeField(blank=True, null=True)
     modified_by = models.IntegerField(null=True)
+    # -- ORM Relationships --
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, models.DO_NOTHING)

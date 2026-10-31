@@ -17,8 +17,7 @@ from pathlib import Path
 import environ
 from django.urls import register_converter
 
-from ktbtracker import converters as ktbtracker_converters
-
+from apps.ktbtracker import converters as ktbtracker_converters
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -54,8 +53,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # -- Third-party apps --
     'django_extensions',
     'django_htmx',
+    'crispy_forms',
+    'crispy_bootstrap5',
     'oauth2_provider',
     # -- Client Applications --
     'apps.ktbtracker',
@@ -137,6 +139,15 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+PASSWORD_HASHERS = [
+    "django.contrib.auth.hashers.PBKDF2PasswordHasher",
+    "django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher",
+    "django.contrib.auth.hashers.Argon2PasswordHasher",
+    "django.contrib.auth.hashers.ScryptPasswordHasher",
+    "django.contrib.auth.hashers.BCryptSHA256PasswordHasher",
+    "django.contrib.auth.hashers.BCryptPasswordHasher",
+]
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/6.1/topics/i18n/
@@ -152,6 +163,12 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
+
+USE_THOUSAND_SEPARATOR = True
+
+FORMAT_MODULE_PATH = [
+    'apps.ktbtracker.formats'
+]
 
 
 # Static files (CSS, JavaScript, Images)
@@ -214,6 +231,10 @@ OAUTH2_PROVIDER = {
     # Supply your generated keys for RS256 signing
     "OIDC_RSA_PRIVATE_KEYS": [base64.b64decode(env('OIDC_RSA_PRIVATE_KEY')).decode('utf-8')],
 }
+
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 
 # Register the custom converter with a name (e.g., 'date')

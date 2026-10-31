@@ -208,3 +208,7 @@ __marimo__/
 
 # HTTP Client Private Environment Files
 *.private.env.json
+
+*.crt
+*.key
+*.pem

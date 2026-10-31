@@ -2,7 +2,7 @@ from django.db import models
 
 from apps.cycles.models import Cycle
 from apps.users.models import User
-
+from config import settings
 
 class Candidate(models.Model):
     audit = models.BooleanField(default=False)  # This field type is a guess.
@@ -33,8 +33,8 @@ class Candidate(models.Model):
     modified = models.DateTimeField(blank=True, null=True)
     modified_by = models.IntegerField(null=True)
     # -- ORM Relationships --
-    cycle = models.ForeignKey(Cycle, models.DO_NOTHING)
-    user = models.ForeignKey(User, models.DO_NOTHING)
+    cycle = models.ForeignKey(Cycle, models.DO_NOTHING, related_name="candidates")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, models.DO_NOTHING)
 
     class Meta:
         unique_together = (("user", "cycle"),)
