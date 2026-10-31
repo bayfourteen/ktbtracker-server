@@ -1,3 +1,10 @@
 from django.contrib import admin
 
-# Register your models here.
+from apps.cycles.models import Cycle
+
+
+@admin.register(Cycle)
+class CyclesAdmin(admin.ModelAdmin):
+    pass
+
+

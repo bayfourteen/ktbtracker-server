@@ -47,6 +47,8 @@ ALLOWED_HOSTS = ['*'] if DEBUG else ['.ktbtracker.com', 'localhost', '127.0.0.1'
 # Application definition
 
 INSTALLED_APPS = [
+    "jazzmin",
+    # -- Django apps --
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
