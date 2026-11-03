@@ -14,4 +14,4 @@ class JournalPost(models.Model):
     modified = models.DateTimeField(blank=True, null=True)
     modified_by = models.IntegerField(null=True)
     # -- ORM Relationships --
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, models.DO_NOTHING)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, models.DO_NOTHING, related_name="journal_posts")

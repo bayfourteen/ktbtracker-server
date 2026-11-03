@@ -43,7 +43,7 @@ class CandidatesListView(ListView):
     def get_queryset(self) -> QuerySet:
         return (Candidate.objects.select_related("cycle")
                 .filter(cycle__id=self.cycle.id)
-                .order_by("user__first_name", "user__last_name")
+                .order_by("user__first_name", "user__last_name", "user__username")
                 .all())
 
     def get_context_data(self, **kwargs):

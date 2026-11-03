@@ -1,15 +1,18 @@
 from django.contrib import admin
 from django.utils.html import format_html
 from django.contrib.auth.models import AbstractUser
+from django.utils.translation import gettext as _
 
 from apps.candidates.models import Candidate
-from apps.cycles.models import Cycle
+from apps.cycles.models import Cycle, CycleChoiceField
+from apps.ktbtracker.models import BeltRank
+from apps.users.models import UserChoiceField, User
 
 
 @admin.register(Candidate)
 class CandidatesAdmin(admin.ModelAdmin):
     # Columns to display in the list view
-    list_display = ("id", "candidate", "belt_rank","status", "audit_icon", "user__email", "cycle_title")
+    list_display = ("candidate_name", "cycle_title", "rank", "status", "audit_icon", "user__email", "id")
 
     # Clickable links that open the detail view
     list_display_links = ("id",)
@@ -28,14 +31,29 @@ class CandidatesAdmin(admin.ModelAdmin):
 
     # Pagination: number of items per page
     list_per_page = 25
+
+    list_select_related = ("user", "cycle")
+
+    readonly_fields = ("created", "created_by", "modified", "modified_by")
+
+    def formfield_for_foreignkey(
+        self, db_field, request, **kwargs
+    ):
+        if db_field.name == "cycle":
+            return CycleChoiceField(Cycle.objects.order_by("-cycle_start").all())
+        if db_field.name == "user":
+            return UserChoiceField(User.objects.order_by("last_name", "first_name", "username").all())
+        
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+    
     @admin.display(description="Audit", boolean=False)
     def audit_icon(self, obj) -> str:
         if obj.audit:
             return format_html('<i class="text-success fa-solid fa-circle-check"></i>', obj.audit)
         return ""
 
-    @admin.display(empty_value="N/A", description="Candidate")
-    def candidate(self, obj) -> str:
+    @admin.display(empty_value="N/A", description=_("Name"))
+    def candidate_name(self, obj) -> str:
         return f"{obj.user.last_name + ', ' if obj.user.last_name else ''}{obj.user.first_name} ({obj.user.username})"
 
     @admin.display(empty_value="N/A", description="Cycle | Split Cycle")
@@ -44,3 +62,7 @@ class CandidatesAdmin(admin.ModelAdmin):
             split_cycle = Cycle.objects.get(id=obj.cycle_cont)
             return f"{obj.cycle.title} | {split_cycle.title}"
         return obj.cycle.title if obj.cycle else "N/A"
+
+    @admin.display(empty_value="N/A", description=_("Rank"))
+    def rank(self, obj) -> str:
+        return BeltRank(obj.belt_rank).label

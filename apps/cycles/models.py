@@ -1,7 +1,9 @@
 from dataclasses import dataclass
 from datetime import date, timedelta
 
+from django.contrib.admin import forms
 from django.db import models
+from django.forms.models import ModelChoiceField
 
 
 @dataclass
@@ -78,3 +80,8 @@ class Cycle(models.Model):
 
     def cycle_week_of(self, cycle_date: date = date.today()) -> CycleWeek:
         return self.cycle_week((cycle_date - self.cycle_start).days // 7)
+
+
+class CycleChoiceField(ModelChoiceField):
+    def label_from_instance(self, obj):
+        return f"{obj.title}"

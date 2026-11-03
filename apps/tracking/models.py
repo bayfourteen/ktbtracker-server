@@ -47,7 +47,7 @@ class Tracking(models.Model):
     modified = models.DateTimeField(blank=True, null=True)
     modified_by = models.IntegerField(null=True)
     # -- ORM Relationships --
-    candidate = models.ForeignKey(Candidate, models.DO_NOTHING)
+    candidate = models.ForeignKey(Candidate, models.DO_NOTHING, related_name="tracking")
 
 
 # Create your models here.

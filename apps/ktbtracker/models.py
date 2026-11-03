@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from enum import Enum
 
+from django.db import models
 from django.utils.translation import gettext as _
 
 
@@ -212,3 +213,23 @@ class Requirements(Enum):
             Requirements.SIT_UPS,
             Requirements.SPARRING,
         ]
+
+
+class BeltRank(models.IntegerChoices):
+    BOCHO_DAN = 0, _("Bocho Dan")
+    FIRST_DAN = 1, _("First Dan")
+    SECOND_DAN = 2, _("Second Dan")
+    THIRD_DAN = 3, _("Third Dan")
+    FOURTH_DAN = 4, _("Fourth Dan")
+    FIFTH_DAN = 5, _("Fifth Dan")
+    SIXTH_DAN = 6, _("Sixth Dan")
+    SEVENTH_DAN = 7, _("Seventh Dan")
+    EIGHTH_DAN = 8, _("Eighth Dan")
+    NINTH_DAN = 9, _("Ninth Dan")
+
+
+class Status(models.IntegerChoices):
+    INACTIVE = 0, _("Inactive")
+    ACTIVE = 1, _("Active")
+    GRADUATE = 2, _("Graduate")
+    DNF = -2, _("Did Not Finish")
