@@ -34,7 +34,7 @@
 <div id="container" class="min-vh-100 d-flex flex-column">
     <!-- BEGIN header -->
     {% block header %}
-        {% include 'header.html' %}
+        {% include 'widgets/header.html' %}
     {% endblock %}
     <!-- END header -->
     <main id="main" class="content flex-grow-1 container-fluid p-0 row" tabindex="-1">
@@ -57,7 +57,7 @@
     </main>
     <!-- BEGIN footer -->
     {% block footer %}
-        {% include 'footer.html' %}
+        {% include 'widgets/footer.html' %}
     {% endblock %}
     <!-- END footer -->
 </div>
