@@ -68,13 +68,13 @@
                 </ul>
                 {% include 'widgets/color-modes.html' %}
                 {% if user.is_authenticated %}
-                    <form action="{% url 'accounts-logout' %}" method="POST">
+                    <form action="{% url 'users:logout' %}" method="POST">
                         {% csrf_token %}
                         <button type="submit"
                                 class="btn btn-outline-danger{% path_active '/log' emit=' d-none' %}">{% trans 'Logout' %}</button>
                     </form>
                 {% else %}
-                    <a href="{% url 'accounts-login' %}">
+                    <a href="{% url 'users:login' %}">
                         <button type="submit"
                                 class="btn btn-outline-success{% path_active '/log' emit=' d-none' %}">{% trans 'Login' %} </button>
                     </a>

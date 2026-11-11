@@ -23,7 +23,7 @@ class TrackingForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.cycle = kwargs.pop("cycle", None)
         self.candidate = kwargs.pop("candidate", None)
-        super(TrackingForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         logger.info(f"{kwargs=} {self.fields=}")
 

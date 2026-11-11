@@ -1,0 +1,16 @@
+{% load i18n l10n static ktbtracker_tags %}
+<div class="col" hx-get="{% url 'users:index' %}{% querystring %}"
+     hx-target="this" hx-trigger="load" hx-swap="innerHTML">
+    {% partialdef user-selector %}
+        <select name="user" class="form-select" aria-label="{% trans 'Select a user' %}" onchange="this.form.submit()">
+            <option{% if not selected_user %} selected{% endif %} value="">{% trans 'Select a user' %}</option>
+            {% for user in users %}
+                <option{% if selected_user == user.id|unlocalize %} selected{% endif %}
+                                                                    value="{{ user.id|unlocalize }}">
+                    {{ user.first_name|capfirst }}{% if user.last_name %} {{ user.last_name|capfirst|slice:1 }}
+                        .{% endif %}
+                </option>
+            {% endfor %}
+        </select>
+    {% endpartialdef user-selector %}
+</div>

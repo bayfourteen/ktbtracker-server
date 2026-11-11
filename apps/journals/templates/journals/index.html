@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load i18n static ktbtracker_tags crispy_forms_tags %}
+{% load i18n l10n static ktbtracker_tags crispy_forms_tags %}
 {% block content %}
     <div id="journals-list-container" class="container p-4">
         <div class="card shadow-sm  p-3 my-3">
@@ -7,33 +7,80 @@
                 <h1 class="h2">{% trans 'Journals' %}</h1>
             </div>
         </div>
-        {% partialdef journals-list inline %}
-            <div class="card h-100 shadow-sm p-3 my-3">
-                <div class="card-header">
-                    {% if is_paginated %}
-                        <div class="d-flex justify-content-end align-items-center">
-                            {% include 'widgets/pagination.html' %}
+        <div class="card h-100 shadow-sm p-3 my-3">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <form method="GET" class="d-flex" role="search">
+                        <div class="row g-2">
+                            {% include 'candidates/widgets/selector.html' %}
+                            {% include 'cycles/widgets/selector.html' %}
                         </div>
+                    </form>
+                    {% if is_paginated %}
+                        {% include 'widgets/pagination.html' %}
                     {% endif %}
                 </div>
-                <div class="card-body">
-                    <table id="journals-list" class="table table-hover">
-                        <thead>
-                        <tr>
-                            <th scope="col">{% trans 'Journal' %}</th>
-                            <th class="text-end" scope="col">{% trans 'Created' %}</th>
-                        </tr>
-                        <tbody>
-                        {% for journal in journals %}
-                            <tr>
-                                <td class="text-truncate">{{ journal.content|slice:100 }}</td>
-                                <td class="text-end">{{ journal.created }}</td>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
             </div>
-        {% endpartialdef journals-list %}
+            <div class="card-body">
+                {% partialdef journals-list inline %}
+                    <div id="journals-list">
+                        <div class="col-lg-12">
+                            <h2>{% trans 'Journals' %}</h2>
+                            {% for journal in journals %}
+                                <div class="card mb-3">
+                                    <div class="row g-0">
+                                        <div class="col-md-2">
+                                            <img src="https://placeholder.com" class="img-fluid rounded-first shadow-sm"
+                                                 alt="Thumbnail">
+                                        </div>
+                                        <div class="col-md-10">
+                                            <div class="card-body">
+                                                <a href="#"
+                                                   hx-get="{% url 'journals:edit' journal.id %}"
+                                                   hx-target="#modal-container"
+                                                   hx-swap="innerHTML">
+                                                    <h5 class="card-title">{{ journal.title }}</h5>
+                                                </a>
+                                                <div class="card-text text-truncate">{{ journal.content|safe }}</div>
+                                                <div class="card-text">
+                                                    <small class="text-muted">
+                                                        By {{ journal.user.first_name|capfirst }} {{ journal.user.last_name|slice:1|capfirst }}
+                                                        &nbsp;&bull;&nbsp;{{ journal.created|date:'LONG_DATE_FORMAT' }} {{ journal.created|time:'TIME_FORMAT' }}
+                                                    </small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endpartialdef journals-list %}
+            </div>
+        </div>
+        <div id="modal-container"></div>
     </div>
 {% endblock %}
+{% block extra_scripts %}
+    <script>
+        const modalContainer = document.getElementById('modal-container');
+        let bootstrapModal;
+
+        // Open modal when HTMX finishes swapping content into it
+        document.body.addEventListener('htmx:afterSwap', function (evt) {
+            if (evt.detail.target.id === 'modal-container') {
+                bootstrapModal = new bootstrap.Modal(document.getElementById('editor-modal'));
+                bootstrapModal.show();
+            }
+        });
+
+        // Close modal when Django returns a custom trigger header on successful save
+        document.body.addEventListener('closeEditor', function () {
+            if (bootstrapModal) {
+                bootstrapModal.hide();
+                // Optional: Clear container content after hiding
+                setTimeout(() => modalContainer.innerHTML = '', 300);
+            }
+        });
+    </script>
+{% endblock extra_scripts %}

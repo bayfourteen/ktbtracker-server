@@ -26,8 +26,7 @@ from users.views import AccountsLoginView
 urlpatterns = [
     path("admin/", admin.site.urls),
     # - - - Accounts (Authentication) Endpoints - - -
-    path("accounts/login/", AccountsLoginView.as_view(), name="accounts-login"),
-    path("accounts/logout/", LogoutView.as_view(), name="accounts-logout"),
+    path("accounts/", include("users.urls")),
     path("journals/", include("journals.urls")),
     path("candidates/", include("candidates.urls")),
     path("cycles/", include("cycles.urls")),

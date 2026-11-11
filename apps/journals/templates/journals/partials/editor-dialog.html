@@ -1,0 +1,24 @@
+{% load i18n static ktbtracker_tags crispy_forms_tags %}
+<div class="modal fade" id="editor-modal" tabindex="-1" role="dialog" aria-labelledby="editor-modal-label" aria-hidden="true">
+    <div id="journals-editor-dialog" class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editor-modal-label">{% trans 'Editor' %}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans 'Close' %}"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editor-form" class="form-floating modal-content"
+                          data-hx-post="{% url 'journals:edit' form.instance.id %}{% querystring %}"
+                          data-hx-headers='{"X-CSRFToken":"{{ csrf_token }}"}'
+                          data-hx-target="#journals-editor-dialog"
+                          data-hx-swap="innerHTML">
+                    {{ form|crispy }}
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans 'Close' %}</button>
+                <button type="submit" class="btn btn-primary" form="editor-form">{% trans 'Save changes' %}</button>
+            </div>
+        </div>
+    </div>
+</div>

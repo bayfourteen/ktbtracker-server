@@ -1,0 +1,16 @@
+{% load i18n l10n static %}
+<div class="col" hx-get="{% url 'cycles:index' %}{% querystring %}"
+     hx-target="this" hx-trigger="load" hx-swap="innerHTML">
+    {% partialdef user-selector %}
+        <select name="cycle" class="form-select" aria-label="{% trans 'Select a cycle' %}"
+                onchange="this.form.submit()">
+            <option{% if not selected_cycle %} selected{% endif %} value="">{% trans 'Select a cycle' %}</option>
+            {% for cycle in cycles %}
+                <option{% if selected_cycle == cycle.id|unlocalize %} selected{% endif %}
+                                                                      value="{{ cycle.id|unlocalize }}">
+                    {{ cycle.title }}
+                </option>
+            {% endfor %}
+        </select>
+    {% endpartialdef user-selector %}
+</div>
