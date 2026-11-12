@@ -32,8 +32,8 @@ class CandidatesListView(ListView):
         paginator = context.get("paginator")
 
         context["page_range"] = paginator.get_elided_page_range(page_obj.number, on_each_side=2, on_ends=1)
+        context["cycles"] = Cycle.objects.order_by("-cycle_start").all()
         context["selected_cycle"] = self.request.GET.get("cycle")
-        context["selected_canid"] = self.request.GET.get("canid")
 
         return context
 

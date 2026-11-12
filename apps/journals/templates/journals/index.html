@@ -16,9 +16,7 @@
                             {% include 'cycles/widgets/selector.html' %}
                         </div>
                     </form>
-                    {% if is_paginated %}
-                        {% include 'widgets/pagination.html' %}
-                    {% endif %}
+                    {% include 'widgets/pagination.html' with page_obj=journals %}
                 </div>
             </div>
             <div class="card-body">

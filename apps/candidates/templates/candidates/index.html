@@ -15,9 +15,7 @@
                             {% include 'cycles/widgets/selector.html' %}
                         </div>
                     </form>
-                    {% if is_paginated %}
-                        {% include 'widgets/pagination.html' %}
-                    {% endif %}
+                    {% include 'widgets/pagination.html' %}
                 </div>
                 <div class="card-body">
                     <table id="candidates-list" class="table table-hover">
@@ -34,7 +32,7 @@
                             <td class="text-end">{% trans 'Show' %}</td>
                             <td class="text-end">{% trans 'ID' %}</td>
                         </tr>
-                        <tbody>
+                        <tbody>H
                         {% for candidate in candidates %}
                             <tr>
                                 <td>{{ candidate.get_candidate_name }}</td>
