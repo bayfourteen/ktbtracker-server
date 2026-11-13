@@ -18,12 +18,18 @@ class CyclesListView(ListView):
     @debug
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        page_obj = context.get("page_obj")
-        paginator = context.get("paginator")
 
-        if paginator:
-            context["page_range"] = paginator.get_elided_page_range(page_obj.number, on_each_side=2, on_ends=1)
-        context["selected_cycle"] = self.request.GET.get("cycle")
+        # Cache (or clear) the selected cycle in the session for use in other views
+        if self.request.GET.get("cycle") not in [None, "", "0"]:
+            self.request.session["_cycle_id"] = int(self.request.GET.get("cycle", 0))
+        elif self.request.GET.get("cycle") in ["", "0"]:
+            self.request.session.pop("_cycle_id", None)
+        context["selected_cycle"] = self.request.GET.get("cycle") or self.request.session.get("_cycle_id")
+
+        # For full page (non-HTMX) requests, add pagination info to context
+        if not self.request.htmx:
+            page_obj = context.get("page_obj")
+            context["elided_range"] = page_obj.paginator.get_elided_page_range(page_obj.number, on_each_side=2, on_ends=1)
 
         return context
 
@@ -36,7 +42,7 @@ class CyclesListView(ListView):
     def render_to_response(self, context, **response_kwargs):
         if self.request.htmx:
             logger.info("HTMX... request detected, rendering cycle selector widget")
-            self.template_name = "cycles/widgets/selector.html#user-selector"
+            self.template_name = "cycles/widgets/selector.html#cycle-selector"
 
         response = super().render_to_response(context, **response_kwargs)
         return response

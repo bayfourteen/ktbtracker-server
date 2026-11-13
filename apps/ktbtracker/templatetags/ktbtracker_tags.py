@@ -2,6 +2,7 @@ import logging
 from datetime import date
 from typing import Any
 
+from bs4 import BeautifulSoup, NavigableString
 from django.template import Context, library
 from django.template.defaultfilters import stringfilter
 
@@ -148,6 +149,23 @@ def cycle_week(value):
         return int(value) if int(value) < 0 else int(value) + 1
     except (ValueError, TypeError):
         return ''
+
+
+@register.filter
+def sanitize(value: str) -> str:
+    """Sanitize a string for use in HTML or JavaScript."""
+    if not isinstance(value, str):
+        return value
+    value = BeautifulSoup(value, "html.parser").get_text(separator="\n", strip=True)
+
+    value = (value
+             .replace("<", "&lt;")
+             .replace(">", "&gt;")
+             .replace("&", "&amp;")
+             .replace('"', "&quot;")
+             .replace("'", "&#39;")
+             .strip())
+    return value
 
 
 @register.simple_tag(takes_context=True)

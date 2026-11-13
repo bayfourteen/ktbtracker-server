@@ -36,14 +36,14 @@
                         </li>
                     {% endif %}
                     <!-- PAGE NUMBERS -->
-                    {% for num in page_range %}
-                        {% if num == page_obj.paginator.ELLIPSIS %}
+                    {% for page_num in elided_range %}
+                        {% if page_num == page_obj.paginator.ELLIPSIS %}
                             <li class="page-item disabled">
-                                <span class="page-link">{{ num }}</span>
+                                <span class="page-link">{{ page_num }}</span>
                             </li>
                         {% else %}
-                            <li class="page-item{% if page_obj.number == num %} active{% endif %}">
-                                <a class="page-link" href="{% querystring page=num %}">{{ num }}</a>
+                            <li class="page-item{% if page_obj.number == page_num %} active{% endif %}">
+                                <a class="page-link" href="{% querystring page=page_num %}">{{ page_num }}</a>
                             </li>
                         {% endif %}
                     {% endfor %}
